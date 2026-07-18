@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050b13"/><stop offset="1" stop-color="#0c1c31"/></linearGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#52f2d2"/><stop offset="1" stop-color="#5da8ff"/></linearGradient>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="#5da8ff" stroke-opacity=".08"/></pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/><rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="1000" cy="100" r="250" fill="#52f2d2" opacity=".08"/>
+  <g transform="translate(90 128)">
+    <path d="M78 0 144 38v76l-66 38-66-38V38Z" fill="none" stroke="url(#g)" stroke-width="7"/>
+    <path d="M46 108V42h40c24 0 38 12 38 33s-14 33-38 33H61" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="90" y="372" fill="#f4f8ff" font-family="Arial Black, Arial, sans-serif" font-size="88" letter-spacing="-3">PREDIX</text>
+  <text x="434" y="372" fill="url(#g)" font-family="Arial Black, Arial, sans-serif" font-size="88" letter-spacing="-3">AI BR</text>
+  <text x="95" y="452" fill="#9db0c7" font-family="Arial, sans-serif" font-size="34">Inteligência artificial aplicada a problemas reais.</text>
+  <text x="95" y="520" fill="#52f2d2" font-family="Courier New, monospace" font-size="22" letter-spacing="3">AGENTES • AUTOMAÇÃO • VISÃO • DECISÃO</text>
+</svg>
