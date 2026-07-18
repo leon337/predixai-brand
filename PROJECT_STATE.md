@@ -7,8 +7,11 @@ PTP_PRINCIPAL=PTP-WEB.1
 NOME_CURTO=site_institucional_predixai_br
 REPOSITORY=leon337/predixai-brand
 BRANCH=main
-STATUS=IMPLEMENTADO_NO_GITHUB_COM_PAGES_PENDENTE_DE_ATIVACAO
+STATUS=PAGES_ATIVADO_DEPLOY_DISPARADO
 SITE_TARGET=https://leon337.github.io/predixai-brand/
+PAGES_SOURCE=GITHUB_ACTIONS
+HTTPS_ENFORCED=YES
+DEPLOY_TRIGGER=PUSH_MAIN
 ```
 
 ## Roadmap
@@ -18,7 +21,7 @@ SITE_TARGET=https://leon337.github.io/predixai-brand/
 ✅ PTP-WEB.1.2 — UI/UX futurista e identidade visual
 ✅ PTP-WEB.1.3 — Responsividade, acessibilidade, SEO e PWA
 ✅🚀 PTP-WEB.1.4 — Código publicado no GitHub
-⏳ PTP-WEB.1.5 — Ativar e validar GitHub Pages
+🟧 PTP-WEB.1.5 — GitHub Pages ativado; deploy em validação
 ```
 
 ## Entregas concluídas
@@ -42,25 +45,22 @@ JSON_PARSE=PASS
 XML_PARSE=PASS
 LOCAL_HTTP_RESPONSE=PASS
 GITHUB_INDEX_FILE=PASS
-PUBLIC_PAGES_URL=NOT_CONFIRMED
+PAGES_SOURCE_ACTIVATED=PASS_BY_USER_SCREENSHOT
+HTTPS_ENFORCED=PASS_BY_USER_SCREENSHOT
+PUBLIC_PAGES_URL=PENDING_EXTERNAL_CONFIRMATION
 ```
 
-## Pendência
+## Execução atual
 
-```txt
-⏳ AGUARDANDO EXECUÇÃO DO LEO
-```
-
-Ativar uma única vez:
-
-```txt
-Repository Settings
-→ Pages
-→ Build and deployment
-→ Source
-→ GitHub Actions
-```
+O GitHub Pages foi ativado com `Source: GitHub Actions`. Este commit técnico no branch `main` foi criado para disparar automaticamente o workflow `.github/workflows/pages.yml`.
 
 ## Regra de avanço
 
-A PTP-WEB.1 só recebe status `PASS_FINAL_HOSTED` após a URL pública responder e o conteúdo visual ser validado em celular e desktop.
+A PTP-WEB.1 recebe status `PASS_FINAL_HOSTED` somente após:
+
+```txt
+WORKFLOW_DEPLOY=PASS
+PUBLIC_URL_HTTP=PASS
+MOBILE_VISUAL_VALIDATION=PASS
+DESKTOP_VISUAL_VALIDATION=PASS
+```
