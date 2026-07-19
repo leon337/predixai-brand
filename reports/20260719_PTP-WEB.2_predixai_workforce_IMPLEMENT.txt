@@ -14,12 +14,22 @@ PASS Taxonomia produto/departamento/vertical/pesquisa
 PASS Atendimento, Pet e Market reclassificados
 PASS Formulário Workforce e sob medida
 PASS API com timeout, origem e configuração obrigatória
-PASS Migração Supabase preparada
 PASS SEO, social card, JSON-LD e sitemap
 PASS Build e workflows endurecidos
 PASS GitHub Pages limitado ao dist/
 PASS Política de privacidade atualizada
 PASS Documentação e memória técnica
+
+===== SUPABASE =====
+PASS Migração 20260719222743_expand_workforce_lead_contract
+PASS Contrato workforce
+PASS Contrato sob_medida
+PASS Interesse diagnostico
+PASS EXECUTE removido de authenticated
+PASS EXECUTE anon mantido para formulário público controlado
+PASS Leitura pública bloqueada por RLS
+INFO RLS sem policy representa deny-all intencional
+WARN SECURITY DEFINER anon aceito com validação, honeypot e rate limit
 
 ===== VALIDAÇÃO PREPARATÓRIA =====
 JAVASCRIPT_SYNTAX=PASS_LOCAL
@@ -28,11 +38,11 @@ STATIC_BUILD=PASS_LOCAL
 API_CONTRACT_TESTS=PASS_LOCAL
 INTERNAL_LINKS=PASS_LOCAL
 BRANCH_COMMITS=PASS
-NO_PRODUCTION_CHANGE=PASS
+NO_PRODUCTION_SITE_CHANGE=PASS
 
 ===== PENDÊNCIAS =====
-SUPABASE_MIGRATION=PENDING
 PULL_REQUEST=PENDING
+GITHUB_ACTIONS=PENDING
 VERCEL_PREVIEW=PENDING
 MOBILE_VISUAL=PENDING
 DESKTOP_VISUAL=PENDING
@@ -42,4 +52,4 @@ MERGE=PENDING
 PRODUCTION_VALIDATION=PENDING
 
 ===== STATUS =====
-PTP-WEB.2=IMPLEMENTED_IN_BRANCH_AWAITING_DATABASE_AND_PREVIEW
+PTP-WEB.2=IMPLEMENTED_MIGRATED_AWAITING_PR_PREVIEW
