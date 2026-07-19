@@ -1,6 +1,8 @@
-# PredixAI BR — Site Institucional e Catálogo Comercial
+# PredixAI BR — PredixAI Workforce
 
-Site oficial da PredixAI BR, empresa brasileira especializada em inteligência artificial, automação, agentes inteligentes, visão computacional e sistemas de apoio à decisão.
+Site oficial da PredixAI BR e núcleo comercial do **PredixAI Workforce**, produto carro-chefe em validação.
+
+> A PredixAI BR cria departamentos inteligentes formados por agentes de IA, automações e sistemas integrados para executar processos empresariais com controle humano.
 
 ## Acesso
 
@@ -11,61 +13,48 @@ Site oficial da PredixAI BR, empresa brasileira especializada em inteligência a
 ## Estado atual
 
 ```txt
-PTP_PRINCIPAL=PTP-WEB.1
-ETAPA_ATUAL=PTP-WEB.1.6.2F1
+PTP_PRINCIPAL=PTP-WEB.2
+PRODUTO_CARRO_CHEFE=PredixAI Workforce
+ESTAGIO=EM_VALIDACAO
 PRIMARY_RUNTIME=Vercel
 SECONDARY_STATIC_HOST=GitHub Pages
 FORM_FRONTEND=Native PredixAI
 FORM_API=Vercel Functions
 FORM_DATABASE=Supabase Postgres
-REAL_LEAD_COLLECTION=BLOCKED_UNTIL_SECURITY_VALIDATION
+INFRASTRUCTURE_COST=0
 ```
+
+## Arquitetura comercial
+
+- **Workforce:** produto carro-chefe;
+- **Atendimento:** primeiro departamento em validação;
+- **Pet:** primeira vertical em validação;
+- **Market:** vertical em pesquisa;
+- **Sob medida:** OCR, visão computacional, integrações e apoio à decisão;
+- **Laboratório:** conceitos sem disponibilidade comercial.
 
 ## Tecnologias
 
-- HTML5 semântico
-- CSS moderno e responsivo
-- JavaScript progressivo sem frameworks
-- SVG para identidade visual
-- PWA Web Manifest
-- SEO, Open Graph, Twitter Cards e JSON-LD
-- GitHub Actions e GitHub Pages
-- Vercel para runtime, deploys e futuras funções de API
-- Supabase planejado para banco de dados e Row Level Security
+HTML5 semântico, CSS mobile-first, JavaScript sem frameworks, Vercel Functions, Supabase Postgres com RLS, SVG, SEO, JSON-LD e GitHub Actions.
 
-## Experiência e interface
-
-- design futurista em tema escuro;
-- identidade visual em ciano, azul e violeta;
-- navegação mobile-first;
-- animações leves com respeito a `prefers-reduced-motion`;
-- acessibilidade por teclado, foco visível e link de salto;
-- página 404 personalizada;
-- coleta mínima de dados como requisito do formulário comercial.
-
-## Publicação
-
-A Vercel está conectada à branch `main`. O build executa:
+## Validação local
 
 ```bash
-bash scripts/build_vercel_static.sh
+chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh
+bash scripts/validate_workforce.sh
 ```
 
-Somente o diretório `dist/` é publicado. Arquivos de governança, relatórios, contexto e possíveis credenciais são excluídos do deployment.
+A Vercel e o GitHub Pages publicam apenas `dist/`, excluindo documentação, relatórios, código da API, migrações e arquivos de governança.
 
-O GitHub Pages permanece como hospedagem estática secundária.
+## Segurança
 
-## Desenvolvimento local
-
-```bash
-python3 -m http.server 8000
-```
-
-Abra `http://localhost:8000`.
-
-## Próxima etapa
-
-Construir a fundação do formulário comercial nativo com validação no servidor, Supabase, política de privacidade, consentimento explícito e proteção antispam.
+- nenhuma chave administrativa no frontend;
+- variáveis Supabase obrigatórias na Vercel;
+- validação server-side, origem controlada e timeout;
+- honeypot e rate limit;
+- leitura pública do banco bloqueada;
+- CSP e headers de segurança;
+- testes automatizados sem criação de lead real em produção.
 
 ## Licença
 

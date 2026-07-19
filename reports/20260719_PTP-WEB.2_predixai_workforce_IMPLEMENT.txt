@@ -1,0 +1,45 @@
+PREDIXAI BR — PTP-WEB.2 — PREDIXAI WORKFORCE
+Data: 2026-07-19
+Modo: IMPLEMENT_BRANCH_PREVIEW_PENDING
+Repositório: leon337/predixai-brand
+Branch: ptp-web-2-workforce-flagship
+
+===== OBJETIVO =====
+Apresentar PredixAI Workforce como produto carro-chefe sem reconstruir o site.
+
+===== ESCOPO IMPLEMENTADO =====
+PASS Home com Workforce estático
+PASS Página /solucoes/workforce/
+PASS Taxonomia produto/departamento/vertical/pesquisa
+PASS Atendimento, Pet e Market reclassificados
+PASS Formulário Workforce e sob medida
+PASS API com timeout, origem e configuração obrigatória
+PASS Migração Supabase preparada
+PASS SEO, social card, JSON-LD e sitemap
+PASS Build e workflows endurecidos
+PASS GitHub Pages limitado ao dist/
+PASS Política de privacidade atualizada
+PASS Documentação e memória técnica
+
+===== VALIDAÇÃO PREPARATÓRIA =====
+JAVASCRIPT_SYNTAX=PASS_LOCAL
+STATIC_CONTRACT=PASS_LOCAL
+STATIC_BUILD=PASS_LOCAL
+API_CONTRACT_TESTS=PASS_LOCAL
+INTERNAL_LINKS=PASS_LOCAL
+BRANCH_COMMITS=PASS
+NO_PRODUCTION_CHANGE=PASS
+
+===== PENDÊNCIAS =====
+SUPABASE_MIGRATION=PENDING
+PULL_REQUEST=PENDING
+VERCEL_PREVIEW=PENDING
+MOBILE_VISUAL=PENDING
+DESKTOP_VISUAL=PENDING
+KEYBOARD_RUNTIME=PENDING
+VALID_LEAD_PREVIEW=PENDING
+MERGE=PENDING
+PRODUCTION_VALIDATION=PENDING
+
+===== STATUS =====
+PTP-WEB.2=IMPLEMENTED_IN_BRANCH_AWAITING_DATABASE_AND_PREVIEW

@@ -3,94 +3,70 @@
 Data: 2026-07-19
 
 ```txt
-PTP_PRINCIPAL=PTP-WEB.1
-NOME_CURTO=site_institucional_catalogo_comercial
+PTP_PRINCIPAL=PTP-WEB.2
+NOME_CURTO=predixai_workforce
 REPOSITORY=leon337/predixai-brand
-BRANCH=main
-STATUS=FORM_NATIVE_MERGED_PRODUCTION_VALIDATION_PENDING
+IMPLEMENTATION_BRANCH=ptp-web-2-workforce-flagship
+STATUS=IMPLEMENTED_IN_BRANCH_AWAITING_DATABASE_AND_PREVIEW
 PRIMARY_SITE=https://predixai-brand.vercel.app/
 SECONDARY_SITE=https://leon337.github.io/predixai-brand/
 VERCEL_TEAM=PREDIX AI BR
 VERCEL_PROJECT=predixai-brand
 VERCEL_PROJECT_ID=prj_pBk9kj1FRPluMRHPyeblhwAhqN7G
-VERCEL_DEPLOYMENT_STATE=WAITING_NEW_PRODUCTION_DEPLOYMENT
 SUPABASE_PROJECT=predixai-brand-site
 SUPABASE_PROJECT_ID=vcmvdmxmkmekcurcfdze
-SUPABASE_REGION=sa-east-1
 INFRASTRUCTURE_COST=0
-MERGE_COMMIT=c492d87e2a582ef0ec46acfa92a1c3b0fc70ad2c
-REAL_LEAD_COLLECTION=BLOCKED_UNTIL_END_TO_END_PASS
+PRODUCTION_CHANGED=NO
+MERGE_STATUS=PENDING_PR_AND_PREVIEW
 ```
 
 ## Roadmap
 
 ```txt
-✅ PTP-WEB.1.1 — Arquitetura e conteúdo institucional
-✅ PTP-WEB.1.2 — UI/UX futurista e identidade visual
-✅ PTP-WEB.1.3 — Responsividade, acessibilidade, SEO e PWA
-✅🚀 PTP-WEB.1.4 — Código publicado no GitHub
-✅🚀 PTP-WEB.1.5 — GitHub Pages publicado e validado
-✅ PTP-WEB.1.6.1 — Pesquisa e decisão estratégica do catálogo
-✅ PTP-WEB.1.6.2 — Plano de validação comercial aprovado
-✅🚀 PTP-WEB.1.6.2V1 — Build estático isolado para Vercel
-✅🚀 PTP-WEB.1.6.2V2 — Deploy Vercel validado
-✅🚀 PTP-WEB.1.6.2V3 — Hardening pós-deploy e domínio principal
-🟨 PTP-WEB.1.6.2F1 — Fundação do formulário comercial nativo
-✅ PTP-WEB.1.6.2F1.1 — Projeto Supabase gratuito
-✅ PTP-WEB.1.6.2F1.2 — Tabela, RLS e RPC limitada
-✅🚀 PTP-WEB.1.6.2F1.3 — API e interface integradas ao main
-✅🚀 PTP-WEB.1.6.2A — Landing PredixAI Atendimento integrada
-✅🚀 PTP-WEB.1.6.2B — Landing PredixAI Pet integrada
-✅🚀 PTP-WEB.1.6.2C — Landing PredixAI Market integrada
-✅🚀 PTP-WEB.1.6.2F2 — Política de privacidade e confirmação integradas
-🟧 PTP-WEB.1.6.2F3 — Teste ponta a ponta, mobile e produção
+✅ PTP-WEB.AUD-001 — Auditoria integral aprovada
+✅ PTP-WEB.2.BRIEF — Briefing definitivo
+✅ PTP-WEB.2.INV — Investigação do estado real
+✅ PTP-WEB.2.0 — Decisões conceituais aprovadas
+✅ PTP-WEB.2.1 — Arquitetura comercial e taxonomia
+✅ PTP-WEB.2.2 — Workforce estático na Home e navegação
+✅ PTP-WEB.2.3 — Página /solucoes/workforce/
+✅ PTP-WEB.2.4 — Reclassificação de Atendimento, Pet e Market
+✅ PTP-WEB.2.5 — Contrato de formulário, API e migração preparado
+✅ PTP-WEB.2.6 — SEO, dados estruturados, social card e sitemap
+✅ PTP-WEB.2.7 — Hardening, build e workflows
+🟨 PTP-WEB.2.8 — Migração, PR, preview, mobile e teste ponta a ponta
+⬜ PTP-WEB.2.9 — Merge, produção e fechamento documental
 ```
 
-## Arquitetura
+## Arquitetura comercial
 
 ```txt
-PRIMARY_RUNTIME=Vercel
-FORM_FRONTEND=Native PredixAI
-FORM_API=Vercel Function /api/leads
-FORM_DATABASE=Supabase Postgres
-FORM_DATABASE_SECURITY=Forced RLS + SECURITY DEFINER RPC
-FORM_RATE_LIMIT=5 submissions/hour/fingerprint
-FORM_ANTISPAM=Honeypot + unknown-field rejection
-GOOGLE_SHEETS=Optional reporting only
-EXTERNAL_FORM_BUILDERS=Discarded
+WORKFORCE=PRODUTO_CARRO_CHEFE_EM_VALIDACAO
+ATENDIMENTO=PRIMEIRO_DEPARTAMENTO_EM_VALIDACAO
+PET=PRIMEIRA_VERTICAL_EM_VALIDACAO
+MARKET=VERTICAL_EM_PESQUISA
+SOB_MEDIDA=OCR_VISAO_INTEGRACOES_APOIO_DECISAO
+LABORATORIO=CONCEITOS_NAO_DISPONIVEIS
 ```
-
-## Implementado nesta etapa
-
-- projeto Supabase dedicado e gratuito;
-- tabela `commercial_leads`;
-- RLS forçada, sem leitura pública;
-- função RPC de inserção validada e limitada;
-- API Vercel `/api/leads`;
-- formulário nativo de quatro etapas;
-- páginas Atendimento, Pet e Market;
-- política de privacidade;
-- página de confirmação;
-- sitemap atualizado;
-- build isolado exigindo todas as páginas públicas;
-- workflow E2E de produção.
 
 ## Regra de avanço
 
-A coleta real permanece bloqueada até:
+A branch somente poderá ser integrada após:
 
 ```txt
 STATIC_BUILD=PASS
-API_PREVIEW_DEPLOY=PASS
-INVALID_PAYLOAD_TEST=PASS
-CONSENT_REQUIRED_TEST=PASS
-HONEYPOT_TEST=PASS
-RATE_LIMIT_TEST=PASS
-VALID_LEAD_INSERT_TEST=PASS
-RLS_PUBLIC_READ_BLOCKED=PASS
-PRIVACY_PAGE_HTTP=PASS
-FORM_MOBILE_VISUAL=WAITING
-FORM_DESKTOP_VISUAL=WAITING
-VERCEL_PRODUCTION_DEPLOY=WAITING
-GITHUB_ACTIONS_E2E=WAITING
+JAVASCRIPT_SYNTAX=PASS
+HTML_AND_LINKS=PASS
+WORKFORCE_STATIC_HOME=PASS
+WORKFORCE_PAGE=PASS
+FORM_CONTRACT=PASS
+API_CONTRACT=PASS
+SUPABASE_MIGRATION=PASS
+PREVIEW_DEPLOY=READY
+MOBILE_VISUAL=PASS
+DESKTOP_VISUAL=PASS
+KEYBOARD=PASS
+REDUCED_MOTION=PASS
+VALID_LEAD_PREVIEW=PASS
+NO_SECRET_EXPOSURE=PASS
 ```
