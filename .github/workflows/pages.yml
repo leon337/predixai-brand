@@ -20,8 +20,9 @@ jobs:
       - uses: actions/checkout@v6
       - name: Validar e construir escopo público
         run: |
-          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh
+          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/prepare_github_pages.sh
           bash scripts/validate_workforce.sh
+          bash scripts/prepare_github_pages.sh
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v4
         with:
