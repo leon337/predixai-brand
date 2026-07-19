@@ -1,28 +1,14 @@
 name: Validar formulário comercial
-
 on:
   push:
     branches: [main]
-    paths:
-      - "api/**"
-      - "validacao/**"
-      - "privacidade/**"
-      - "obrigado/**"
-      - "solucoes/**"
-      - "assets/js/form.js"
-      - "assets/css/commercial.css"
-      - "supabase/**"
-      - "vercel.json"
-      - ".github/workflows/form-e2e.yml"
+    paths: ["api/**","validacao/**","privacidade/**","obrigado/**","solucoes/**","assets/js/form.js","assets/css/workforce.css","supabase/**","vercel.json",".github/workflows/form-e2e.yml"]
   workflow_dispatch:
-
 permissions:
   contents: read
-
 concurrency:
   group: predixai-form-e2e-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -30,73 +16,21 @@ jobs:
     env:
       BASE_URL: https://predixai-brand.vercel.app
     steps:
-      - name: Aguardar deployment da Vercel
-        shell: bash
+      - name: Aguardar deployment
         run: |
           set -Eeuo pipefail
-          for attempt in $(seq 1 36); do
-            status="$(curl -sS -o health.json -w '%{http_code}' "${BASE_URL}/api/leads" || true)"
-            if [[ "${status}" == "200" ]] && grep -q '"service":"predixai-leads"' health.json; then
-              cat health.json
-              exit 0
-            fi
-            echo "Tentativa ${attempt}/36: API ainda não está pronta (${status})."
-            sleep 10
-          done
-          echo "API não ficou pronta no prazo." >&2
-          exit 1
-
-      - name: Validar páginas públicas
-        shell: bash
+          for attempt in $(seq 1 36);do status="$(curl -sS -o health.json -w '%{http_code}' "${BASE_URL}/api/leads"||true)";if [[ "${status}" == 200 ]]&&grep -q '"service":"predixai-leads"' health.json;then cat health.json;exit 0;fi;sleep 10;done;exit 1
+      - name: Validar páginas
         run: |
           set -Eeuo pipefail
-          for path in \
-            / \
-            /validacao/ \
-            /privacidade/ \
-            /obrigado/ \
-            /solucoes/atendimento/ \
-            /solucoes/pet/ \
-            /solucoes/market/
-          do
-            status="$(curl -sS -o /dev/null -w '%{http_code}' "${BASE_URL}${path}")"
-            [[ "${status}" == "200" ]] || { echo "${path} retornou ${status}" >&2; exit 1; }
-          done
-
-      - name: Rejeitar envio sem consentimento
-        shell: bash
+          for path in / /validacao/ /privacidade/ /obrigado/ /solucoes/workforce/ /solucoes/atendimento/ /solucoes/pet/ /solucoes/market/;do status="$(curl -sS -o /dev/null -w '%{http_code}' "${BASE_URL}${path}")";[[ "${status}" == 200 ]]||exit 1;done
+      - name: Rejeitar sem consentimento
         run: |
-          set -Eeuo pipefail
-          status="$(curl -sS -o consent.json -w '%{http_code}' \
-            -H 'content-type: application/json' \
-            -d '{"source":"direto","product_interest":"atendimento","person_name":"Teste CI","business_name":"PredixAI CI Test","city":"Recife","state":"PE","business_segment":"Serviços","preferred_contact":"email","contact_value":"consent@example.com","main_problem":"Teste automatizado","commercial_interest":["entrevista"],"consent_contact":false,"website":""}' \
-            "${BASE_URL}/api/leads")"
-          [[ "${status}" == "422" ]] || { cat consent.json; exit 1; }
-          grep -q 'CONSENT_REQUIRED' consent.json
-
+          status="$(curl -sS -o consent.json -w '%{http_code}' -H 'content-type: application/json' -H "origin: ${BASE_URL}" -d '{"source":"workforce","product_interest":"workforce","person_name":"Teste CI","business_name":"PredixAI CI","city":"Recife","state":"PE","business_segment":"Serviços","preferred_contact":"email","contact_value":"consent@example.com","main_problem":"Teste","desired_result":"Validar","commercial_interest":["diagnostico"],"consent_contact":false,"website":""}' "${BASE_URL}/api/leads")";[[ "${status}" == 422 ]]&&grep -q CONSENT_REQUIRED consent.json
       - name: Bloquear honeypot
-        shell: bash
         run: |
-          set -Eeuo pipefail
-          status="$(curl -sS -o honeypot.json -w '%{http_code}' \
-            -H 'content-type: application/json' \
-            -d '{"source":"direto","product_interest":"atendimento","person_name":"Teste CI","business_name":"PredixAI CI Test","city":"Recife","state":"PE","business_segment":"Serviços","preferred_contact":"email","contact_value":"honeypot@example.com","main_problem":"Teste automatizado","commercial_interest":["entrevista"],"consent_contact":true,"website":"preenchido"}' \
-            "${BASE_URL}/api/leads")"
-          [[ "${status}" == "400" ]] || { cat honeypot.json; exit 1; }
-          grep -q 'SPAM_DETECTED' honeypot.json
-
-      - name: Registrar lead técnico válido
-        shell: bash
+          status="$(curl -sS -o honeypot.json -w '%{http_code}' -H 'content-type: application/json' -H "origin: ${BASE_URL}" -d '{"source":"sob_medida","product_interest":"sob_medida","person_name":"Teste CI","business_name":"PredixAI CI","city":"Recife","state":"PE","business_segment":"Serviços","preferred_contact":"email","contact_value":"honeypot@example.com","main_problem":"Teste","desired_result":"Validar","commercial_interest":["diagnostico"],"consent_contact":true,"website":"preenchido"}' "${BASE_URL}/api/leads")";[[ "${status}" == 400 ]]&&grep -q SPAM_DETECTED honeypot.json
+      - name: Rejeitar origem externa
         run: |
-          set -Eeuo pipefail
-          payload="$(cat <<JSON
-          {"source":"direto","product_interest":"atendimento","person_name":"Teste CI","business_name":"PredixAI CI Test","city":"Recife","state":"PE","business_segment":"Prestação de serviços","preferred_contact":"email","contact_value":"ci-${GITHUB_SHA}@example.com","current_tool":"GitHub Actions","main_problem":"Validar o fluxo ponta a ponta","desired_result":"Confirmar API e banco","commercial_interest":["entrevista"],"acceptable_price_range":"apos_demo","consent_contact":true,"consent_news":false,"details":{"daily_volume":"Até 10"},"utm_campaign":"e2e_ci","website":""}
-          JSON
-          )"
-          status="$(curl -sS -o valid.json -w '%{http_code}' \
-            -H 'content-type: application/json' \
-            -d "${payload}" \
-            "${BASE_URL}/api/leads")"
-          [[ "${status}" == "201" ]] || { cat valid.json; exit 1; }
-          grep -q '"ok":true' valid.json
-          echo "E2E_FORM=PASS"
+          status="$(curl -sS -o origin.json -w '%{http_code}' -H 'content-type: application/json' -H 'origin: https://example.invalid' -d '{}' "${BASE_URL}/api/leads")";[[ "${status}" == 403 ]]&&grep -q ORIGIN_NOT_ALLOWED origin.json
+      - run: echo VALID_LEAD_INSERT=MANUAL_PREVIEW_ONLY

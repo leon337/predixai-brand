@@ -1,0 +1,21 @@
+name: Validar PTP-WEB.2 Workforce
+on:
+  pull_request:
+    paths: ["index.html","assets/**","solucoes/**","validacao/**","privacidade/**","api/**","supabase/**","scripts/**","sitemap.xml","manifest.webmanifest","vercel.json",".github/workflows/**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Executar validação estática
+        run: |
+          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh
+          bash scripts/validate_workforce.sh
+      - name: Garantir ausência de credenciais administrativas
+        run: |
+          set -Eeuo pipefail
+          ! grep -RInE 'service_role|SUPABASE_SERVICE_ROLE|sk-[A-Za-z0-9_-]{20,}|sb_secret_' --exclude-dir=.git --exclude='*.md' .
