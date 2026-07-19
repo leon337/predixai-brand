@@ -7,14 +7,15 @@ PTP_PRINCIPAL=PTP-WEB.1
 NOME_CURTO=site_institucional_catalogo_comercial
 REPOSITORY=leon337/predixai-brand
 BRANCH=main
-STATUS=POST_DEPLOY_HARDENING_READY_FORM_FOUNDATION_NEXT
+STATUS=FORM_FOUNDATION_CURRENT
 PRIMARY_SITE=https://predixai-brand.vercel.app/
 SECONDARY_SITE=https://leon337.github.io/predixai-brand/
 VERCEL_TEAM=PREDIX AI BR
 VERCEL_PROJECT=predixai-brand
 VERCEL_PROJECT_ID=prj_pBk9kj1FRPluMRHPyeblhwAhqN7G
 INITIAL_VALIDATED_DEPLOYMENT_ID=dpl_3j4Sgw3A2gHCE3ByNxhT5cofwTZp
-LATEST_DEPLOYMENT_ID=RESOLVE_VIA_VERCEL
+LATEST_VALIDATED_PRODUCTION_DEPLOYMENT_ID=dpl_68BFcgRoRxgWyJePtPtKrkCXNVyW
+LATEST_VALIDATED_PRODUCTION_COMMIT=5c5c504ac015976e9e564e9e184e507faadcf2ae
 VERCEL_DEPLOYMENT_STATE=READY
 PAGES_SOURCE=GITHUB_ACTIONS
 HTTPS_ENFORCED=YES
@@ -33,8 +34,8 @@ DEPLOY_TRIGGER=PUSH_MAIN
 ✅ PTP-WEB.1.6.2 — Plano de validação comercial aprovado
 ✅🚀 PTP-WEB.1.6.2V1 — Build estático isolado para Vercel
 ✅🚀 PTP-WEB.1.6.2V2 — Deploy Vercel validado
-🟧 PTP-WEB.1.6.2V3 — Hardening pós-deploy e domínio principal
-⬜ PTP-WEB.1.6.2F1 — Fundação do formulário comercial nativo
+✅🚀 PTP-WEB.1.6.2V3 — Hardening pós-deploy e domínio principal
+🟧 PTP-WEB.1.6.2F1 — Fundação do formulário comercial nativo
 ⬜ PTP-WEB.1.6.2A — Landing PredixAI Atendimento
 ⬜ PTP-WEB.1.6.2B — Landing PredixAI Pet
 ⬜ PTP-WEB.1.6.2C — Landing PredixAI Market
@@ -55,7 +56,8 @@ DEPLOY_TRIGGER=PUSH_MAIN
 - deployments Vercel em estado `READY`;
 - domínio Vercel definido como origem SEO principal;
 - manifesto PWA portátil entre Vercel e GitHub Pages;
-- cabeçalhos adicionais contra framing e isolamento de janela.
+- cabeçalhos adicionais contra framing e isolamento de janela;
+- hardening V3 publicado e validado em produção.
 
 ## Validações realizadas
 
@@ -76,7 +78,10 @@ SECURITY_HEADERS=PASS
 FORBIDDEN_PROJECT_STATE_HTTP=404
 FORBIDDEN_DOCS_HTTP=404
 SEO_PRIMARY_DOMAIN=VERCEL
-PWA_PATH_PORTABILITY=PASS_STATIC_REVIEW
+PWA_PATH_PORTABILITY=PASS
+ROBOTS_PRIMARY_DOMAIN=PASS
+SITEMAP_PRIMARY_DOMAIN=PASS
+CUSTOM_404_RETURN_LINK=PASS
 ```
 
 ## Decisão arquitetural atual
