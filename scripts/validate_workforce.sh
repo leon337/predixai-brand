@@ -22,8 +22,22 @@ for path in files:
  if duplicates:raise SystemExit(f'duplicate IDs in {path}: {sorted(duplicates)}')
  if not parser.title:raise SystemExit(f'missing title in {path}')
 home=(root/'index.html').read_text(encoding='utf-8')
-if 'id="workforce"' not in home:raise SystemExit('Workforce is not static in Home')
+required_home=[
+ 'PredixAI Workforce — equipe inteligente para empresas',
+ 'Automatize atendimento e tarefas repetitivas',
+ 'Analisar um processo da minha empresa',
+ 'id="como-funciona"','id="processos"','id="para-quem"','id="seguranca"'
+]
+for term in required_home:
+ if term not in home:raise SystemExit(f'commercial Home contract missing: {term}')
+for forbidden in ['>Soluções<','>Produtos<','ENGINEERING','EDUCATION','RESEARCH','PREDIXAI // CUSTOM']:
+ if forbidden in home:raise SystemExit(f'foreign or ambiguous public term in Home: {forbidden}')
 if 'installCommercialLayer' in (root/'assets/js/main.js').read_text(encoding='utf-8'):raise SystemExit('legacy runtime injection present')
+for css in ['assets/css/workforce-base.css','assets/css/home-commercial.css']:
+ if not (root/css).is_file():raise SystemExit(f'missing modular CSS: {css}')
+workforce_css=(root/'assets/css/workforce.css').read_text(encoding='utf-8')
+for imported in ['workforce-base.css','home-commercial.css']:
+ if imported not in workforce_css:raise SystemExit(f'CSS import missing: {imported}')
 workforce=(root/'solucoes/workforce/index.html').read_text(encoding='utf-8')
 for term in ['Atendimento','Comercial','Administrativo','Financeiro','RH','Estoque','Logística','Documentação','Gestão','Integrações']:
  if term not in workforce:raise SystemExit(f'department missing: {term}')
@@ -38,5 +52,9 @@ form=(root/'validacao/index.html').read_text(encoding='utf-8')
 for value in ['value="workforce"','value="pet"','value="market"','value="sob_medida"']:
  if value not in form:raise SystemExit(f'form option missing: {value}')
 print('STATIC_CONTRACT=PASS')
+print('BRAZILIAN_COMMUNICATION=PASS')
+print('COMMERCIAL_HOME_CONTRACT=PASS')
 PY
-bash scripts/build_vercel_static.sh;pass "Static build and Workforce contract"
+bash scripts/build_vercel_static.sh
+for required in dist/index.html dist/assets/css/workforce-base.css dist/assets/css/home-commercial.css;do [[ -e "$required" ]]||{ echo "missing build output: $required" >&2;exit 1;};done
+pass "Static build, commercial Home and Workforce contract"
