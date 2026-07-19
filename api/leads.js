@@ -1,3 +1,5 @@
+const { createHash } = require("node:crypto");
+
 const SUPABASE_URL = process.env.SUPABASE_URL || "https://vcmvdmxmkmekcurcfdze.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY =
   process.env.SUPABASE_PUBLISHABLE_KEY || "sb_publishable_jtl_BpCayPEQk-GuBwXajg_zhWvBUNN";
@@ -39,6 +41,19 @@ const cleanDetails = (value) => {
     }
   }
   return result;
+};
+
+const firstHeader = (request, name) => {
+  const value = request.headers?.[name];
+  return Array.isArray(value) ? value[0] : String(value || "");
+};
+
+const clientFingerprint = (request) => {
+  const forwarded = firstHeader(request, "x-forwarded-for").split(",")[0].trim();
+  const realIp = firstHeader(request, "x-real-ip").trim();
+  const ip = forwarded || realIp || "unknown";
+  const userAgent = firstHeader(request, "user-agent").slice(0, 300) || "unknown";
+  return createHash("sha256").update(`${ip}|${userAgent}|predixai-leads-v2`).digest("hex");
 };
 
 const normalizeBody = (body) => {
@@ -120,8 +135,12 @@ module.exports = async function handler(request, response) {
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   response.setHeader("X-Robots-Tag", "noindex, nofollow");
 
+  if (request.method === "GET" || request.method === "HEAD") {
+    return response.status(200).json({ ok: true, service: "predixai-leads", accepts: "POST" });
+  }
+
   if (request.method !== "POST") {
-    response.setHeader("Allow", "POST");
+    response.setHeader("Allow", "GET, HEAD, POST");
     return response.status(405).json({ ok: false, error: "METHOD_NOT_ALLOWED" });
   }
 
@@ -151,7 +170,8 @@ module.exports = async function handler(request, response) {
         apikey: SUPABASE_PUBLISHABLE_KEY,
         authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
         "content-type": "application/json",
-        "x-client-info": "predixai-brand-site/1.0"
+        "x-client-info": "predixai-brand-site/1.0",
+        "x-predixai-fingerprint": clientFingerprint(request)
       },
       body: JSON.stringify({ payload })
     });
