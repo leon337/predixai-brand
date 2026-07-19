@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="Participe da validação das soluções PredixAI Atendimento, Pet e Market.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://predixai-brand.vercel.app/validacao/">
+  <title>Validação Comercial — PredixAI BR</title>
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/commercial.css">
+</head>
+<body class="page-shell">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div><div class="ambient ambient-two" aria-hidden="true"></div>
+  <header class="site-header is-scrolled" data-header><div class="container nav-wrap">
+    <a class="brand" href="/" aria-label="PredixAI BR — início"><img src="/assets/img/logo.svg" alt="PredixAI BR" width="194" height="42"></a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" data-menu-toggle><span class="sr-only">Abrir menu</span><span></span><span></span><span></span></button>
+    <nav id="primary-navigation" class="primary-nav" aria-label="Navegação principal" data-menu><a href="/#produtos">Produtos</a><a href="/#metodo">Método</a><a href="/privacidade/">Privacidade</a><a class="nav-cta" href="/validacao/?source=direto">Participar</a></nav>
+  </div></header>
+
+  <main id="conteudo" class="page-main">
+    <section class="page-hero"><div class="container"><p class="eyebrow">Validação comercial</p><h1>Ajude a construir a próxima solução PredixAI.</h1><p>O formulário leva cerca de três minutos. Usaremos as respostas para priorizar entrevistas, demonstrações e pilotos.</p></div></section>
+    <section class="container form-layout" aria-label="Formulário de validação">
+      <form class="form-shell" data-lead-form novalidate>
+        <div class="form-progress" data-form-progress aria-live="polite">Etapa 1 de 4</div>
+        <div class="form-status" data-form-status role="status" aria-live="polite" hidden></div>
+
+        <section class="form-step" data-step>
+          <h2>Qual solução interessa mais?</h2><p>Escolha a opção mais próxima da necessidade atual da empresa.</p>
+          <div class="choice-grid">
+            <label class="choice-card"><input type="radio" name="product_interest" value="atendimento" required><span><strong>PredixAI Atendimento</strong><small>Atendimento, clientes, agenda, orçamentos, lembretes e oportunidades.</small></span></label>
+            <label class="choice-card"><input type="radio" name="product_interest" value="pet" required><span><strong>PredixAI Pet</strong><small>Tutores, animais, serviços recorrentes, pacotes e relacionamento.</small></span></label>
+            <label class="choice-card"><input type="radio" name="product_interest" value="market" required><span><strong>PredixAI Market</strong><small>Pesquisa para mercados de bairro. O produto ainda não está pronto.</small></span></label>
+          </div>
+          <div class="form-actions"><span></span><button class="button button-primary" type="button" data-next>Continuar →</button></div>
+        </section>
+
+        <section class="form-step" data-step hidden>
+          <h2>Empresa e contato</h2><p>Coletamos apenas o necessário para entender o cenário e retornar quando autorizado.</p>
+          <div class="field-grid">
+            <div class="field"><label for="person_name">Seu nome</label><input id="person_name" name="person_name" maxlength="120" autocomplete="name" required></div>
+            <div class="field"><label for="business_name">Empresa ou negócio</label><input id="business_name" name="business_name" maxlength="160" autocomplete="organization" required></div>
+            <div class="field"><label for="city">Cidade</label><input id="city" name="city" maxlength="120" autocomplete="address-level2" required></div>
+            <div class="field"><label for="state">Estado</label><select id="state" name="state" autocomplete="address-level1" required><option value="">Selecione</option><option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option></select></div>
+            <div class="field is-full"><label for="business_segment">Segmento principal</label><select id="business_segment" name="business_segment" required><option value="">Selecione</option><option>Prestação de serviços</option><option>Pet shop</option><option>Banho e tosa</option><option>Clínica veterinária</option><option>Mercearia ou minimercado</option><option>Oficina</option><option>Salão ou estética</option><option>Imobiliária</option><option>Clínica ou consultório</option><option>Escola ou curso</option><option>Outro</option></select></div>
+            <div class="field"><label for="preferred_contact">Como prefere o contato?</label><select id="preferred_contact" name="preferred_contact" required><option value="whatsapp">WhatsApp</option><option value="email">E-mail</option></select></div>
+            <div class="field"><label for="contact_value" data-contact-label>WhatsApp profissional</label><input id="contact_value" name="contact_value" type="tel" autocomplete="tel" placeholder="(81) 99999-9999" maxlength="180" data-contact-value required></div>
+          </div>
+          <div class="form-actions"><button class="button button-ghost" type="button" data-back>← Voltar</button><button class="button button-primary" type="button" data-next>Continuar →</button></div>
+        </section>
+
+        <section class="form-step" data-step hidden>
+          <h2>Como funciona hoje?</h2><p>As perguntas mudam conforme a solução escolhida.</p>
+          <div data-product-details="atendimento" hidden>
+            <div class="field"><label for="at_daily_volume">Atendimentos aproximados por dia</label><select id="at_daily_volume" name="at_daily_volume" data-required-when-visible="true"><option value="">Selecione</option><option>Até 10</option><option>De 11 a 30</option><option>De 31 a 60</option><option>Mais de 60</option><option>Não sei informar</option></select></div>
+            <fieldset class="field"><legend>Canais utilizados</legend><div class="check-grid"><label class="check-option"><input type="checkbox" name="at_channels" value="WhatsApp">WhatsApp</label><label class="check-option"><input type="checkbox" name="at_channels" value="Instagram">Instagram</label><label class="check-option"><input type="checkbox" name="at_channels" value="Telefone">Telefone</label><label class="check-option"><input type="checkbox" name="at_channels" value="E-mail">E-mail</label><label class="check-option"><input type="checkbox" name="at_channels" value="Site">Site</label><label class="check-option"><input type="checkbox" name="at_channels" value="Presencial">Presencial</label></div></fieldset>
+            <div class="field"><label for="at_organization_method">Como organiza os atendimentos?</label><select id="at_organization_method" name="at_organization_method"><option value="">Selecione</option><option>Sistema ou CRM</option><option>Planilha</option><option>Agenda</option><option>Somente WhatsApp</option><option>Sem organização definida</option></select></div>
+          </div>
+
+          <div data-product-details="pet" hidden>
+            <div class="notice">O primeiro MVP será administrativo e comercial. Não realizará diagnóstico, prescrição nem substituirá atendimento veterinário.</div>
+            <fieldset class="field"><legend>Serviços oferecidos</legend><div class="check-grid"><label class="check-option"><input type="checkbox" name="pet_services" value="Banho e tosa">Banho e tosa</label><label class="check-option"><input type="checkbox" name="pet_services" value="Venda de produtos">Venda de produtos</label><label class="check-option"><input type="checkbox" name="pet_services" value="Hotel pet">Hotel pet</label><label class="check-option"><input type="checkbox" name="pet_services" value="Creche pet">Creche pet</label><label class="check-option"><input type="checkbox" name="pet_services" value="Transporte pet">Transporte pet</label><label class="check-option"><input type="checkbox" name="pet_services" value="Serviços veterinários">Serviços veterinários</label></div></fieldset>
+            <div class="field"><label for="pet_monthly_volume">Serviços aproximados por mês</label><select id="pet_monthly_volume" name="pet_monthly_volume" data-required-when-visible="true"><option value="">Selecione</option><option>Até 50</option><option>De 51 a 150</option><option>De 151 a 300</option><option>Mais de 300</option><option>Não sei informar</option></select></div>
+            <fieldset class="field"><legend>Problemas mais frequentes</legend><div class="check-grid"><label class="check-option"><input type="checkbox" name="pet_problems" value="Faltas e cancelamentos">Faltas e cancelamentos</label><label class="check-option"><input type="checkbox" name="pet_problems" value="Agenda desorganizada">Agenda desorganizada</label><label class="check-option"><input type="checkbox" name="pet_problems" value="Controle de pacotes">Controle de pacotes</label><label class="check-option"><input type="checkbox" name="pet_problems" value="Clientes que não retornam">Clientes que não retornam</label><label class="check-option"><input type="checkbox" name="pet_problems" value="Estoque e vendas">Estoque e vendas</label><label class="check-option"><input type="checkbox" name="pet_problems" value="Comunicação com tutores">Comunicação com tutores</label></div></fieldset>
+          </div>
+
+          <div data-product-details="market" hidden>
+            <div class="notice is-warning">O PredixAI Market está em pesquisa. As funcionalidades apresentadas são conceitos e não representam um sistema pronto para implantação.</div>
+            <div class="field"><label for="market_cash_registers">Quantidade de caixas</label><select id="market_cash_registers" name="market_cash_registers" data-required-when-visible="true"><option value="">Selecione</option><option>1</option><option>2</option><option>De 3 a 5</option><option>Mais de 5</option></select></div>
+            <fieldset class="field"><legend>Equipamentos utilizados</legend><div class="check-grid"><label class="check-option"><input type="checkbox" name="market_equipment" value="Leitor de código">Leitor de código</label><label class="check-option"><input type="checkbox" name="market_equipment" value="Balança">Balança</label><label class="check-option"><input type="checkbox" name="market_equipment" value="Impressora">Impressora</label><label class="check-option"><input type="checkbox" name="market_equipment" value="Computador">Computador</label><label class="check-option"><input type="checkbox" name="market_equipment" value="Celular ou tablet">Celular ou tablet</label><label class="check-option"><input type="checkbox" name="market_equipment" value="Máquina de cartão">Máquina de cartão</label></div></fieldset>
+            <div class="field"><label for="market_operation">Como controla a operação?</label><select id="market_operation" name="market_operation"><option value="">Selecione</option><option>Sistema instalado</option><option>Sistema online</option><option>Planilha</option><option>Caderno</option><option>Não utiliza sistema</option></select></div>
+            <div class="field"><label for="market_offline">Continua vendendo sem internet?</label><select id="market_offline" name="market_offline"><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Às vezes</option><option>Não sei</option></select></div>
+          </div>
+
+          <div class="field"><label for="current_tool">Sistema ou ferramenta atual</label><input id="current_tool" name="current_tool" maxlength="180" placeholder="Ex.: planilha, agenda, sistema especializado"></div>
+          <div class="field"><label for="main_problem">Principal problema operacional</label><textarea id="main_problem" name="main_problem" maxlength="1000" required></textarea></div>
+          <div class="field"><label for="desired_result">Resultado mais importante</label><textarea id="desired_result" name="desired_result" maxlength="500"></textarea></div>
+          <div class="form-actions"><button class="button button-ghost" type="button" data-back>← Voltar</button><button class="button button-primary" type="button" data-next>Continuar →</button></div>
+        </section>
+
+        <section class="form-step" data-step hidden>
+          <h2>Interesse e consentimento</h2><p>O preenchimento não representa contrato, cobrança ou garantia de participação.</p>
+          <fieldset class="field"><legend>Como sua empresa participaria?</legend><div class="check-grid"><label class="check-option"><input type="checkbox" name="commercial_interest" value="novidades">Receber novidades</label><label class="check-option"><input type="checkbox" name="commercial_interest" value="entrevista">Participar de entrevista</label><label class="check-option"><input type="checkbox" name="commercial_interest" value="demonstracao">Ver demonstração</label><label class="check-option"><input type="checkbox" name="commercial_interest" value="piloto">Testar piloto</label><label class="check-option"><input type="checkbox" name="commercial_interest" value="proposta">Receber proposta futura</label></div></fieldset>
+          <div class="field"><label for="acceptable_price_range">Faixa mensal considerada aceitável</label><select id="acceptable_price_range" name="acceptable_price_range"><option value="">Prefiro não informar</option><option value="ate_49">Até R$ 49</option><option value="50_99">R$ 50 a R$ 99</option><option value="100_199">R$ 100 a R$ 199</option><option value="200_399">R$ 200 a R$ 399</option><option value="400_mais">R$ 400 ou mais</option><option value="apos_demo">Após uma demonstração</option></select></div>
+          <label class="check-option"><input type="checkbox" name="consent_contact" required>Li a <a href="/privacidade/" target="_blank" rel="noopener">Política de Privacidade</a> e autorizo contato sobre esta pesquisa, demonstrações e possíveis pilotos.</label>
+          <label class="check-option"><input type="checkbox" name="consent_news">Desejo receber novidades futuras da PredixAI BR.</label>
+          <div class="honeypot" aria-hidden="true"><label for="website">Não preencha este campo</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
+          <div class="form-actions"><button class="button button-ghost" type="button" data-back>← Voltar</button><button class="button button-primary" type="submit">Enviar participação</button></div>
+        </section>
+      </form>
+      <aside class="form-aside"><h2>Coleta mínima e segura</h2><ul><li>Não solicitamos CPF, senha ou dados bancários.</li><li>Não coletamos prontuários nem dados de saúde.</li><li>Não há cobrança nesta etapa.</li><li>As respostas são protegidas no banco e não ficam públicas.</li></ul></aside>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-grid"><div><img src="/assets/img/logo.svg" alt="PredixAI BR" width="194" height="42"><p>Inteligência artificial aplicada a problemas reais.</p></div><div class="footer-links"><a href="/">Início</a><a href="/#produtos">Produtos</a><a href="/privacidade/">Privacidade</a></div><p class="copyright">© <span data-year></span> PredixAI BR. Todos os direitos reservados.</p></div></footer>
+  <script src="/assets/js/main.js" defer></script><script src="/assets/js/form.js" defer></script>
+</body>
+</html>
