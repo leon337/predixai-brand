@@ -15,10 +15,11 @@
     "team_id": "team_D45x1LavGkCy2ifRlrShm2WJ",
     "project": "predixai-brand",
     "project_id": "prj_pBk9kj1FRPluMRHPyeblhwAhqN7G",
-    "deployment_id": "dpl_3j4Sgw3A2gHCE3ByNxhT5cofwTZp",
+    "initial_validated_deployment_id": "dpl_3j4Sgw3A2gHCE3ByNxhT5cofwTZp",
+    "latest_deployment_id": "RESOLVE_VIA_VERCEL",
     "deployment_state": "READY",
     "deployment_target": "production",
-    "deployed_commit": "710140cbc7fed9484e9fc748ebc7aa929e7a7ad2"
+    "initial_deployed_commit": "710140cbc7fed9484e9fc748ebc7aa929e7a7ad2"
   },
   "stack": [
     "HTML5",
