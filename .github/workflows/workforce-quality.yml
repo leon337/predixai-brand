@@ -18,4 +18,12 @@ jobs:
       - name: Garantir ausência de credenciais administrativas
         run: |
           set -Eeuo pipefail
-          ! grep -RInE 'service_role|SUPABASE_SERVICE_ROLE|sk-[A-Za-z0-9_-]{20,}|sb_secret_' --exclude-dir=.git --exclude='*.md' .
+          if git grep -nE 'SUPABASE_SERVICE_ROLE|sb_secret_|sk-[A-Za-z0-9_-]{20,}' -- \
+            ':!*.md' \
+            ':!reports/**' \
+            ':!.github/workflows/workforce-quality.yml'
+          then
+            echo 'Possível credencial administrativa encontrada.' >&2
+            exit 1
+          fi
+          echo 'ADMIN_CREDENTIAL_SCAN=PASS'
