@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://leon337.github.io/predixai-brand/sitemap.xml
+Sitemap: https://predixai-brand.vercel.app/sitemap.xml

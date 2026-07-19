@@ -1,0 +1,40 @@
+PREDIXAI BR — PTP-WEB.1.6.2V3 — HARDENING PÓS-DEPLOY VERCEL
+DATA=2026-07-19
+REPOSITORY=leon337/predixai-brand
+BASE_BRANCH=main
+WORK_BRANCH=ptp-web-1-6-2-v3-hardening-current
+
+STATUS=PASS_PRE_MERGE
+MODE=POST_DEPLOY_HARDENING
+
+OBJETIVO=Corrigir referências herdadas do GitHub Pages, tornar o manifesto PWA portátil, fortalecer cabeçalhos HTTP e sincronizar a documentação antes da fundação do formulário comercial nativo.
+
+ALTERACOES:
+- canonical, Open Graph, Twitter Card e JSON-LD apontando para Vercel;
+- robots.txt e sitemap.xml apontando para Vercel;
+- manifest.webmanifest com start_url e scope relativos;
+- 404 redirecionando ao site principal Vercel;
+- cabeçalhos X-Frame-Options, Cross-Origin-Opener-Policy e X-DNS-Prefetch-Control;
+- README e PROJECT_STATE atualizados.
+
+VALIDACOES_LOCAIS:
+HTML_PRIMARY_DOMAIN_REFERENCE=PASS
+ROBOTS_SITEMAP_DOMAIN=PASS
+SITEMAP_XML_PARSE=PASS
+MANIFEST_JSON_PARSE=PASS
+MANIFEST_RELATIVE_START_AND_SCOPE=PASS
+VERCEL_JSON_PARSE=PASS
+VERCEL_BUILD_CONFIGURATION_PRESERVED=PASS
+TECHNICAL_MEMORY_EXCLUSION_UNCHANGED=PASS
+
+SEGURANCA:
+ENV_FILES_ADDED=NO
+TOKENS_ADDED=NO
+CREDENTIALS_ADDED=NO
+REAL_LEAD_COLLECTION=NO
+FORM_API_ENABLED=NO
+
+NEXT_PTP=PTP-WEB.1.6.2F1
+NEXT_ACTION=Conectar Supabase e definir schema mínimo, RLS e API do formulário nativo.
+
+REPORT_CLOSED_BEFORE_MERGE=YES
