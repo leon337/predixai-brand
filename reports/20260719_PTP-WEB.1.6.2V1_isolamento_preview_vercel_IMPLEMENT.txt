@@ -1,0 +1,77 @@
+PREDIXAI BR — PTP-WEB.1.6.2V1 — ISOLAMENTO DO DEPLOY VERCEL
+DATA=2026-07-19
+REPOSITORY=leon337/predixai-brand
+BRANCH=main
+
+STATUS=PASS_PRE_DEPLOY
+MODE=IMPLEMENT
+
+OBJETIVO=Gerar uma saída estática isolada em dist/ contendo somente arquivos públicos do site antes do primeiro deploy na Vercel.
+
+ARQUIVOS_CRIADOS:
+- scripts/build_vercel_static.sh
+- vercel.json
+
+COMMITS_IMPLEMENTACAO:
+- 0446046f4eb11cde0103ae10d0ec8a8247507e80 — build estático seguro
+- 61dcb01fc959465a418ae83cbee6cd7e2f87f635 — configuração Vercel
+
+CONFIGURACAO:
+APPLICATION_PRESET=Other
+ROOT_DIRECTORY=./
+BUILD_COMMAND=bash scripts/build_vercel_static.sh
+OUTPUT_DIRECTORY=dist
+INSTALL_COMMAND=AUTOMATIC_OR_EMPTY
+ENVIRONMENT_VARIABLE_COUNT=0
+
+ARQUIVOS_PUBLICOS_OBRIGATORIOS:
+- index.html
+- 404.html
+- manifest.webmanifest
+- robots.txt
+- sitemap.xml
+- assets/
+
+DIRETORIOS_PUBLICOS_OPCIONAIS:
+- solucoes/
+- validacao/
+- privacidade/
+- obrigado/
+
+EXCLUSOES_OBRIGATORIAS:
+- docs/
+- reports/
+- .github/
+- PROJECT_STATE.md
+- predixai_context.json
+- README.md
+- .git/
+- .env*
+- arquivos .pem e .key
+- nomes contendo credential, secret ou token
+
+VALIDACOES:
+BASH_SYNTAX=PASS
+BUILD_LOCAL_REPRODUCTION=PASS
+VERCEL_JSON_PARSE=PASS
+DIST_CREATED=PASS
+DIST_FILE_COUNT=11
+INDEX_PRESENT=PASS
+ASSETS_PRESENT=PASS
+DOCS_EXCLUDED=PASS
+REPORTS_EXCLUDED=PASS
+GITHUB_METADATA_EXCLUDED=PASS
+PROJECT_STATE_EXCLUDED=PASS
+PREDIXAI_CONTEXT_EXCLUDED=PASS
+README_EXCLUDED=PASS
+SENSITIVE_FILENAME_SCAN=PASS
+
+VERCEL_PROJECT_CREATED=NO
+VERCEL_DEPLOY_EXECUTED=NO
+GITHUB_PAGES_CHANGED=NO
+PUBLIC_SITE_CURRENTLY_ACTIVE=YES
+
+LIMITACAO=O deploy real e os logs da Vercel ainda dependem do clique humano em Deploy e da validação posterior pelo conector Vercel.
+
+REPORT_CLOSED_BEFORE_COMMIT_PUSH=YES
+NEXT_ACTION=Executar o primeiro deploy Vercel com as configurações aprovadas e auditar build, URL e arquivos públicos.
