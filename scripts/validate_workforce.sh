@@ -25,19 +25,22 @@ home=(root/'index.html').read_text(encoding='utf-8')
 required_home=[
  'PredixAI Workforce — equipe inteligente para empresas',
  'Automatize atendimento e tarefas repetitivas',
+ 'Desenvolvida para empresas brasileiras',
  'Analisar um processo da minha empresa',
+ 'href="/solucoes/workforce/"',
+ 'assets/css/home-commercial.css',
  'id="como-funciona"','id="processos"','id="para-quem"','id="seguranca"'
 ]
 for term in required_home:
  if term not in home:raise SystemExit(f'commercial Home contract missing: {term}')
-for forbidden in ['>Soluções<','>Produtos<','ENGINEERING','EDUCATION','RESEARCH','PREDIXAI // CUSTOM']:
+for forbidden in ['>Soluções<','>Produtos<','ENGINEERING','EDUCATION','RESEARCH','PREDIXAI // CUSTOM','PREDIXAI // CORE','>ONLINE<']:
  if forbidden in home:raise SystemExit(f'foreign or ambiguous public term in Home: {forbidden}')
 if 'installCommercialLayer' in (root/'assets/js/main.js').read_text(encoding='utf-8'):raise SystemExit('legacy runtime injection present')
 for css in ['assets/css/workforce-base.css','assets/css/home-commercial.css']:
  if not (root/css).is_file():raise SystemExit(f'missing modular CSS: {css}')
 workforce_css=(root/'assets/css/workforce.css').read_text(encoding='utf-8')
-for imported in ['workforce-base.css','home-commercial.css']:
- if imported not in workforce_css:raise SystemExit(f'CSS import missing: {imported}')
+if 'workforce-base.css' not in workforce_css:raise SystemExit('Workforce base CSS import missing')
+if 'home-commercial.css' in workforce_css:raise SystemExit('Home CSS must not load on internal pages')
 workforce=(root/'solucoes/workforce/index.html').read_text(encoding='utf-8')
 for term in ['Atendimento','Comercial','Administrativo','Financeiro','RH','Estoque','Logística','Documentação','Gestão','Integrações']:
  if term not in workforce:raise SystemExit(f'department missing: {term}')
@@ -51,9 +54,13 @@ for term in ['workforce','sob_medida','UPSTREAM_TIMEOUT_MS','ORIGIN_NOT_ALLOWED'
 form=(root/'validacao/index.html').read_text(encoding='utf-8')
 for value in ['value="workforce"','value="pet"','value="market"','value="sob_medida"']:
  if value not in form:raise SystemExit(f'form option missing: {value}')
+form_js=(root/'assets/js/form.js').read_text(encoding='utf-8')
+for marker in ['leon337.github.io','https://predixai-brand.vercel.app/api/leads','/predixai-brand']:
+ if marker not in form_js:raise SystemExit(f'GitHub Pages form compatibility missing: {marker}')
 print('STATIC_CONTRACT=PASS')
 print('BRAZILIAN_COMMUNICATION=PASS')
 print('COMMERCIAL_HOME_CONTRACT=PASS')
+print('GITHUB_PAGES_FORM_COMPATIBILITY=PASS')
 PY
 bash scripts/build_vercel_static.sh
 for required in dist/index.html dist/assets/css/workforce-base.css dist/assets/css/home-commercial.css;do [[ -e "$required" ]]||{ echo "missing build output: $required" >&2;exit 1;};done
