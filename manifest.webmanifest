@@ -1,14 +1,12 @@
 {
-  "name": "PredixAI BR",
+  "name": "PredixAI Workforce — PredixAI BR",
   "short_name": "PredixAI",
-  "description": "Inteligência artificial aplicada a problemas reais.",
+  "description": "Departamentos inteligentes com agentes de IA, automações, integrações e controle humano.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#050b13",
   "theme_color": "#07111f",
-  "icons": [
-    {"src": "assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
-  ]
+  "icons": [{"src":"assets/img/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }
