@@ -1,0 +1,77 @@
+PREDIXAI BR — PTP-WEB.1.6.2V2 — VALIDAÇÃO DO DEPLOY VERCEL
+DATA=2026-07-19
+REPOSITORY=leon337/predixai-brand
+BRANCH=main
+
+STATUS=PASS_FINAL_DEPLOY_READY
+MODE=POST_DEPLOY_VALIDATION
+
+OBJETIVO=Confirmar o primeiro deployment Vercel do site PredixAI BR, validar a saída isolada dist/, registrar a URL pública e identificar pendências antes da implementação do formulário comercial nativo.
+
+VERCEL_TEAM=PREDIX AI BR
+VERCEL_TEAM_ID=team_D45x1LavGkCy2ifRlrShm2WJ
+VERCEL_PROJECT=predixai-brand
+VERCEL_PROJECT_ID=prj_pBk9kj1FRPluMRHPyeblhwAhqN7G
+DEPLOYMENT_ID=dpl_3j4Sgw3A2gHCE3ByNxhT5cofwTZp
+DEPLOYMENT_TARGET=production
+DEPLOYMENT_STATE=READY
+DEPLOYMENT_SOURCE=import
+DEPLOYMENT_REGION=iad1
+DEPLOYED_GITHUB_COMMIT=710140cbc7fed9484e9fc748ebc7aa929e7a7ad2
+
+PRIMARY_VERCEL_URL=https://predixai-brand.vercel.app/
+DEPLOYMENT_URL=https://predixai-brand-7vftzajjc-predix-ai-br.vercel.app/
+BRANCH_ALIAS=https://predixai-brand-git-main-predix-ai-br.vercel.app/
+
+BUILD_VALIDATION:
+GITHUB_CLONE=PASS
+BUILD_COMMAND=bash scripts/build_vercel_static.sh
+OUTPUT_DIRECTORY=dist
+PUBLIC_FILE_COUNT=11
+DIST_ISOLATION=PASS
+MEMORY_TECHNICAL_FILES_EXCLUDED=PASS
+BUILD_COMPLETED=PASS
+DEPLOYMENT_COMPLETED=PASS
+
+HTTP_VALIDATION:
+PUBLIC_URL_HTTP_STATUS=200
+CONTENT_TYPE=text/html;charset=utf-8
+VERCEL_CACHE=HIT
+HTTPS=PASS
+HSTS=PASS
+X_CONTENT_TYPE_OPTIONS=nosniff
+REFERRER_POLICY=strict-origin-when-cross-origin
+PERMISSIONS_POLICY=camera=(),microphone=(),geolocation=()
+
+VISUAL_EVIDENCE:
+DESKTOP_HOME=PASS_BY_USER_SCREENSHOT
+DESKTOP_SOLUTIONS=PASS_BY_USER_SCREENSHOT
+DESKTOP_METHOD=PASS_BY_USER_SCREENSHOT
+DESKTOP_ECOSYSTEM=PASS_BY_USER_SCREENSHOT
+DESKTOP_ABOUT=PASS_BY_USER_SCREENSHOT
+DESKTOP_CONTACT=PASS_BY_USER_SCREENSHOT
+
+GITHUB_PAGES_STATUS=KEPT_AS_SECONDARY_HOST
+VERCEL_STATUS=PRIMARY_RUNTIME_FOR_NEXT_PHASE
+
+PENDENCIAS_IDENTIFICADAS:
+1. Atualizar canonical, Open Graph, Twitter Card e JSON-LD para o domínio Vercel.
+2. Atualizar robots.txt e sitemap.xml para o domínio Vercel.
+3. Tornar manifest.webmanifest portátil entre raiz Vercel e subcaminho GitHub Pages.
+4. Criar páginas comerciais PredixAI Atendimento, PredixAI Pet e PredixAI Market.
+5. Criar formulário nativo PredixAI com backend seguro.
+6. Criar política de privacidade e confirmação de envio.
+7. Integrar banco e API antes de aceitar dados reais.
+
+FORM_ARCHITECTURE_DECISION:
+FRONTEND=Native PredixAI form
+HOSTING_AND_API=Vercel
+DATABASE_AND_AUTH=Supabase
+EXTERNAL_FORM_BUILDERS=DISCARDED
+GOOGLE_SHEETS=OPTIONAL_REPORTING_ONLY
+
+NEXT_PTP=PTP-WEB.1.6.2F1
+NEXT_PTP_NAME=Fundação do formulário comercial nativo
+NEXT_ACTION=Auditar e conectar Supabase, definir schema de leads e implementar API e formulário sem coletar dados sensíveis.
+
+REPORT_CLOSED_BEFORE_COMMIT_PUSH=YES
