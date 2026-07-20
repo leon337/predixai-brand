@@ -1,0 +1,45 @@
+name: Validar PTP-WEB.2 Workforce
+on:
+  pull_request:
+    paths: ["index.html","assets/**","solucoes/**","funcionario-ia-gratis/**","validacao/**","privacidade/**","api/**","supabase/**","scripts/**","sitemap.xml","manifest.webmanifest","vercel.json",".github/workflows/**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Preparar validadores
+        run: chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
+      - name: Validar sintaxe do gerador
+        run: bash scripts/validate_employee_builder.sh syntax
+      - name: Validar catálogo e HTML do gerador
+        run: bash scripts/validate_employee_builder.sh contract
+      - name: Validar geração de prompt e diagnóstico
+        run: bash scripts/validate_employee_builder.sh runtime
+      - name: Validar privacidade do gerador
+        run: bash scripts/validate_employee_builder.sh privacy
+      - name: Validar Workforce e build estático
+        run: bash scripts/validate_workforce.sh
+      - name: Validar adaptação do GitHub Pages
+        run: |
+          bash scripts/prepare_github_pages.sh
+          grep -q 'href="/predixai-brand/solucoes/workforce/"' dist/index.html
+          grep -q 'href="/predixai-brand/funcionario-ia-gratis/"' dist/index.html
+          grep -q 'src="/predixai-brand/assets/js/employee-builder.js"' dist/funcionario-ia-gratis/index.html
+          grep -q 'href="/predixai-brand/validacao/' dist/index.html
+          echo 'GITHUB_PAGES_SECONDARY=PASS'
+      - name: Garantir ausência de credenciais administrativas
+        run: |
+          set -Eeuo pipefail
+          if git grep -nE 'SUPABASE_SERVICE_ROLE|sb_secret_|sk-[A-Za-z0-9_-]{20,}' -- \
+            ':!*.md' \
+            ':!reports/**' \
+            ':!.github/workflows/workforce-quality.yml'
+          then
+            echo 'Possível credencial administrativa encontrada.' >&2
+            exit 1
+          fi
+          echo 'ADMIN_CREDENTIAL_SCAN=PASS'

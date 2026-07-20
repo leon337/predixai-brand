@@ -1,96 +1,238 @@
 # PROJECT STATE — PredixAI BR Site
 
-Data: 2026-07-19
+Data: 2026-07-20
 
 ```txt
-PTP_PRINCIPAL=PTP-WEB.1
-NOME_CURTO=site_institucional_catalogo_comercial
+PTP_PRINCIPAL=PTP-WEB.2
+NOME_CURTO=predixai_workforce
+CURRENT_MINI_PTP=PTP-WEB.2.8.3J
+CURRENT_MINI_PTP_NAME=funcionario_ia_gratis
 REPOSITORY=leon337/predixai-brand
-BRANCH=main
-STATUS=FORM_NATIVE_MERGED_PRODUCTION_VALIDATION_PENDING
+IMPLEMENTATION_BRANCH=ptp-web-2-workforce-flagship
+IMPLEMENTATION_CODE_HEAD=643a9d1dd0592051c959313f1cdf3655c782b675
+STATUS=IMPLEMENTED_AWAITING_HUMAN_VISUAL_RUNTIME_REVIEW
 PRIMARY_SITE=https://predixai-brand.vercel.app/
 SECONDARY_SITE=https://leon337.github.io/predixai-brand/
+PREVIEW_SITE=https://predixai-brand-git-ptp-web-2-workforce-flagship-predix-ai-br.vercel.app/
 VERCEL_TEAM=PREDIX AI BR
 VERCEL_PROJECT=predixai-brand
 VERCEL_PROJECT_ID=prj_pBk9kj1FRPluMRHPyeblhwAhqN7G
-VERCEL_DEPLOYMENT_STATE=WAITING_NEW_PRODUCTION_DEPLOYMENT
 SUPABASE_PROJECT=predixai-brand-site
 SUPABASE_PROJECT_ID=vcmvdmxmkmekcurcfdze
-SUPABASE_REGION=sa-east-1
+SUPABASE_MIGRATION=20260719222743_expand_workforce_lead_contract
+NEW_SUPABASE_MIGRATION_REQUIRED=NO
 INFRASTRUCTURE_COST=0
-MERGE_COMMIT=c492d87e2a582ef0ec46acfa92a1c3b0fc70ad2c
-REAL_LEAD_COLLECTION=BLOCKED_UNTIL_END_TO_END_PASS
+PRODUCTION_SITE_CHANGED=NO
+DATABASE_CONTRACT_EXPANDED=YES_BACKWARD_COMPATIBLE
+PULL_REQUEST=6
+PULL_REQUEST_DRAFT=YES
+MERGE_STATUS=BLOCKED_AWAITING_VISUAL_RUNTIME_AND_LEO_APPROVAL
+LATEST_TESTED_PREVIEW_DEPLOYMENT=dpl_4ByWBFX3Zf1XBb4siqzjvcSLkbJV
+LATEST_TESTED_PREVIEW_COMMIT=643a9d1dd0592051c959313f1cdf3655c782b675
+LATEST_TESTED_PREVIEW_STATE=READY
+LATEST_GITHUB_ACTION_RUN=29776626243
+LATEST_GITHUB_ACTION_JOB=88467445125
+LATEST_GITHUB_ACTION_RESULT=PASS
 ```
 
 ## Roadmap
 
 ```txt
-✅ PTP-WEB.1.1 — Arquitetura e conteúdo institucional
-✅ PTP-WEB.1.2 — UI/UX futurista e identidade visual
-✅ PTP-WEB.1.3 — Responsividade, acessibilidade, SEO e PWA
-✅🚀 PTP-WEB.1.4 — Código publicado no GitHub
-✅🚀 PTP-WEB.1.5 — GitHub Pages publicado e validado
-✅ PTP-WEB.1.6.1 — Pesquisa e decisão estratégica do catálogo
-✅ PTP-WEB.1.6.2 — Plano de validação comercial aprovado
-✅🚀 PTP-WEB.1.6.2V1 — Build estático isolado para Vercel
-✅🚀 PTP-WEB.1.6.2V2 — Deploy Vercel validado
-✅🚀 PTP-WEB.1.6.2V3 — Hardening pós-deploy e domínio principal
-🟨 PTP-WEB.1.6.2F1 — Fundação do formulário comercial nativo
-✅ PTP-WEB.1.6.2F1.1 — Projeto Supabase gratuito
-✅ PTP-WEB.1.6.2F1.2 — Tabela, RLS e RPC limitada
-✅🚀 PTP-WEB.1.6.2F1.3 — API e interface integradas ao main
-✅🚀 PTP-WEB.1.6.2A — Landing PredixAI Atendimento integrada
-✅🚀 PTP-WEB.1.6.2B — Landing PredixAI Pet integrada
-✅🚀 PTP-WEB.1.6.2C — Landing PredixAI Market integrada
-✅🚀 PTP-WEB.1.6.2F2 — Política de privacidade e confirmação integradas
-🟧 PTP-WEB.1.6.2F3 — Teste ponta a ponta, mobile e produção
+✅ PTP-WEB.AUD-001 — Auditoria integral aprovada
+✅ PTP-WEB.2.BRIEF — Briefing definitivo
+✅ PTP-WEB.2.INV — Investigação do estado real
+✅ PTP-WEB.2.0 — Decisões conceituais aprovadas
+✅ PTP-WEB.2.1 — Arquitetura comercial e taxonomia
+✅ PTP-WEB.2.2 — Workforce estático na Home e navegação
+✅ PTP-WEB.2.3 — Página /solucoes/workforce/
+✅ PTP-WEB.2.4 — Atendimento e segmentos iniciais
+✅ PTP-WEB.2.5 — Formulário, API e contrato Supabase
+✅ PTP-WEB.2.6 — SEO, dados estruturados, social card e sitemap
+✅ PTP-WEB.2.7 — Hardening, build e workflows
+✅ PTP-WEB.2.8.1 — Home Comercial Brasileira
+✅ PTP-WEB.2.8.2 — Refinamento Visual e Conversão
+✅ PTP-WEB.2.8.3A — Posicionamento Funcionários de IA
+✅ PTP-WEB.2.8.3B — Departamentos disponíveis
+✅ PTP-WEB.2.8.3C — Fluxo teste → implantação
+✅ PTP-WEB.2.8.3F — Pet e Market removidos como produtos
+✅ PTP-WEB.2.8.3H — Confiança comercial e privacidade
+🟨 PTP-WEB.2.8.3J — Funcionário de IA Grátis
+🟧 PTP-WEB.2.8 — Validação visual, mobile e ponta a ponta
+⬜ PTP-WEB.2.9 — Merge, produção e fechamento documental
 ```
 
-## Arquitetura
+## Arquitetura comercial vigente
 
 ```txt
-PRIMARY_RUNTIME=Vercel
-FORM_FRONTEND=Native PredixAI
-FORM_API=Vercel Function /api/leads
-FORM_DATABASE=Supabase Postgres
-FORM_DATABASE_SECURITY=Forced RLS + SECURITY DEFINER RPC
-FORM_RATE_LIMIT=5 submissions/hour/fingerprint
-FORM_ANTISPAM=Honeypot + unknown-field rejection
-GOOGLE_SHEETS=Optional reporting only
-EXTERNAL_FORM_BUILDERS=Discarded
+WORKFORCE=PRODUTO_CARRO_CHEFE
+WORKFORCE_CATEGORY=PLATAFORMA_DE_FUNCIONARIOS_DE_IA
+FREE_ENTRY_OFFER=FUNCIONARIO_DE_IA_GRATIS
+FREE_ENTRY_ROUTE=/funcionario-ia-gratis/
+REVENUE_MODEL=PROMPT_GRATUITO_TO_DIAGNOSTICO_TO_IMPLANTACAO_TO_MENSALIDADE_TO_EXPANSAO
+ALL_DEPARTMENTS=AVAILABLE_FOR_CONFIGURATION_AND_IMPLEMENTATION
+PUBLIC_MATURITY_BADGES=REMOVED
+ATENDIMENTO=AVAILABLE_DEPARTMENT
+PET=SEGMENT_EXAMPLE_NOT_PRODUCT
+MARKET=SEGMENT_EXAMPLE_NOT_PRODUCT
+CUSTOM=INTEGRATIONS_OCR_VISION_APPS_AND_AUTOMATIONS
+PUBLIC_COMMUNICATION=PORTUGUES_BRASIL
+TARGET_MARKET=EMPRESAS_BRASILEIRAS
 ```
 
-## Implementado nesta etapa
+## Departamentos públicos
 
-- projeto Supabase dedicado e gratuito;
-- tabela `commercial_leads`;
-- RLS forçada, sem leitura pública;
-- função RPC de inserção validada e limitada;
-- API Vercel `/api/leads`;
-- formulário nativo de quatro etapas;
-- páginas Atendimento, Pet e Market;
-- política de privacidade;
-- página de confirmação;
-- sitemap atualizado;
-- build isolado exigindo todas as páginas públicas;
-- workflow E2E de produção.
+```txt
+ATENDIMENTO=AVAILABLE
+ADMINISTRATIVO=AVAILABLE
+FINANCEIRO=AVAILABLE
+COMERCIAL=AVAILABLE
+ESTOQUE=AVAILABLE
+LOGISTICA=AVAILABLE
+RECURSOS_HUMANOS=AVAILABLE
+DOCUMENTACAO=AVAILABLE
+GESTAO=AVAILABLE
+INTEGRACOES_AUTOMACOES=AVAILABLE
+```
+
+Disponível significa que a PredixAI pode diagnosticar, configurar e implantar a solução conforme os processos, sistemas, permissões e limites de cada empresa. Não significa ativação instantânea sem configuração.
+
+## Funcionário de IA Grátis
+
+```txt
+INITIAL_EMPLOYEE_MODELS=10
+PROMPT_GENERATION=LOCAL_DETERMINISTIC
+EXTERNAL_AI_API=NOT_USED
+LOGIN_REQUIRED=NO
+LEAD_GATE=NO
+PROMPT_COPY_WITHOUT_CONTACT=YES
+ANSWERS_AUTOMATICALLY_SUBMITTED=NO
+ANSWERS_STORED_IN_SUPABASE=NO
+PERSISTENT_BROWSER_STORAGE=NO
+EXTERNAL_ANALYTICS=NO
+AUTOMATION_DIAGNOSIS=LOCAL
+PAID_IMPLEMENTATION_CTA=YES
+```
+
+Modelos iniciais:
+
+1. Atendente de IA;
+2. Secretária virtual;
+3. Agente comercial;
+4. Agente de orçamentos e propostas;
+5. Assistente administrativo;
+6. Agente financeiro;
+7. Agente de cobrança;
+8. Assistente de Recursos Humanos;
+9. Assistente de documentação;
+10. Gestor de estoque.
+
+## Funil comercial
+
+```txt
+SOCIAL_TRAFFIC
+→ FREE_EMPLOYEE_BUILDER
+→ PRACTICAL_MANUAL_TEST
+→ AUTOMATION_DIAGNOSIS
+→ IMPLEMENTATION_REQUEST
+→ PAID_CONFIGURATION_AND_INTEGRATION
+→ MONTHLY_PLATFORM
+→ NEW_EMPLOYEES_AND_DEPARTMENTS
+```
+
+## Formulário comercial
+
+```txt
+PUBLIC_OPTIONS=WORKFORCE_OR_CUSTOM_SOLUTION
+PET_PRODUCT_OPTION=REMOVED
+MARKET_PRODUCT_OPTION=REMOVED
+ALL_DEPARTMENTS_SELECTABLE=YES
+EXISTING_API_REUSED=YES
+EXISTING_SUPABASE_RPC_REUSED=YES
+NEW_TABLE=NO
+CONSENT_REQUIRED_FOR_FORM_SUBMISSION=YES
+FREE_PROMPT_REQUIRES_FORM_SUBMISSION=NO
+```
+
+## Publicação principal e secundária
+
+```txt
+VERCEL_PRIMARY=READY_PREVIEW
+GITHUB_PAGES_SECONDARY=BUILD_CONTRACT_PASS
+GITHUB_PAGES_PUBLIC_SOURCE=dist
+GITHUB_PAGES_PATH_REWRITE=PASS
+GITHUB_PAGES_EMPLOYEE_BUILDER=PASS
+GITHUB_PAGES_FORM_API=https://predixai-brand.vercel.app/api/leads
+GITHUB_PAGES_CONFIRMATION_PATH=/predixai-brand/obrigado/
+CURRENT_MAIN_GITHUB_PAGES=OLD_VERSION_UNTIL_MERGE
+CURRENT_PRODUCTION_VERCEL=OLD_VERSION_UNTIL_MERGE
+```
+
+## Validação automática
+
+```txt
+JAVASCRIPT_SYNTAX=PASS
+EMPLOYEE_CATALOG_10=PASS
+BUILDER_HTML_CONTRACT=PASS
+PROMPT_GENERATION=PASS
+AUTOMATION_DIAGNOSIS=PASS
+LOCAL_GENERATION=PASS
+NO_LEAD_GATE=PASS
+PRIVACY_SCAN=PASS
+WORKFORCE_STATIC_CONTRACT=PASS
+ALL_DEPARTMENTS_AVAILABLE=PASS
+LEGACY_PRODUCTS_REMOVED=PASS
+STATIC_BUILD=PASS
+GITHUB_PAGES_PATHS=PASS
+ADMIN_CREDENTIAL_SCAN=PASS
+GITHUB_ACTIONS=PASS
+PREVIEW_DEPLOY=READY
+PRODUCTION=UNCHANGED
+```
+
+## Banco e segurança
+
+```txt
+EXISTING_MIGRATION_APPLIED=PASS
+WORKFORCE_RPC_CONTRACT=PASS
+CUSTOM_RPC_CONTRACT=PASS
+AUTHENTICATED_RPC_EXECUTE=REVOKED
+ANON_RPC_EXECUTE=INTENTIONAL_PUBLIC_FORM_ENDPOINT
+PUBLIC_TABLE_READ=BLOCKED_BY_RLS
+FREE_BUILDER_CALLS_API=NO
+FREE_BUILDER_STORES_RESPONSES=NO
+FREE_BUILDER_EXTERNAL_ANALYTICS=NO
+SECRET_SCAN=PASS
+```
+
+## Documentação
+
+```txt
+REPORT=reports/20260720_PTP-WEB.2.8.3J_funcionario_ia_gratis_IMPLEMENT.txt
+HISTORY=docs/history/ptp/PTP-WEB/PTP-WEB.2/20260720_PTP-WEB.2.8.3J_funcionario_ia_gratis_IMPLEMENT.md
+REPORT_INDEX=docs/reports_index.md
+```
 
 ## Regra de avanço
 
-A coleta real permanece bloqueada até:
+A branch somente poderá ser integrada após:
 
 ```txt
-STATIC_BUILD=PASS
-API_PREVIEW_DEPLOY=PASS
-INVALID_PAYLOAD_TEST=PASS
-CONSENT_REQUIRED_TEST=PASS
-HONEYPOT_TEST=PASS
-RATE_LIMIT_TEST=PASS
-VALID_LEAD_INSERT_TEST=PASS
-RLS_PUBLIC_READ_BLOCKED=PASS
-PRIVACY_PAGE_HTTP=PASS
-FORM_MOBILE_VISUAL=WAITING
-FORM_DESKTOP_VISUAL=WAITING
-VERCEL_PRODUCTION_DEPLOY=WAITING
-GITHUB_ACTIONS_E2E=WAITING
+HOME_DESKTOP_VISUAL=PASS
+HOME_MOBILE_VISUAL=PASS
+BUILDER_360PX=PASS
+BUILDER_390PX=PASS
+BUILDER_THREE_STEPS_RUNTIME=PASS
+PROMPT_COPY_RUNTIME=PASS
+AUTOMATION_DIAGNOSIS_HUMAN_REVIEW=PASS
+KEYBOARD_RUNTIME=PASS
+REDUCED_MOTION_RUNTIME=PASS
+VALID_LEAD_PREVIEW=PASS
+SUPABASE_INSERT_CONFIRMATION=PASS
+TEST_RECORD_REMOVAL=PASS
+PR_6_STILL_MERGEABLE=YES
+LEO_MERGE_APPROVAL=YES
 ```
+
+## Próxima ação
+
+Leo deve abrir o preview no celular e no notebook, testar o gerador completo e enviar capturas da Home e das três etapas. O merge continua proibido até aprovação explícita após todos os gates humanos.

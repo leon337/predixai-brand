@@ -1,0 +1,244 @@
+PREDIXAI BR — RELATÓRIO DE IMPLEMENTAÇÃO
+PTP-WEB.2.8.3J — Funcionário de IA Grátis
+Data: 2026-07-20
+Repositório: leon337/predixai-brand
+Branch: ptp-web-2-workforce-flagship
+Pull Request: 6
+Modo de execução: implementação direta e controlada pela API do GitHub
+Produção alterada: NÃO
+Merge executado: NÃO
+
+======================================================================
+1. OBJETIVO
+======================================================================
+
+Criar uma oferta gratuita capaz de demonstrar valor real antes da contratação:
+
+PROMPT GRATUITO
+→ EXPERIÊNCIA PRÁTICA
+→ DIAGNÓSTICO DE AUTOMAÇÃO
+→ IMPLANTAÇÃO PAGA
+→ MENSALIDADE
+→ EXPANSÃO DE AGENTES E INTEGRAÇÕES
+
+O visitante escolhe uma função, responde a um questionário e recebe um
+Funcionário de IA personalizado para testar manualmente. O resultado também
+mostra integrações e automações que podem ser implantadas pela PredixAI.
+
+======================================================================
+2. DECISÕES COMERCIAIS APLICADAS
+======================================================================
+
+- PredixAI Workforce reposicionado como Plataforma de Funcionários de IA.
+- Todos os departamentos apresentados como disponíveis comercialmente.
+- Estados públicos EM VALIDAÇÃO, PLANEJADO, SOB MEDIDA e EM PESQUISA removidos
+  do catálogo de departamentos.
+- Pet e Market removidos como produtos independentes.
+- Pet, mercado e outros ramos tratados como exemplos de aplicação por segmento.
+- Atendente gratuito não foi artificialmente limitado para forçar venda.
+- A versão gratuita demonstra comportamento e raciocínio de trabalho.
+- A oferta paga cobre diagnóstico, configuração, integrações, automação,
+  hospedagem, suporte, monitoramento e expansão.
+
+======================================================================
+3. ENTREGA DO GERADOR GRATUITO
+======================================================================
+
+Nova rota:
+- /funcionario-ia-gratis/
+
+Dez modelos iniciais:
+1. Atendente de IA
+2. Secretária virtual
+3. Agente comercial
+4. Agente de orçamentos e propostas
+5. Assistente administrativo
+6. Agente financeiro
+7. Agente de cobrança
+8. Assistente de Recursos Humanos
+9. Assistente de documentação
+10. Gestor de estoque
+
+Fluxo:
+- escolha do funcionário;
+- nome e segmento da empresa;
+- tom de comunicação;
+- gatilhos de trabalho;
+- tarefas;
+- fontes de informação;
+- resultados esperados;
+- situações de controle humano;
+- regras específicas;
+- geração do prompt;
+- diagnóstico de automação;
+- cópia livre;
+- chamada para implantação completa.
+
+======================================================================
+4. ARQUITETURA TÉCNICA
+======================================================================
+
+Geração do prompt:
+- determinística;
+- executada no navegador;
+- sem consumo de API de IA;
+- sem login;
+- sem lead gate;
+- sem envio automático das respostas;
+- sem armazenamento local persistente;
+- sem analytics externo nesta entrega.
+
+Arquivos criados:
+- funcionario-ia-gratis/index.html
+- assets/css/employee-builder.css
+- assets/js/employee-builder.js
+- assets/js/prompt-generator.js
+- assets/data/ai-employees.json
+- scripts/validate_employee_builder.sh
+
+Arquivos comerciais alterados:
+- index.html
+- solucoes/workforce/index.html
+- solucoes/atendimento/index.html
+- solucoes/pet/index.html
+- solucoes/market/index.html
+- validacao/index.html
+- assets/js/form.js
+- privacidade/index.html
+- sitemap.xml
+
+Arquivos de build e qualidade alterados:
+- scripts/build_vercel_static.sh
+- scripts/validate_workforce.sh
+- .github/workflows/workforce-quality.yml
+
+======================================================================
+5. PRIVACIDADE E SEGURANÇA
+======================================================================
+
+- Prompt pode ser gerado e copiado sem cadastro.
+- Questionário não envia dados automaticamente para /api/leads.
+- Respostas não são gravadas no Supabase durante o uso gratuito.
+- Aviso contra envio de senhas, tokens, dados bancários, prontuários,
+  documentos pessoais e informações sigilosas.
+- Prompt inclui limites, supervisão humana e proibição de alegar acesso a
+  sistemas sem integração real.
+- Analytics externo não foi implantado.
+- Política de Privacidade atualizada para refletir geração local.
+- Rotas Pet e Market configuradas como noindex,follow e canonical Workforce.
+- Pet e Market removidos do sitemap comercial.
+
+======================================================================
+6. FORMULÁRIO COMERCIAL
+======================================================================
+
+O formulário de implantação passou a oferecer:
+- Funcionário ou departamento de IA;
+- integração ou solução específica.
+
+Pet e Market foram removidos como opções de produto.
+Todos os departamentos permanecem selecionáveis:
+- Atendimento
+- Administrativo
+- Financeiro
+- Comercial
+- Estoque
+- Logística
+- Recursos Humanos
+- Documentação
+- Gestão
+- Integrações e automações
+
+A API e o contrato Supabase existentes foram preservados. O gerador gratuito
+não depende deles. O formulário comercial continua enviando somente após
+consentimento explícito.
+
+======================================================================
+7. BUILD E PUBLICAÇÃO
+======================================================================
+
+O build estático agora inclui:
+- funcionario-ia-gratis/
+- assets/css/employee-builder.css
+- assets/js/employee-builder.js
+- assets/js/prompt-generator.js
+- assets/data/ai-employees.json
+
+Compatibilidade mantida:
+- Vercel Preview
+- GitHub Pages com prefixo /predixai-brand/
+- API de leads na Vercel para a publicação secundária
+
+Produção principal não recebeu merge.
+
+======================================================================
+8. VALIDAÇÕES AUTOMÁTICAS
+======================================================================
+
+IMPLEMENTATION_CODE_HEAD=643a9d1dd0592051c959313f1cdf3655c782b675
+GITHUB_ACTION_RUN=29776626243
+GITHUB_ACTION_JOB=88467445125
+
+JAVASCRIPT_SYNTAX=PASS
+EMPLOYEE_CATALOG_10=PASS
+BUILDER_HTML_CONTRACT=PASS
+PROMPT_GENERATION=PASS
+AUTOMATION_DIAGNOSIS=PASS
+LOCAL_GENERATION=PASS
+NO_LEAD_GATE=PASS
+PRIVACY_SCAN=PASS
+WORKFORCE_STATIC_CONTRACT=PASS
+ALL_DEPARTMENTS_AVAILABLE=PASS
+LEGACY_PRODUCTS_REMOVED=PASS
+STATIC_BUILD=PASS
+GITHUB_PAGES_PATHS=PASS
+ADMIN_CREDENTIAL_SCAN=PASS
+GITHUB_ACTIONS=PASS
+
+Observação de correção:
+- um scanner inicial tratava a sequência curta "sk-" como possível segredo;
+- o elemento técnico "task-options" produziu falso positivo;
+- a regra foi corrigida para reconhecer somente chaves com padrão e tamanho
+  compatíveis;
+- o run final passou em todos os gates.
+
+======================================================================
+9. PREVIEW
+======================================================================
+
+PREVIEW_BRANCH_ALIAS=https://predixai-brand-git-ptp-web-2-workforce-flagship-predix-ai-br.vercel.app/
+PREVIEW_DEPLOYMENT=dpl_4ByWBFX3Zf1XBb4siqzjvcSLkbJV
+PREVIEW_COMMIT=643a9d1dd0592051c959313f1cdf3655c782b675
+PREVIEW_STATE=READY
+PRODUCTION_SITE_CHANGED=NO
+
+======================================================================
+10. PENDÊNCIAS HUMANAS
+======================================================================
+
+- revisão visual da Home no notebook;
+- revisão visual da Home no celular;
+- revisão visual do gerador em 360 px e 390 px;
+- execução completa das três etapas do gerador;
+- teste de cópia do prompt;
+- revisão do diagnóstico de automação;
+- validação por teclado;
+- validação de movimento reduzido;
+- envio controlado do formulário de implantação no preview;
+- confirmação do registro no Supabase;
+- remoção do registro de teste;
+- aprovação explícita de Leo antes do merge.
+
+======================================================================
+11. ESTADO FINAL DESTE RELATÓRIO
+======================================================================
+
+IMPLEMENTATION=PASS_AUTOMATED
+VISUAL_VALIDATION=PENDING
+RUNTIME_HUMAN_VALIDATION=PENDING
+PR_6=OPEN_DRAFT
+MERGE=BLOCKED
+PRODUCTION=UNCHANGED
+
+O relatório foi fechado antes de qualquer futura decisão de merge. Nenhuma
+linha deverá ser adicionada após este fechamento.

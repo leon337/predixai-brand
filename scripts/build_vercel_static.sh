@@ -1,73 +1,36 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DIST_DIR="${ROOT_DIR}/dist"
-
-log() { printf '[build_vercel_static] %s\n' "$*"; }
-fail() { printf '[build_vercel_static] ERROR: %s\n' "$*" >&2; exit 1; }
-
-copy_required_file() {
-  local relative_path="$1"
-  local source_path="${ROOT_DIR}/${relative_path}"
-  local target_path="${DIST_DIR}/${relative_path}"
-  [[ -f "${source_path}" ]] || fail "arquivo público obrigatório ausente: ${relative_path}"
-  mkdir -p "$(dirname "${target_path}")"
-  cp -p "${source_path}" "${target_path}"
-}
-
-copy_optional_file() {
-  local relative_path="$1"
-  local source_path="${ROOT_DIR}/${relative_path}"
-  local target_path="${DIST_DIR}/${relative_path}"
-  if [[ -f "${source_path}" ]]; then
-    mkdir -p "$(dirname "${target_path}")"
-    cp -p "${source_path}" "${target_path}"
-  fi
-}
-
-copy_required_dir() {
-  local relative_path="$1"
-  local source_path="${ROOT_DIR}/${relative_path}"
-  [[ -d "${source_path}" ]] || fail "diretório público obrigatório ausente: ${relative_path}"
-  cp -a "${source_path}" "${DIST_DIR}/${relative_path}"
-}
-
-log "limpando saída anterior"
-rm -rf "${DIST_DIR}"
-mkdir -p "${DIST_DIR}"
-
-log "copiando arquivos públicos obrigatórios"
-for file in index.html 404.html manifest.webmanifest robots.txt sitemap.xml; do
-  copy_required_file "${file}"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; DIST_DIR="${ROOT_DIR}/dist"
+log(){ printf '[build_vercel_static] %s\n' "$*"; }; fail(){ printf '[build_vercel_static] ERROR: %s\n' "$*" >&2; exit 1; }
+copy_required_file(){ local p="$1"; [[ -f "${ROOT_DIR}/${p}" ]]||fail "arquivo público obrigatório ausente: ${p}"; mkdir -p "$(dirname "${DIST_DIR}/${p}")"; cp -p "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}"; }
+copy_optional_file(){ local p="$1"; if [[ -f "${ROOT_DIR}/${p}" ]];then mkdir -p "$(dirname "${DIST_DIR}/${p}")";cp -p "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}";fi; }
+copy_required_dir(){ local p="$1";[[ -d "${ROOT_DIR}/${p}" ]]||fail "diretório público obrigatório ausente: ${p}";cp -a "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}"; }
+log "limpando saída anterior";rm -rf "${DIST_DIR}";mkdir -p "${DIST_DIR}"
+for file in index.html 404.html manifest.webmanifest robots.txt sitemap.xml;do copy_required_file "${file}";done
+copy_optional_file .nojekyll;copy_required_dir assets
+for directory in solucoes validacao privacidade obrigado funcionario-ia-gratis;do copy_required_dir "${directory}";done
+for required in \
+  solucoes/workforce/index.html \
+  funcionario-ia-gratis/index.html \
+  assets/css/workforce.css \
+  assets/css/workforce-base.css \
+  assets/css/home-commercial.css \
+  assets/css/employee-builder.css \
+  assets/js/employee-builder.js \
+  assets/js/prompt-generator.js \
+  assets/data/ai-employees.json \
+  assets/img/predixai-workforce-flow.svg \
+  assets/img/social-card.svg
+do
+  [[ -f "${DIST_DIR}/${required}" ]]||fail "entrega Workforce ausente: ${required}"
 done
-
-copy_optional_file ".nojekyll"
-copy_required_dir "assets"
-
-log "copiando páginas comerciais obrigatórias"
-for directory in solucoes validacao privacidade obrigado; do
-  copy_required_dir "${directory}"
-done
-
-log "verificando exclusão de memória técnica, API-fonte e arquivos sensíveis"
-for forbidden_path in docs reports .github api supabase PROJECT_STATE.md predixai_context.json README.md .git .env .env.local; do
-  [[ ! -e "${DIST_DIR}/${forbidden_path}" ]] || fail "arquivo proibido presente em dist/: ${forbidden_path}"
-done
-
-sensitive_file="$({
-  find "${DIST_DIR}" -type f \
-    \( -name '.env*' -o -name '*.pem' -o -name '*.key' \
-    -o -iname '*credential*' -o -iname '*secret*' -o -iname '*token*' \) \
-    -print -quit
-} || true)"
-
-[[ -z "${sensitive_file}" ]] || fail "possível arquivo sensível encontrado: ${sensitive_file#${ROOT_DIR}/}"
-[[ -f "${DIST_DIR}/index.html" ]] || fail "dist/index.html não foi criado"
-[[ -f "${DIST_DIR}/validacao/index.html" ]] || fail "página de validação ausente"
-[[ -f "${DIST_DIR}/privacidade/index.html" ]] || fail "página de privacidade ausente"
-[[ -f "${DIST_DIR}/obrigado/index.html" ]] || fail "página de confirmação ausente"
-[[ -d "${DIST_DIR}/assets" ]] || fail "dist/assets não foi criado"
-
-file_count="$(find "${DIST_DIR}" -type f | wc -l | tr -d ' ')"
-log "build concluído: ${file_count} arquivos públicos em dist/"
+for marker in 'PredixAI Workforce' 'id="como-funciona"' 'id="departamentos"' 'id="seguranca"' 'funcionario-ia-gratis' 'assets/css/home-commercial.css';do grep -q "${marker}" "${DIST_DIR}/index.html"||fail "marcador comercial ausente na Home: ${marker}";done
+grep -q 'workforce-base.css' "${DIST_DIR}/assets/css/workforce.css"||fail "importação CSS base ausente"
+if grep -q 'home-commercial.css' "${DIST_DIR}/assets/css/workforce.css";then fail "estilos exclusivos da Home carregados nas páginas internas";fi
+grep -q 'Plataforma de Funcionários de IA' "${DIST_DIR}/solucoes/workforce/index.html"||fail "página Workforce inválida"
+grep -q 'data-employee-builder' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "gerador de funcionário ausente"
+grep -q '/funcionario-ia-gratis/' "${DIST_DIR}/sitemap.xml"||fail "Funcionário de IA Grátis ausente do sitemap"
+for forbidden in docs reports .github api supabase PROJECT_STATE.md predixai_context.json README.md .git .env .env.local;do [[ ! -e "${DIST_DIR}/${forbidden}" ]]||fail "arquivo proibido em dist/: ${forbidden}";done
+sensitive="$({ find "${DIST_DIR}" -type f \( -name '.env*' -o -name '*.pem' -o -name '*.key' -o -iname '*credential*' -o -iname '*secret*' -o -iname '*token*' \) -print -quit; }||true)";[[ -z "${sensitive}" ]]||fail "possível arquivo sensível: ${sensitive#${ROOT_DIR}/}"
+for required in index.html validacao/index.html privacidade/index.html obrigado/index.html funcionario-ia-gratis/index.html;do [[ -f "${DIST_DIR}/${required}" ]]||fail "arquivo ausente em dist/: ${required}";done
+log "build concluído: $(find "${DIST_DIR}" -type f|wc -l|tr -d ' ') arquivos públicos em dist/"
