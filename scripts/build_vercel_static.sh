@@ -8,13 +8,29 @@ copy_required_dir(){ local p="$1";[[ -d "${ROOT_DIR}/${p}" ]]||fail "diretório 
 log "limpando saída anterior";rm -rf "${DIST_DIR}";mkdir -p "${DIST_DIR}"
 for file in index.html 404.html manifest.webmanifest robots.txt sitemap.xml;do copy_required_file "${file}";done
 copy_optional_file .nojekyll;copy_required_dir assets
-for directory in solucoes validacao privacidade obrigado;do copy_required_dir "${directory}";done
-for required in solucoes/workforce/index.html assets/css/workforce.css assets/css/workforce-base.css assets/css/home-commercial.css assets/img/predixai-workforce-flow.svg assets/img/social-card.svg;do [[ -f "${DIST_DIR}/${required}" ]]||fail "entrega Workforce ausente: ${required}";done
-for marker in 'PredixAI Workforce' 'id="como-funciona"' 'id="processos"' 'id="para-quem"' 'id="seguranca"' 'assets/css/home-commercial.css';do grep -q "${marker}" "${DIST_DIR}/index.html"||fail "marcador comercial ausente na Home: ${marker}";done
+for directory in solucoes validacao privacidade obrigado funcionario-ia-gratis;do copy_required_dir "${directory}";done
+for required in \
+  solucoes/workforce/index.html \
+  funcionario-ia-gratis/index.html \
+  assets/css/workforce.css \
+  assets/css/workforce-base.css \
+  assets/css/home-commercial.css \
+  assets/css/employee-builder.css \
+  assets/js/employee-builder.js \
+  assets/js/prompt-generator.js \
+  assets/data/ai-employees.json \
+  assets/img/predixai-workforce-flow.svg \
+  assets/img/social-card.svg
+do
+  [[ -f "${DIST_DIR}/${required}" ]]||fail "entrega Workforce ausente: ${required}"
+done
+for marker in 'PredixAI Workforce' 'id="como-funciona"' 'id="departamentos"' 'id="seguranca"' 'funcionario-ia-gratis' 'assets/css/home-commercial.css';do grep -q "${marker}" "${DIST_DIR}/index.html"||fail "marcador comercial ausente na Home: ${marker}";done
 grep -q 'workforce-base.css' "${DIST_DIR}/assets/css/workforce.css"||fail "importação CSS base ausente"
 if grep -q 'home-commercial.css' "${DIST_DIR}/assets/css/workforce.css";then fail "estilos exclusivos da Home carregados nas páginas internas";fi
-grep -q 'PredixAI Workforce' "${DIST_DIR}/solucoes/workforce/index.html"||fail "página Workforce inválida";grep -q '/solucoes/workforce/' "${DIST_DIR}/sitemap.xml"||fail "Workforce ausente do sitemap"
+grep -q 'Plataforma de Funcionários de IA' "${DIST_DIR}/solucoes/workforce/index.html"||fail "página Workforce inválida"
+grep -q 'data-employee-builder' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "gerador de funcionário ausente"
+grep -q '/funcionario-ia-gratis/' "${DIST_DIR}/sitemap.xml"||fail "Funcionário de IA Grátis ausente do sitemap"
 for forbidden in docs reports .github api supabase PROJECT_STATE.md predixai_context.json README.md .git .env .env.local;do [[ ! -e "${DIST_DIR}/${forbidden}" ]]||fail "arquivo proibido em dist/: ${forbidden}";done
 sensitive="$({ find "${DIST_DIR}" -type f \( -name '.env*' -o -name '*.pem' -o -name '*.key' -o -iname '*credential*' -o -iname '*secret*' -o -iname '*token*' \) -print -quit; }||true)";[[ -z "${sensitive}" ]]||fail "possível arquivo sensível: ${sensitive#${ROOT_DIR}/}"
-for required in index.html validacao/index.html privacidade/index.html obrigado/index.html;do [[ -f "${DIST_DIR}/${required}" ]]||fail "arquivo ausente em dist/: ${required}";done
+for required in index.html validacao/index.html privacidade/index.html obrigado/index.html funcionario-ia-gratis/index.html;do [[ -f "${DIST_DIR}/${required}" ]]||fail "arquivo ausente em dist/: ${required}";done
 log "build concluído: $(find "${DIST_DIR}" -type f|wc -l|tr -d ' ') arquivos públicos em dist/"
