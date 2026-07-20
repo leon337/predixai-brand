@@ -1,0 +1,63 @@
+PREDIXAI BR — PTP-WEB.2.8.1 — HOME COMERCIAL BRASILEIRA
+DATA=2026-07-19
+REPOSITORY=leon337/predixai-brand
+BRANCH=ptp-web-2-workforce-flagship
+PULL_REQUEST=6
+
+STATUS=PASS_PREVIEW_AWAITING_HUMAN_REVIEW
+MODE=IMPLEMENT
+
+OBJETIVO=Reformular a Home para que um visitante brasileiro compreenda rapidamente o produto principal, o problema resolvido, o funcionamento e a próxima ação.
+
+ORIGEM=Revisão visual humana do preview da PTP-WEB.2.
+OBSERVACAO_GOVERNANCA=A solicitação foi aprovada na conversa como PTP-WEB.2.1 ajustada, mas o código PTP-WEB.2.1 já estava ocupado pela arquitetura comercial. O código canônico foi normalizado para PTP-WEB.2.8.1.
+
+ALTERACOES:
+- PredixAI Workforce transformado no centro do Hero;
+- subtítulo público: equipe inteligente para empresas;
+- promessa clara sobre atendimento e tarefas repetitivas;
+- público brasileiro declarado explicitamente;
+- CTA principal: Analisar um processo da minha empresa;
+- menu simplificado;
+- exemplo concreto de funcionamento;
+- processos automatizáveis apresentados em linguagem empresarial;
+- segmentos e estágios reais reorganizados;
+- segurança e controle humano preservados;
+- CSS comercial modularizado;
+- validações de clareza comercial e português do Brasil adicionadas.
+
+ARQUIVOS_CRIADOS:
+- assets/css/workforce-base.css
+- assets/css/home-commercial.css
+
+ARQUIVOS_ALTERADOS:
+- index.html
+- assets/css/workforce.css
+- scripts/validate_workforce.sh
+- scripts/build_vercel_static.sh
+
+VALIDACOES:
+JAVASCRIPT_SYNTAX=PASS
+COMMERCIAL_HOME_CONTRACT=PASS
+BRAZILIAN_COMMUNICATION=PASS
+STATIC_BUILD=PASS
+CSS_MODULES=PASS
+GITHUB_ACTIONS=PASS
+GITHUB_ACTION_RUN=29708710818
+VERCEL_PREVIEW=READY
+VERCEL_DEPLOYMENT=dpl_EXQvsPeKZk2EF8cc2kqCVuFuwXqD
+PREVIEW_HTTP=200
+PR_MERGEABLE=YES
+PRODUCTION_SITE_CHANGED=NO
+
+PREVIEW_URL=https://predixai-brand-git-ptp-web-2-workforce-flagship-predix-ai-br.vercel.app/
+
+PENDENCIAS:
+- validação visual humana em desktop;
+- validação visual humana em celular;
+- teste dos primeiros dez segundos;
+- teclado e movimento reduzido em runtime;
+- aprovação explícita para merge.
+
+REPORT_CLOSED_BEFORE_MERGE=YES
+NEXT_ACTION=Leo validar o novo preview no notebook e no celular antes de liberar o merge.
