@@ -68,12 +68,17 @@ NODE
 }
 
 run_privacy(){
-  for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track' 'SUPABASE_SERVICE_ROLE' 'sk-';do
-    if grep -RFn -- "$forbidden" assets/js/employee-builder.js assets/js/prompt-generator.js funcionario-ia-gratis/index.html;then
+  local files=(assets/js/employee-builder.js assets/js/prompt-generator.js funcionario-ia-gratis/index.html)
+  for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track' 'SUPABASE_SERVICE_ROLE';do
+    if grep -Fn -- "$forbidden" "${files[@]}";then
       echo "forbidden builder marker: $forbidden" >&2
       exit 1
     fi
   done
+  if grep -En -- 'sk-[A-Za-z0-9_-]{20,}' "${files[@]}";then
+    echo 'possible API secret found in employee builder delivery' >&2
+    exit 1
+  fi
   pass "local generation, privacy and no lead gate"
 }
 
