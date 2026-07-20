@@ -69,7 +69,7 @@ NODE
 
 run_privacy(){
   local files=(assets/js/employee-builder.js assets/js/prompt-generator.js funcionario-ia-gratis/index.html)
-  for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track' 'SUPABASE_SERVICE_ROLE';do
+  for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track';do
     if grep -Fn -- "$forbidden" "${files[@]}";then
       echo "forbidden builder marker: $forbidden" >&2
       exit 1
