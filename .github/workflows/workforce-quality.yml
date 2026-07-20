@@ -1,7 +1,7 @@
 name: Validar PTP-WEB.2 Workforce
 on:
   pull_request:
-    paths: ["index.html","assets/**","solucoes/**","validacao/**","privacidade/**","api/**","supabase/**","scripts/**","sitemap.xml","manifest.webmanifest","vercel.json",".github/workflows/**"]
+    paths: ["index.html","assets/**","solucoes/**","funcionario-ia-gratis/**","validacao/**","privacidade/**","api/**","supabase/**","scripts/**","sitemap.xml","manifest.webmanifest","vercel.json",".github/workflows/**"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -13,12 +13,14 @@ jobs:
       - uses: actions/checkout@v6
       - name: Executar validação estática
         run: |
-          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/prepare_github_pages.sh
+          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
           bash scripts/validate_workforce.sh
       - name: Validar adaptação do GitHub Pages
         run: |
           bash scripts/prepare_github_pages.sh
           grep -q 'href="/predixai-brand/solucoes/workforce/"' dist/index.html
+          grep -q 'href="/predixai-brand/funcionario-ia-gratis/"' dist/index.html
+          grep -q 'src="/predixai-brand/assets/js/employee-builder.js"' dist/funcionario-ia-gratis/index.html
           grep -q 'href="/predixai-brand/validacao/' dist/index.html
           echo 'GITHUB_PAGES_SECONDARY=PASS'
       - name: Garantir ausência de credenciais administrativas
