@@ -2,12 +2,16 @@
 set -Eeuo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "${ROOT_DIR}"
+MODE="${1:-all}"
 pass(){ printf 'PTP-WEB.2.8.3J VALIDATION PASS: %s\n' "$*"; }
 
-node --check assets/js/prompt-generator.js
-node --check assets/js/employee-builder.js
-pass "JavaScript syntax"
+run_syntax(){
+  node --check assets/js/prompt-generator.js
+  node --check assets/js/employee-builder.js
+  pass "JavaScript syntax"
+}
 
+run_contract(){
 python3 - <<'PY'
 from html.parser import HTMLParser
 from pathlib import Path
@@ -28,7 +32,6 @@ text=page.read_text(encoding='utf-8')
 for marker in ['data-employee-builder','data-employee-grid','data-prompt-output','data-copy-prompt','data-diagnosis-integrations','data-implementation-link','Crie seu','Funcionário de IA grátis']:
     if marker not in text:raise SystemExit(f'builder marker missing: {marker}')
 if '/api/leads' in text:raise SystemExit('prompt generation must not be gated by lead API')
-
 catalog=json.loads((root/'assets/data/ai-employees.json').read_text(encoding='utf-8'))
 employees=catalog.get('employees')
 if not isinstance(employees,list) or len(employees)!=10:raise SystemExit('catalog must contain exactly 10 initial employees')
@@ -43,7 +46,9 @@ for item in employees:
 print('EMPLOYEE_CATALOG=PASS')
 print('BUILDER_HTML=PASS')
 PY
+}
 
+run_runtime(){
 node <<'NODE'
 global.window={};
 require('./assets/js/prompt-generator.js');
@@ -60,11 +65,23 @@ if(!Array.isArray(diagnosis.integrations)||!diagnosis.integrations.length)throw 
 console.log('PROMPT_GENERATION=PASS');
 console.log('AUTOMATION_DIAGNOSIS=PASS');
 NODE
+}
 
-for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track' 'SUPABASE_SERVICE_ROLE' 'sk-';do
-  if grep -RFn -- "$forbidden" assets/js/employee-builder.js assets/js/prompt-generator.js funcionario-ia-gratis/index.html;then
-    echo "forbidden builder marker: $forbidden" >&2
-    exit 1
-  fi
-done
-pass "local generation, privacy and no lead gate"
+run_privacy(){
+  for forbidden in 'localStorage' 'sessionStorage' 'gtag(' 'fbq(' 'analytics.track' 'SUPABASE_SERVICE_ROLE' 'sk-';do
+    if grep -RFn -- "$forbidden" assets/js/employee-builder.js assets/js/prompt-generator.js funcionario-ia-gratis/index.html;then
+      echo "forbidden builder marker: $forbidden" >&2
+      exit 1
+    fi
+  done
+  pass "local generation, privacy and no lead gate"
+}
+
+case "${MODE}" in
+  syntax) run_syntax ;;
+  contract) run_contract ;;
+  runtime) run_runtime ;;
+  privacy) run_privacy ;;
+  all) run_syntax;run_contract;run_runtime;run_privacy ;;
+  *) echo "modo inválido: ${MODE}" >&2;exit 2 ;;
+esac
