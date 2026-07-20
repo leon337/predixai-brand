@@ -18,9 +18,9 @@
   .page-hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); }
   .page-hero p:not(.eyebrow) { max-width: 720px; margin-top: 24px; font-size: 1.08rem; }
   body.page-shell:has([data-lead-form]) { padding-top: var(--header-height); }
-  body.page-shell:has([data-lead-form]) .page-hero { padding: clamp(26px, 4vw, 48px) 0 28px; }
-  body.page-shell:has([data-lead-form]) .page-hero h1 { max-width: 860px; font-size: clamp(2.25rem, 4.7vw, 4.15rem); }
-  body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 16px; }
+  body.page-shell:has([data-lead-form]) .page-hero { padding: clamp(16px, 2.8vw, 30px) 0 18px; }
+  body.page-shell:has([data-lead-form]) .page-hero h1 { max-width: 780px; font-size: clamp(2.05rem, 4vw, 3.55rem); }
+  body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 12px; }
 
   .status-panel, .content-panel, .form-shell { border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(155deg, rgba(15,31,51,.82), rgba(7,15,27,.78)); box-shadow: var(--shadow); }
   .status-panel { padding: 30px; }
@@ -41,11 +41,11 @@
   .form-aside { position: sticky; top: calc(var(--header-height) + 28px); padding: 24px; border: 1px solid var(--line); border-radius: 22px; background: rgba(7,17,31,.76); }
   .form-aside h2 { font-size: 1.25rem; }
   .form-aside ul { display: grid; gap: 10px; margin-top: 18px; padding-left: 20px; color: var(--muted); font-size: .9rem; }
-  .form-progress { position: relative; overflow: hidden; padding-bottom: 14px; margin-bottom: 32px; border-bottom: 1px solid var(--line); color: var(--cyan); font-family: ui-monospace, monospace; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
+  .form-progress { position: relative; overflow: hidden; padding-bottom: 14px; margin-bottom: 26px; border-bottom: 1px solid var(--line); color: var(--cyan); font-family: ui-monospace, monospace; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
   .form-progress::after { content: ""; position: absolute; left: 0; bottom: -1px; width: var(--progress,25%); height: 2px; background: linear-gradient(90deg,var(--cyan),var(--blue)); transition: width .25s ease; }
   .form-step[hidden], [data-product-details][hidden] { display: none !important; }
-  .form-step h2 { margin-bottom: 12px; font-size: clamp(1.8rem,4vw,2.7rem); }
-  .form-step > p { margin-bottom: 28px; }
+  .form-step h2 { margin-bottom: 10px; font-size: clamp(1.7rem,3.5vw,2.45rem); }
+  .form-step > p { margin-bottom: 24px; }
 
   .choice-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
   .choice-card { position: relative; display: block; cursor: pointer; }
@@ -95,14 +95,14 @@
     .form-actions { flex-direction: column-reverse; }
     .form-actions .button { width: 100%; }
     .product-card { min-height: 320px; }
-    body.page-shell:has([data-lead-form]) .page-hero { padding: 20px 0 22px; }
-    body.page-shell:has([data-lead-form]) .page-hero .eyebrow { margin-bottom: 14px; }
-    body.page-shell:has([data-lead-form]) .page-hero h1 { font-size: clamp(2.25rem, 10.8vw, 3.1rem); line-height: 1.02; }
-    body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 14px; font-size: 1rem; }
-    body.page-shell:has([data-lead-form]) .form-layout { gap: 18px; }
-    body.page-shell:has([data-lead-form]) .form-shell { padding: 22px 18px; }
-    body.page-shell:has([data-lead-form]) .form-progress { margin-bottom: 24px; }
-    body.page-shell:has([data-lead-form]) .form-step h2 { font-size: clamp(1.6rem, 7.4vw, 2.05rem); }
-    body.page-shell:has([data-lead-form]) .form-step > p { margin-bottom: 22px; }
+    body.page-shell:has([data-lead-form]) .page-hero { padding: 8px 0 14px; }
+    body.page-shell:has([data-lead-form]) .page-hero .eyebrow { margin-bottom: 10px; }
+    body.page-shell:has([data-lead-form]) .page-hero h1 { max-width: 620px; font-size: clamp(1.95rem, 9.1vw, 2.65rem); line-height: 1.02; }
+    body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 10px; font-size: .96rem; line-height: 1.55; }
+    body.page-shell:has([data-lead-form]) .form-layout { gap: 12px; }
+    body.page-shell:has([data-lead-form]) .form-shell { padding: 18px 16px; }
+    body.page-shell:has([data-lead-form]) .form-progress { margin-bottom: 18px; }
+    body.page-shell:has([data-lead-form]) .form-step h2 { font-size: clamp(1.5rem, 6.8vw, 1.9rem); }
+    body.page-shell:has([data-lead-form]) .form-step > p { margin-bottom: 18px; }
   }
 }
