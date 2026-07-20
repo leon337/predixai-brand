@@ -3,6 +3,7 @@ DATA=2026-07-19
 REPOSITORY=leon337/predixai-brand
 BRANCH=ptp-web-2-workforce-flagship
 PULL_REQUEST=6
+CODE_HEAD=1451e9cb66db11564d1b48b3fbe1a72c9573808a
 
 STATUS=PASS_PREVIEW_AWAITING_HUMAN_REVIEW
 MODE=IMPLEMENT
@@ -12,29 +13,45 @@ OBJETIVO=Reformular a Home para que um visitante brasileiro compreenda rapidamen
 ORIGEM=Revisão visual humana do preview da PTP-WEB.2.
 OBSERVACAO_GOVERNANCA=A solicitação foi aprovada na conversa como PTP-WEB.2.1 ajustada, mas o código PTP-WEB.2.1 já estava ocupado pela arquitetura comercial. O código canônico foi normalizado para PTP-WEB.2.8.1.
 
-ALTERACOES:
+ALTERACOES_COMERCIAIS:
 - PredixAI Workforce transformado no centro do Hero;
 - subtítulo público: equipe inteligente para empresas;
-- promessa clara sobre atendimento e tarefas repetitivas;
+- promessa direta: automatizar atendimento e tarefas repetitivas sem perder controle;
 - público brasileiro declarado explicitamente;
 - CTA principal: Analisar um processo da minha empresa;
+- link Workforce inserido no menu, Hero e rodapé;
 - menu simplificado;
-- exemplo concreto de funcionamento;
+- categorias concorrentes Soluções e Produtos removidas da navegação;
+- exemplo concreto do contato do cliente até a ação registrada;
 - processos automatizáveis apresentados em linguagem empresarial;
 - segmentos e estágios reais reorganizados;
 - segurança e controle humano preservados;
-- CSS comercial modularizado;
-- validações de clareza comercial e português do Brasil adicionadas.
+- termos estrangeiros públicos removidos, exceto marcas consolidadas.
+
+ALTERACOES_TECNICAS:
+- CSS comercial separado em assets/css/home-commercial.css;
+- estilos internos do Workforce separados em assets/css/workforce-base.css;
+- assets/css/workforce.css limitado ao estilo base das páginas internas;
+- build exige os marcadores comerciais da Home;
+- validador exige clareza comercial e português do Brasil;
+- GitHub Pages publica somente dist/;
+- scripts/prepare_github_pages.sh adapta links para /predixai-brand/;
+- formulário no GitHub Pages envia para a API oficial na Vercel;
+- redirecionamento de confirmação no GitHub Pages adaptado ao subdiretório.
 
 ARQUIVOS_CRIADOS:
 - assets/css/workforce-base.css
 - assets/css/home-commercial.css
+- scripts/prepare_github_pages.sh
 
 ARQUIVOS_ALTERADOS:
 - index.html
 - assets/css/workforce.css
+- assets/js/form.js
 - scripts/validate_workforce.sh
 - scripts/build_vercel_static.sh
+- .github/workflows/pages.yml
+- .github/workflows/workforce-quality.yml
 
 VALIDACOES:
 JAVASCRIPT_SYNTAX=PASS
@@ -42,22 +59,39 @@ COMMERCIAL_HOME_CONTRACT=PASS
 BRAZILIAN_COMMUNICATION=PASS
 STATIC_BUILD=PASS
 CSS_MODULES=PASS
+GITHUB_PAGES_PATHS=PASS
+GITHUB_PAGES_FORM_COMPATIBILITY=PASS
+API_CONTRACT=PASS
+SUPABASE_MIGRATION=PASS
 GITHUB_ACTIONS=PASS
-GITHUB_ACTION_RUN=29708710818
+GITHUB_ACTION_RUN=29708887558
 VERCEL_PREVIEW=READY
-VERCEL_DEPLOYMENT=dpl_EXQvsPeKZk2EF8cc2kqCVuFuwXqD
-PREVIEW_HTTP=200
+VERCEL_DEPLOYMENT=dpl_DKKUhuVmHH3yM7W7cYx52Taavazh
+VERCEL_DEPLOYMENT_COMMIT=1451e9cb66db11564d1b48b3fbe1a72c9573808a
 PR_MERGEABLE=YES
+PR_DRAFT=YES
 PRODUCTION_SITE_CHANGED=NO
 
 PREVIEW_URL=https://predixai-brand-git-ptp-web-2-workforce-flagship-predix-ai-br.vercel.app/
+PREVIEW_ACCESS=VERCEL_AUTHENTICATION_OR_TEMPORARY_SHARE_REQUIRED
 
 PENDENCIAS:
 - validação visual humana em desktop;
 - validação visual humana em celular;
-- teste dos primeiros dez segundos;
-- teclado e movimento reduzido em runtime;
+- teste dos primeiros dez segundos com pessoa sem contexto;
+- validação de teclado e movimento reduzido em navegador real;
+- envio válido controlado no preview;
 - aprovação explícita para merge.
 
+RESTRICOES_PRESERVADAS:
+- Workforce continua descrito como solução em validação;
+- nenhuma promessa de substituição integral de profissionais;
+- nenhuma promessa percentual de economia;
+- nenhuma cobrança adicionada;
+- nenhuma credencial exposta;
+- nenhuma rota publicada removida;
+- produção principal não alterada.
+
 REPORT_CLOSED_BEFORE_MERGE=YES
+MERGE_AUTHORIZED=NO
 NEXT_ACTION=Leo validar o novo preview no notebook e no celular antes de liberar o merge.
