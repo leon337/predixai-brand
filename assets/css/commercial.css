@@ -17,6 +17,10 @@
   .page-hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(36px, 7vw, 90px); align-items: center; }
   .page-hero h1 { font-size: clamp(2.5rem, 6vw, 5rem); }
   .page-hero p:not(.eyebrow) { max-width: 720px; margin-top: 24px; font-size: 1.08rem; }
+  body.page-shell:has([data-lead-form]) { padding-top: var(--header-height); }
+  body.page-shell:has([data-lead-form]) .page-hero { padding: clamp(26px, 4vw, 48px) 0 28px; }
+  body.page-shell:has([data-lead-form]) .page-hero h1 { max-width: 860px; font-size: clamp(2.25rem, 4.7vw, 4.15rem); }
+  body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 16px; }
 
   .status-panel, .content-panel, .form-shell { border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(155deg, rgba(15,31,51,.82), rgba(7,15,27,.78)); box-shadow: var(--shadow); }
   .status-panel { padding: 30px; }
@@ -91,5 +95,14 @@
     .form-actions { flex-direction: column-reverse; }
     .form-actions .button { width: 100%; }
     .product-card { min-height: 320px; }
+    body.page-shell:has([data-lead-form]) .page-hero { padding: 20px 0 22px; }
+    body.page-shell:has([data-lead-form]) .page-hero .eyebrow { margin-bottom: 14px; }
+    body.page-shell:has([data-lead-form]) .page-hero h1 { font-size: clamp(2.25rem, 10.8vw, 3.1rem); line-height: 1.02; }
+    body.page-shell:has([data-lead-form]) .page-hero p:not(.eyebrow) { margin-top: 14px; font-size: 1rem; }
+    body.page-shell:has([data-lead-form]) .form-layout { gap: 18px; }
+    body.page-shell:has([data-lead-form]) .form-shell { padding: 22px 18px; }
+    body.page-shell:has([data-lead-form]) .form-progress { margin-bottom: 24px; }
+    body.page-shell:has([data-lead-form]) .form-step h2 { font-size: clamp(1.6rem, 7.4vw, 2.05rem); }
+    body.page-shell:has([data-lead-form]) .form-step > p { margin-bottom: 22px; }
   }
 }
