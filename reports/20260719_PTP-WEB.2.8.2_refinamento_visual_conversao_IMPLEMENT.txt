@@ -1,0 +1,69 @@
+PREDIXAI BR — PTP-WEB.2.8.2 — REFINAMENTO VISUAL E CONVERSÃO
+DATA=2026-07-19
+REPOSITORY=leon337/predixai-brand
+BRANCH=ptp-web-2-workforce-flagship
+PULL_REQUEST=6
+
+STATUS=IMPLEMENTED_AWAITING_AUTOMATION_AND_HUMAN_REVIEW
+MODE=IMPLEMENT
+
+OBJETIVO=Reduzir a altura visual do Hero comercial e do cabeçalho do diagnóstico, antecipando o CTA e a primeira pergunta sem alterar identidade, arquitetura, rotas, API ou banco.
+
+ORIGEM=Validação visual humana em notebook e celular após PTP-WEB.2.8.1.
+
+ALTERACOES:
+- redução do título comercial em desktop;
+- redução da altura e do espaçamento do Hero;
+- CTA principal antecipado na primeira tela;
+- painel visual do Hero dimensionado para ocupar menos altura;
+- redução do espaço entre cabeçalho e conteúdo no celular;
+- cabeçalho do diagnóstico compactado;
+- título do diagnóstico reduzido em telas pequenas;
+- primeira pergunta aproximada da primeira tela;
+- formulário e etapas preservados;
+- identidade visual preservada.
+
+ARQUIVOS_ALTERADOS:
+- assets/css/home-commercial.css
+- assets/css/commercial.css
+
+COMMITS_CODIGO:
+- af8e022947089262f2e4f2526f8e68a9c7fb5fb5 — compactar Hero comercial e antecipar CTA
+- 9e3e3a4dfebb3b1ee5a61097955581df7382efc6 — compactar cabeçalho do diagnóstico e antecipar primeira pergunta
+
+ESCOPO_NAO_ALTERADO:
+- index.html
+- validacao/index.html
+- assets/js/form.js
+- api/leads.js
+- contrato Supabase
+- rotas públicas
+- conteúdo comercial
+- produção main
+
+VALIDACAO_ESTATICA:
+CSS_TARGETS_PRESENT=PASS
+HOME_RESPONSIVE_RULES=PASS
+FORM_RESPONSIVE_RULES=PASS
+IDENTITY_PRESERVED=PASS
+API_CHANGED=NO
+SUPABASE_CHANGED=NO
+PRODUCTION_CHANGED=NO
+
+AUTOMACAO_NO_FECHAMENTO:
+GITHUB_ACTION_RUN=29709720718
+GITHUB_ACTION_STATUS=QUEUED
+VERCEL_DEPLOYMENT=dpl_2HrL2C9EGrqHWKQNk3SoAHtCeeN7
+VERCEL_DEPLOYMENT_STATUS=INITIALIZING
+
+PENDENCIAS:
+- confirmação de GitHub Actions PASS;
+- confirmação de preview Vercel READY;
+- nova captura desktop;
+- nova captura mobile da Home;
+- nova captura mobile do início do formulário;
+- teste do menu, teclado, movimento reduzido e envio controlado.
+
+MERGE_AUTHORIZED=NO
+REPORT_CLOSED_BEFORE_MERGE=YES
+NEXT_ACTION=Validar o preview atualizado após a conclusão das automações e manter o PR 6 bloqueado até aprovação humana.
