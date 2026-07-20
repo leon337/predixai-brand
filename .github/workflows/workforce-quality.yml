@@ -11,10 +11,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-      - name: Executar validação estática
-        run: |
-          chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
-          bash scripts/validate_workforce.sh
+      - name: Preparar validadores
+        run: chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
+      - name: Validar Funcionário de IA Grátis
+        run: bash scripts/validate_employee_builder.sh
+      - name: Validar Workforce e build estático
+        run: bash scripts/validate_workforce.sh
       - name: Validar adaptação do GitHub Pages
         run: |
           bash scripts/prepare_github_pages.sh
