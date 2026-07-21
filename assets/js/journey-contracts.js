@@ -56,8 +56,10 @@
     TEST_SKIPPED: "TEST_SKIPPED",
     SCENARIO_EXECUTED: "SCENARIO_EXECUTED",
     OBSERVATION_RECORDED: "OBSERVATION_RECORDED",
+    READINESS_PREPARED: "READINESS_PREPARED",
     READINESS_VIEWED: "READINESS_VIEWED",
     FREE_PATH_SELECTED: "FREE_PATH_SELECTED",
+    COMMERCIAL_PATH_SELECTED: "COMMERCIAL_PATH_SELECTED",
     COMMERCIAL_SCOPE_SELECTED: "COMMERCIAL_SCOPE_SELECTED",
     COMMERCIAL_CONTACT_CONFIRMED: "COMMERCIAL_CONTACT_CONFIRMED",
     COMMERCIAL_SUBMIT_STARTED: "COMMERCIAL_SUBMIT_STARTED",
@@ -223,6 +225,7 @@
         break;
       case EVENTS.RESULTS_CONFIRMED:
         if (!Array.isArray(payload.desiredResultIds) || payload.desiredResultIds.length < 1 || payload.desiredResultIds.length > 3) throw new Error("INVALID_SELECTION");
+        if (!payload.recommendation?.employeeId) throw new Error("MISSING_RECOMMENDATION");
         state.answers.desiredResultIds = [...new Set(payload.desiredResultIds)];
         state.recommendation = payload.recommendation;
         state.versions.recommendationVersion += 1;
@@ -304,12 +307,22 @@
         state.artifacts.readinessMap = payload.readinessMap;
         setScreen(state, SCREENS.TEST_SUMMARY, event);
         break;
+      case EVENTS.READINESS_PREPARED:
+        if (!payload.readinessMap && !state.artifacts.readinessMap) throw new Error("MISSING_READINESS_MAP");
+        if (payload.readinessMap) state.artifacts.readinessMap = payload.readinessMap;
+        setScreen(state, SCREENS.READINESS, event);
+        break;
       case EVENTS.READINESS_VIEWED:
         if (!state.artifacts.readinessMap) state.artifacts.readinessMap = payload.readinessMap;
+        if (!state.artifacts.readinessMap || state.artifacts.readinessMap.status !== "CURRENT") throw new Error("MISSING_READINESS_MAP");
         setScreen(state, SCREENS.DECISION, event);
         break;
       case EVENTS.FREE_PATH_SELECTED:
         setScreen(state, SCREENS.FREE_PATH, event);
+        break;
+      case EVENTS.COMMERCIAL_PATH_SELECTED:
+        if (!state.artifacts.readinessMap || state.artifacts.readinessMap.status !== "CURRENT") throw new Error("MISSING_READINESS_MAP");
+        setScreen(state, SCREENS.COMMERCIAL_SCOPE, event);
         break;
       case EVENTS.COMMERCIAL_SCOPE_SELECTED:
         if (!Array.isArray(payload.scopeIds) || payload.scopeIds.length < 1) throw new Error("INVALID_SELECTION");
@@ -324,11 +337,17 @@
       case EVENTS.COMMERCIAL_CONTACT_CONFIRMED:
         if (!state.commercial.draft) throw new Error("MISSING_COMMERCIAL_SCOPE");
         state.commercial.draft = { ...state.commercial.draft, ...payload.contact };
-        state.commercial.submission.status = SUBMISSION.READY;
+        state.commercial.submission = {
+          ...state.commercial.submission,
+          status: SUBMISSION.READY,
+          submissionAttemptId: payload.contact.submissionAttemptId || null,
+          idempotencyKey: payload.contact.idempotencyKey || null
+        };
         setScreen(state, SCREENS.COMMERCIAL_SUBMIT, event);
         break;
       case EVENTS.COMMERCIAL_SUBMIT_STARTED:
         if (state.commercial.submission.status === SUBMISSION.UNKNOWN) throw new Error("SUBMISSION_RETRY_BLOCKED");
+        if (!payload.submissionAttemptId || !payload.idempotencyKey) throw new Error("MISSING_SUBMISSION_IDENTIFIERS");
         state.commercial.submission = {
           ...state.commercial.submission,
           status: SUBMISSION.SUBMITTING,
@@ -338,6 +357,7 @@
         };
         break;
       case EVENTS.COMMERCIAL_SUBMIT_CONFIRMED:
+        if (!payload.serverReference) throw new Error("MISSING_SERVER_REFERENCE");
         state.commercial.submission.status = SUBMISSION.CONFIRMED;
         state.commercial.submission.serverReference = payload.serverReference;
         break;
@@ -350,7 +370,8 @@
         state.commercial.submission.lastErrorCode = payload.errorCode || "SUBMISSION_UNKNOWN";
         break;
       case EVENTS.BACK:
-        setScreen(state, payload.screen || SCREENS.ENTRY, event);
+        if (!Object.values(SCREENS).includes(payload.screen)) throw new Error("INVALID_NAVIGATION_TARGET");
+        setScreen(state, payload.screen, event);
         break;
       case EVENTS.RESET:
         return createInitialState();
@@ -380,6 +401,8 @@
     }
     if ([SCREENS.READINESS, SCREENS.DECISION, SCREENS.FREE_PATH, SCREENS.COMMERCIAL_SCOPE, SCREENS.COMMERCIAL_CONTACT, SCREENS.COMMERCIAL_SUBMIT].includes(requested) &&
         !state.artifacts.prompt) return SCREENS.REVIEW;
+    if ([SCREENS.DECISION, SCREENS.FREE_PATH, SCREENS.COMMERCIAL_SCOPE, SCREENS.COMMERCIAL_CONTACT, SCREENS.COMMERCIAL_SUBMIT].includes(requested) &&
+        state.artifacts.readinessMap?.status !== "CURRENT") return SCREENS.READINESS;
     return requested;
   };
 
