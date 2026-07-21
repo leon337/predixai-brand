@@ -7,13 +7,25 @@
   const { STORAGE, validateEnvelope, deriveCanonicalScreen, clone } = contracts;
 
   class SessionStateStore {
-    constructor(storage = window.sessionStorage) {
-      this.storage = storage;
+    constructor(storage) {
+      this.storage = storage || null;
       this.memoryState = null;
       this.status = "AVAILABLE";
+      if (!this.storage) {
+        try {
+          this.storage = window.sessionStorage;
+        } catch {
+          this.storage = null;
+          this.status = "MEMORY_ONLY";
+        }
+      }
     }
 
     probe() {
+      if (!this.storage) {
+        this.status = "MEMORY_ONLY";
+        return this.status;
+      }
       try {
         const key = `${STORAGE.namespace}.probe`;
         this.storage.setItem(key, "1");
@@ -79,13 +91,17 @@
         this.status = "AVAILABLE";
         return { ok: true, durable: true, status: "AVAILABLE" };
       } catch (error) {
-        this.status = error instanceof DOMException && error.name === "QuotaExceededError" ? "QUOTA_EXCEEDED" : "WRITE_FAILED";
+        this.status = error?.name === "QuotaExceededError" ? "QUOTA_EXCEEDED" : "WRITE_FAILED";
         return { ok: false, durable: false, status: this.status };
       }
     }
 
     clear() {
       const keys = [STORAGE.active, STORAGE.pending, STORAGE.lastKnownGood];
+      if (!this.storage) {
+        this.memoryState = null;
+        return { ok: true, status: "CLEARED_MEMORY_ONLY" };
+      }
       try {
         keys.forEach((key) => this.storage.removeItem(key));
         const remains = keys.some((key) => this.storage.getItem(key) !== null);
