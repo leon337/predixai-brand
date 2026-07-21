@@ -127,7 +127,8 @@
         const backup = safeParse(backupRaw);
         if (validateEnvelope(backup)) {
           this.status = "CORRUPTED";
-          return this.finalizeLoaded(backup, "RECOVERABLE_PARTIAL");
+          const recoveredBackup = recoverPartialEnvelope(backup);
+          if (recoveredBackup) return this.finalizeLoaded(recoveredBackup, "RECOVERABLE_PARTIAL");
         }
 
         const partial = recoverPartialEnvelope(active) || recoverPartialEnvelope(backup);
