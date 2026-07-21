@@ -50,6 +50,7 @@
     RECOMMENDATION_ACCEPTED: "RECOMMENDATION_ACCEPTED",
     CONFIGURATION_CONFIRMED: "CONFIGURATION_CONFIRMED",
     PROMPT_PREPARED: "PROMPT_PREPARED",
+    PROMPT_COPY_REQUIRED: "PROMPT_COPY_REQUIRED",
     PROMPT_COPY_CONFIRMED: "PROMPT_COPY_CONFIRMED",
     PLATFORM_SELECTED: "PLATFORM_SELECTED",
     PROMPT_SUBMISSION_DECLARED: "PROMPT_SUBMISSION_DECLARED",
@@ -66,6 +67,9 @@
     COMMERCIAL_SUBMIT_CONFIRMED: "COMMERCIAL_SUBMIT_CONFIRMED",
     COMMERCIAL_SUBMIT_FAILED: "COMMERCIAL_SUBMIT_FAILED",
     COMMERCIAL_SUBMIT_UNKNOWN: "COMMERCIAL_SUBMIT_UNKNOWN",
+    CATALOG_SELECTION_ORPHANED: "CATALOG_SELECTION_ORPHANED",
+    CONNECTIVITY_EVIDENCE_CHANGED: "CONNECTIVITY_EVIDENCE_CHANGED",
+    TAB_CONFLICT_DETECTED: "TAB_CONFLICT_DETECTED",
     BACK: "NAVIGATE_BACK",
     RESET: "RESET_JOURNEY"
   });
@@ -88,9 +92,26 @@
     CANCELED: "CANCELED"
   });
 
+  const CONNECTIVITY = Object.freeze({
+    UNKNOWN: "UNKNOWN",
+    LIKELY_ONLINE: "LIKELY_ONLINE",
+    LIKELY_OFFLINE: "LIKELY_OFFLINE",
+    OPERATION_REQUIRES_CONNECTION: "OPERATION_REQUIRES_CONNECTION",
+    REQUEST_FAILED: "REQUEST_FAILED",
+    CONNECTION_CONFIRMED_BY_SUCCESS: "CONNECTION_CONFIRMED_BY_SUCCESS"
+  });
+
+  const OFFLINE_READINESS = Object.freeze({
+    READY: "OFFLINE_READY",
+    PARTIAL: "OFFLINE_PARTIAL",
+    NOT_READY: "OFFLINE_NOT_READY"
+  });
+
   const nowIso = () => new Date().toISOString();
-  const randomId = (prefix) => `${prefix}-${crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)}`;
+  const randomId = (prefix) => `${prefix}-${globalThis.crypto?.randomUUID ? globalThis.crypto.randomUUID() : Math.random().toString(36).slice(2)}`;
   const clone = (value) => JSON.parse(JSON.stringify(value));
+  const isString = (value, max = 1000) => typeof value === "string" && value.length <= max;
+  const isStringArray = (value, maxItems, maxLength = 100) => Array.isArray(value) && value.length <= maxItems && value.every((item) => isString(item, maxLength));
 
   const createInitialState = () => ({
     meta: {
@@ -100,12 +121,14 @@
       storageStatus: "available",
       integrityStatus: "valid",
       tabInstanceId: randomId("tab"),
-      appBuildVersion: "k6.1"
+      appBuildVersion: "k6.2"
     },
     session: {
       sessionId: randomId("session"),
       status: "valid",
-      resumeHintScreen: SCREENS.ENTRY
+      resumeHintScreen: SCREENS.ENTRY,
+      orphanEmployeeId: null,
+      duplicateTabDetected: false
     },
     journey: {
       phase: PHASES.CREATE,
@@ -144,19 +167,28 @@
       activeTestAttempt: null,
       observations: []
     },
+    externalState: {
+      connectivityEvidence: CONNECTIVITY.UNKNOWN,
+      offlineReadiness: OFFLINE_READINESS.NOT_READY,
+      localAssetsReady: false,
+      updatedAt: null
+    },
     commercial: {
       draft: null,
       submission: {
         status: SUBMISSION.DRAFT,
         submissionAttemptId: null,
         idempotencyKey: null,
+        payloadHash: null,
+        payloadSnapshot: null,
         serverReference: null,
         lastErrorCode: null
       }
     },
     operations: {
       activeOperation: null,
-      lastError: null
+      lastError: null,
+      recoveryNotice: null
     }
   });
 
@@ -171,9 +203,19 @@
     state.journey.canonicalScreen = screen;
     state.journey.phase = phaseForScreen(screen);
     state.session.resumeHintScreen = screen;
-    state.journey.history.push({ screen, event, stateRevision: state.meta.stateRevision + 1, at: nowIso() });
+    state.journey.history.push({ screen, event, stateRevision: state.meta.stateRevision, at: nowIso() });
     state.journey.history = state.journey.history.slice(-30);
   };
+
+  const resetSubmission = () => ({
+    status: SUBMISSION.DRAFT,
+    submissionAttemptId: null,
+    idempotencyKey: null,
+    payloadHash: null,
+    payloadSnapshot: null,
+    serverReference: null,
+    lastErrorCode: null
+  });
 
   const invalidateFromConfiguration = (state) => {
     if (state.artifacts.prompt) state.artifacts.prompt.status = "STALE";
@@ -181,13 +223,60 @@
     state.externalJourney.activeTestAttempt = null;
     state.externalJourney.observations = [];
     state.commercial.draft = null;
-    state.commercial.submission = {
-      status: SUBMISSION.DRAFT,
-      submissionAttemptId: null,
-      idempotencyKey: null,
-      serverReference: null,
-      lastErrorCode: null
-    };
+    state.commercial.submission = resetSubmission();
+  };
+
+  const validateObservation = (observation) => {
+    if (!observation || typeof observation !== "object") return { ok: false, code: "INCOMPLETE_INPUT" };
+    const { matchResult, inventedInfo, humanHandoff } = observation;
+    const validMatch = new Set(["expected", "partial", "unexpected", "unable"]);
+    const validInvented = new Set(["no", "yes", "unknown"]);
+    const validHandoff = new Set(["yes", "no", "not-required", "unknown"]);
+    if (!validMatch.has(matchResult) || !validInvented.has(inventedInfo) || !validHandoff.has(humanHandoff)) return { ok: false, code: "INCOMPLETE_INPUT" };
+    if (matchResult === "unable" && (inventedInfo !== "unknown" || !["unknown", "not-required"].includes(humanHandoff))) return { ok: false, code: "CONTRADICTORY_OBSERVATION" };
+    if (matchResult === "expected" && inventedInfo === "yes") return { ok: false, code: "CONTRADICTORY_OBSERVATION" };
+    return { ok: true };
+  };
+
+  const validateEnvelope = (value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    if (value.meta?.schemaVersion !== "1.0") return false;
+    if (!Number.isInteger(value.meta?.stateRevision) || value.meta.stateRevision < 0) return false;
+    if (!Object.values(SCREENS).includes(value.journey?.canonicalScreen)) return false;
+    if (!Object.values(PHASES).includes(value.journey?.phase)) return false;
+    if (!value.session?.sessionId || !value.meta?.tabInstanceId) return false;
+    if (!value.answers || !isString(value.answers.objectiveId, 80) || !isString(value.answers.segment, 80) || !isString(value.answers.processModeId, 80)) return false;
+    if (!isStringArray(value.answers.channelIds, 8, 80) || !isStringArray(value.answers.desiredResultIds, 3, 80)) return false;
+    if (!value.configuration || !isString(value.configuration.employeeId, 80) || !isString(value.configuration.tone, 120) || !isString(value.configuration.additionalRules, 500)) return false;
+    if (!isStringArray(value.configuration.mandatoryControls, 20, 300) || !isStringArray(value.configuration.authorizedContent, 10, 300)) return false;
+    if (!value.commercial?.submission || !Object.values(SUBMISSION).includes(value.commercial.submission.status)) return false;
+    return true;
+  };
+
+  const screenRank = Object.freeze(Object.values(SCREENS).reduce((acc, screen, index) => ({ ...acc, [screen]: index }), {}));
+  const requestedAtOrAfter = (requested, screen) => (screenRank[requested] ?? 0) >= (screenRank[screen] ?? 0);
+
+  const deriveCanonicalScreen = (state) => {
+    if (!validateEnvelope(state)) return SCREENS.ENTRY;
+    const requested = state.journey.canonicalScreen;
+    if (requested === SCREENS.ENTRY) return requested;
+    if (!state.answers.objectiveId) return SCREENS.OBJECTIVE;
+    if (requestedAtOrAfter(requested, SCREENS.SEGMENT) && !state.answers.segment) return SCREENS.SEGMENT;
+    if (requestedAtOrAfter(requested, SCREENS.PROCESS) && !state.answers.processModeId) return SCREENS.PROCESS;
+    if (requestedAtOrAfter(requested, SCREENS.RESULTS) && state.answers.desiredResultIds.length < 1) return SCREENS.RESULTS;
+    if (requestedAtOrAfter(requested, SCREENS.RECOMMENDATION) && !state.recommendation?.employeeId) return SCREENS.RESULTS;
+    if (requestedAtOrAfter(requested, SCREENS.CONFIGURATION) && !state.configuration.employeeId) return SCREENS.RECOMMENDATION;
+    if (requestedAtOrAfter(requested, SCREENS.PROMPT) && !state.artifacts.prompt) return SCREENS.REVIEW;
+    if (requestedAtOrAfter(requested, SCREENS.PLATFORM) && state.artifacts.prompt?.copiedVersion !== state.artifacts.prompt?.promptVersion) return SCREENS.PROMPT;
+    if ([SCREENS.SCENARIO, SCREENS.OBSERVATION, SCREENS.TEST_SUMMARY].includes(requested)) {
+      const status = state.externalJourney.activeTestAttempt?.status;
+      if (!new Set(["USER_DECLARED_PROMPT_SENT", "USER_DECLARED_TEST_EXECUTED", "OBSERVATION_RECORDED"]).has(status)) return SCREENS.RETURN;
+    }
+    if (requestedAtOrAfter(requested, SCREENS.READINESS) && !state.artifacts.prompt) return SCREENS.REVIEW;
+    if (requestedAtOrAfter(requested, SCREENS.DECISION) && state.artifacts.readinessMap?.status !== "CURRENT") return SCREENS.READINESS;
+    if (requestedAtOrAfter(requested, SCREENS.COMMERCIAL_CONTACT) && !state.commercial.draft?.selectedTechnicalScopeIds?.length) return SCREENS.COMMERCIAL_SCOPE;
+    if (requestedAtOrAfter(requested, SCREENS.COMMERCIAL_SUBMIT) && state.commercial.submission.status === SUBMISSION.DRAFT) return SCREENS.COMMERCIAL_CONTACT;
+    return requested;
   };
 
   const transition = (current, event, payload = {}) => {
@@ -201,7 +290,7 @@
         break;
       case EVENTS.OBJECTIVE_SELECTED:
         if (!payload.objectiveId) throw new Error("INCOMPLETE_INPUT");
-        state.answers.objectiveId = payload.objectiveId;
+        state.answers.objectiveId = String(payload.objectiveId).slice(0, 80);
         invalidateFromConfiguration(state);
         setScreen(state, SCREENS.SEGMENT, event);
         break;
@@ -213,25 +302,26 @@
         break;
       case EVENTS.PROCESS_SELECTED:
         if (!payload.processModeId) throw new Error("INCOMPLETE_INPUT");
-        state.answers.processModeId = payload.processModeId;
+        state.answers.processModeId = String(payload.processModeId).slice(0, 80);
         invalidateFromConfiguration(state);
         setScreen(state, SCREENS.CHANNELS, event);
         break;
       case EVENTS.CHANNELS_CONFIRMED:
         if (!Array.isArray(payload.channelIds)) throw new Error("INVALID_SELECTION");
-        state.answers.channelIds = [...new Set(payload.channelIds)].slice(0, 8);
+        state.answers.channelIds = [...new Set(payload.channelIds.map(String))].slice(0, 8);
         invalidateFromConfiguration(state);
         setScreen(state, SCREENS.RESULTS, event);
         break;
       case EVENTS.RESULTS_CONFIRMED:
         if (!Array.isArray(payload.desiredResultIds) || payload.desiredResultIds.length < 1 || payload.desiredResultIds.length > 3) throw new Error("INVALID_SELECTION");
         if (!payload.recommendation?.employeeId) throw new Error("MISSING_RECOMMENDATION");
-        state.answers.desiredResultIds = [...new Set(payload.desiredResultIds)];
-        state.recommendation = payload.recommendation;
+        state.answers.desiredResultIds = [...new Set(payload.desiredResultIds.map(String))];
+        state.recommendation = clone(payload.recommendation);
         state.versions.recommendationVersion += 1;
         state.versions.configurationVersion += 1;
         state.configuration.employeeId = payload.recommendation.employeeId;
-        state.configuration.mandatoryControls = payload.mandatoryControls || [];
+        state.configuration.mandatoryControls = Array.isArray(payload.mandatoryControls) ? payload.mandatoryControls.slice(0, 20) : [];
+        state.session.orphanEmployeeId = null;
         setScreen(state, SCREENS.RECOMMENDATION, event);
         break;
       case EVENTS.RECOMMENDATION_ACCEPTED:
@@ -239,9 +329,10 @@
         setScreen(state, SCREENS.CONFIGURATION, event);
         break;
       case EVENTS.CONFIGURATION_CONFIRMED:
-        state.configuration.tone = String(payload.tone || state.configuration.tone);
+        if (!state.configuration.employeeId || !state.configuration.mandatoryControls.length) throw new Error("MISSING_REQUIRED_CONFIRMATION");
+        state.configuration.tone = String(payload.tone || state.configuration.tone).slice(0, 120);
         state.configuration.additionalRules = String(payload.additionalRules || "").trim().slice(0, 500);
-        state.configuration.authorizedContent = Array.isArray(payload.authorizedContent) ? payload.authorizedContent.slice(0, 10) : [];
+        state.configuration.authorizedContent = Array.isArray(payload.authorizedContent) ? payload.authorizedContent.map(String).slice(0, 10) : [];
         state.versions.configurationVersion += 1;
         state.versions.humanControlVersion += 1;
         state.versions.authorizedContentVersion += 1;
@@ -250,26 +341,27 @@
         break;
       case EVENTS.PROMPT_PREPARED:
         if (!payload.promptArtifact?.content) throw new Error("PROMPT_GENERATION_FAILED");
-        state.artifacts.prompt = payload.promptArtifact;
+        state.artifacts.prompt = clone(payload.promptArtifact);
         state.versions.promptVersion = payload.promptArtifact.promptVersion;
+        setScreen(state, SCREENS.PROMPT, event);
+        break;
+      case EVENTS.PROMPT_COPY_REQUIRED:
+        if (!state.artifacts.prompt || state.artifacts.prompt.status === "STALE") throw new Error("STALE_PROMPT");
+        state.artifacts.prompt.copyStatus = "MANUAL_COPY_REQUIRED";
+        state.artifacts.prompt.copiedVersion = null;
         setScreen(state, SCREENS.PROMPT, event);
         break;
       case EVENTS.PROMPT_COPY_CONFIRMED:
         if (!state.artifacts.prompt || state.artifacts.prompt.status === "STALE") throw new Error("STALE_PROMPT");
-        state.artifacts.prompt.copyStatus = payload.copyStatus || "CLIPBOARD_SUCCESS";
+        if (!new Set(["CLIPBOARD_SUCCESS", "MANUAL_COPY_CONFIRMED"]).has(payload.copyStatus)) throw new Error("MISSING_REQUIRED_CONFIRMATION");
+        state.artifacts.prompt.copyStatus = payload.copyStatus;
         state.artifacts.prompt.copiedVersion = state.artifacts.prompt.promptVersion;
         setScreen(state, SCREENS.PLATFORM, event);
         break;
       case EVENTS.PLATFORM_SELECTED:
         if (!payload.platformId) throw new Error("INVALID_SELECTION");
         if (state.artifacts.prompt?.copiedVersion !== state.artifacts.prompt?.promptVersion) throw new Error("PROMPT_NOT_COPIED");
-        state.externalJourney.activeTestAttempt = {
-          testAttemptId: randomId("attempt"),
-          promptVersion: state.artifacts.prompt.promptVersion,
-          platformId: payload.platformId,
-          status: "AWAITING_USER_RETURN",
-          createdAt: nowIso()
-        };
+        state.externalJourney.activeTestAttempt = { testAttemptId: randomId("attempt"), promptVersion: state.artifacts.prompt.promptVersion, platformId: String(payload.platformId).slice(0, 40), status: "AWAITING_USER_RETURN", createdAt: nowIso() };
         setScreen(state, SCREENS.RETURN, event);
         break;
       case EVENTS.PROMPT_SUBMISSION_DECLARED:
@@ -280,13 +372,10 @@
         setScreen(state, SCREENS.SCENARIO, event);
         break;
       case EVENTS.TEST_SKIPPED:
-        state.externalJourney.activeTestAttempt = state.externalJourney.activeTestAttempt || {
-          testAttemptId: randomId("attempt"),
-          promptVersion: state.artifacts.prompt?.promptVersion || 0,
-          platformId: null
-        };
+        state.externalJourney.activeTestAttempt = state.externalJourney.activeTestAttempt || { testAttemptId: randomId("attempt"), promptVersion: state.artifacts.prompt?.promptVersion || 0, platformId: null };
         state.externalJourney.activeTestAttempt.status = "SKIPPED";
         state.externalJourney.activeTestAttempt.completedAt = nowIso();
+        if (payload.readinessMap) state.artifacts.readinessMap = clone(payload.readinessMap);
         setScreen(state, SCREENS.READINESS, event);
         break;
       case EVENTS.SCENARIO_EXECUTED:
@@ -294,26 +383,24 @@
         state.externalJourney.activeTestAttempt.status = "USER_DECLARED_TEST_EXECUTED";
         setScreen(state, SCREENS.OBSERVATION, event);
         break;
-      case EVENTS.OBSERVATION_RECORDED:
-        if (!payload.observation) throw new Error("INCOMPLETE_INPUT");
-        state.externalJourney.observations.push({
-          observationId: randomId("observation"),
-          testAttemptId: state.externalJourney.activeTestAttempt?.testAttemptId || null,
-          promptVersion: state.artifacts.prompt?.promptVersion || 0,
-          ...payload.observation,
-          recordedAt: nowIso()
-        });
+      case EVENTS.OBSERVATION_RECORDED: {
+        const verdict = validateObservation(payload.observation);
+        if (!verdict.ok) throw new Error(verdict.code);
+        if (state.externalJourney.activeTestAttempt?.status !== "USER_DECLARED_TEST_EXECUTED") throw new Error("MISSING_TEST_ATTEMPT");
+        state.externalJourney.observations.push({ observationId: randomId("observation"), testAttemptId: state.externalJourney.activeTestAttempt.testAttemptId, promptVersion: state.artifacts.prompt?.promptVersion || 0, ...clone(payload.observation), recordedAt: nowIso() });
         state.externalJourney.activeTestAttempt.status = "OBSERVATION_RECORDED";
-        state.artifacts.readinessMap = payload.readinessMap;
+        if (!payload.readinessMap) throw new Error("MISSING_READINESS_MAP");
+        state.artifacts.readinessMap = clone(payload.readinessMap);
         setScreen(state, SCREENS.TEST_SUMMARY, event);
         break;
+      }
       case EVENTS.READINESS_PREPARED:
         if (!payload.readinessMap && !state.artifacts.readinessMap) throw new Error("MISSING_READINESS_MAP");
-        if (payload.readinessMap) state.artifacts.readinessMap = payload.readinessMap;
+        if (payload.readinessMap) state.artifacts.readinessMap = clone(payload.readinessMap);
+        if (state.artifacts.readinessMap?.status !== "CURRENT") throw new Error("MISSING_READINESS_MAP");
         setScreen(state, SCREENS.READINESS, event);
         break;
       case EVENTS.READINESS_VIEWED:
-        if (!state.artifacts.readinessMap) state.artifacts.readinessMap = payload.readinessMap;
         if (!state.artifacts.readinessMap || state.artifacts.readinessMap.status !== "CURRENT") throw new Error("MISSING_READINESS_MAP");
         setScreen(state, SCREENS.DECISION, event);
         break;
@@ -326,35 +413,23 @@
         break;
       case EVENTS.COMMERCIAL_SCOPE_SELECTED:
         if (!Array.isArray(payload.scopeIds) || payload.scopeIds.length < 1) throw new Error("INVALID_SELECTION");
-        state.commercial.draft = {
-          schemaVersion: "2.0",
-          selectedTechnicalScopeIds: [...new Set(payload.scopeIds)].slice(0, 6),
-          readinessSummaryAllowlist: payload.readinessSummaryAllowlist || [],
-          createdAt: nowIso()
-        };
+        state.commercial.draft = { schemaVersion: "2.0", selectedTechnicalScopeIds: [...new Set(payload.scopeIds.map(String))].sort().slice(0, 6), readinessSummaryAllowlist: Array.isArray(payload.readinessSummaryAllowlist) ? clone(payload.readinessSummaryAllowlist).slice(0, 12) : [], createdAt: nowIso() };
+        state.commercial.submission = resetSubmission();
         setScreen(state, SCREENS.COMMERCIAL_CONTACT, event);
         break;
       case EVENTS.COMMERCIAL_CONTACT_CONFIRMED:
         if (!state.commercial.draft) throw new Error("MISSING_COMMERCIAL_SCOPE");
-        state.commercial.draft = { ...state.commercial.draft, ...payload.contact };
-        state.commercial.submission = {
-          ...state.commercial.submission,
-          status: SUBMISSION.READY,
-          submissionAttemptId: payload.contact.submissionAttemptId || null,
-          idempotencyKey: payload.contact.idempotencyKey || null
-        };
+        if (!payload.contact?.consentContact) throw new Error("MISSING_REQUIRED_CONFIRMATION");
+        if (!payload.payloadSnapshot || !payload.payloadHash || !payload.submissionAttemptId || !payload.idempotencyKey) throw new Error("MISSING_SUBMISSION_IDENTIFIERS");
+        state.commercial.draft = { ...state.commercial.draft, ...clone(payload.contact) };
+        state.commercial.submission = { status: SUBMISSION.READY, submissionAttemptId: payload.submissionAttemptId, idempotencyKey: payload.idempotencyKey, payloadHash: payload.payloadHash, payloadSnapshot: clone(payload.payloadSnapshot), serverReference: null, lastErrorCode: null };
         setScreen(state, SCREENS.COMMERCIAL_SUBMIT, event);
         break;
       case EVENTS.COMMERCIAL_SUBMIT_STARTED:
-        if (state.commercial.submission.status === SUBMISSION.UNKNOWN) throw new Error("SUBMISSION_RETRY_BLOCKED");
-        if (!payload.submissionAttemptId || !payload.idempotencyKey) throw new Error("MISSING_SUBMISSION_IDENTIFIERS");
-        state.commercial.submission = {
-          ...state.commercial.submission,
-          status: SUBMISSION.SUBMITTING,
-          submissionAttemptId: payload.submissionAttemptId,
-          idempotencyKey: payload.idempotencyKey,
-          lastErrorCode: null
-        };
+        if ([SUBMISSION.UNKNOWN, SUBMISSION.CONFIRMED, SUBMISSION.SUBMITTING].includes(state.commercial.submission.status)) throw new Error("SUBMISSION_RETRY_BLOCKED");
+        if (!state.commercial.submission.submissionAttemptId || !state.commercial.submission.idempotencyKey || !state.commercial.submission.payloadSnapshot) throw new Error("MISSING_SUBMISSION_IDENTIFIERS");
+        state.commercial.submission.status = SUBMISSION.SUBMITTING;
+        state.commercial.submission.lastErrorCode = null;
         break;
       case EVENTS.COMMERCIAL_SUBMIT_CONFIRMED:
         if (!payload.serverReference) throw new Error("MISSING_SERVER_REFERENCE");
@@ -369,41 +444,44 @@
         state.commercial.submission.status = SUBMISSION.UNKNOWN;
         state.commercial.submission.lastErrorCode = payload.errorCode || "SUBMISSION_UNKNOWN";
         break;
+      case EVENTS.CATALOG_SELECTION_ORPHANED:
+        state.session.status = "CATALOG_ORPHANED_SELECTION";
+        state.session.orphanEmployeeId = String(payload.employeeId || state.configuration.employeeId || state.recommendation?.employeeId || "").slice(0, 80) || null;
+        state.recommendation = null;
+        state.configuration.employeeId = "";
+        state.configuration.mandatoryControls = [];
+        state.artifacts.prompt = null;
+        state.artifacts.readinessMap = null;
+        state.externalJourney.activeTestAttempt = null;
+        state.externalJourney.observations = [];
+        state.commercial.draft = null;
+        state.commercial.submission = resetSubmission();
+        setScreen(state, SCREENS.RESULTS, event);
+        break;
+      case EVENTS.CONNECTIVITY_EVIDENCE_CHANGED:
+        if (!Object.values(CONNECTIVITY).includes(payload.connectivityEvidence)) throw new Error("INVALID_CONNECTIVITY_EVIDENCE");
+        if (!Object.values(OFFLINE_READINESS).includes(payload.offlineReadiness)) throw new Error("INVALID_OFFLINE_READINESS");
+        state.externalState = { connectivityEvidence: payload.connectivityEvidence, offlineReadiness: payload.offlineReadiness, localAssetsReady: payload.localAssetsReady === true, updatedAt: nowIso() };
+        break;
+      case EVENTS.TAB_CONFLICT_DETECTED:
+        state.session.duplicateTabDetected = true;
+        state.session.status = "DUPLICATE_TAB_CONFLICT";
+        break;
       case EVENTS.BACK:
         if (!Object.values(SCREENS).includes(payload.screen)) throw new Error("INVALID_NAVIGATION_TARGET");
         setScreen(state, payload.screen, event);
         break;
       case EVENTS.RESET:
+        if (state.commercial.submission.status === SUBMISSION.UNKNOWN) throw new Error("SUBMISSION_RETRY_BLOCKED");
         return createInitialState();
       default:
         throw new Error("UNKNOWN_EVENT");
     }
 
+    state.journey.canonicalScreen = deriveCanonicalScreen(state);
+    state.journey.phase = phaseForScreen(state.journey.canonicalScreen);
+    state.session.resumeHintScreen = state.journey.canonicalScreen;
     return state;
-  };
-
-  const validateEnvelope = (value) => {
-    if (!value || typeof value !== "object") return false;
-    if (value.meta?.schemaVersion !== "1.0") return false;
-    if (!Number.isInteger(value.meta?.stateRevision) || value.meta.stateRevision < 0) return false;
-    if (!Object.values(SCREENS).includes(value.journey?.canonicalScreen)) return false;
-    if (!value.session?.sessionId || !value.meta?.tabInstanceId) return false;
-    return true;
-  };
-
-  const deriveCanonicalScreen = (state) => {
-    if (!validateEnvelope(state)) return SCREENS.ENTRY;
-    const requested = state.journey.canonicalScreen;
-    if ([SCREENS.SCENARIO, SCREENS.OBSERVATION, SCREENS.TEST_SUMMARY].includes(requested)) {
-      if (state.externalJourney.activeTestAttempt?.status !== "USER_DECLARED_PROMPT_SENT" &&
-          state.externalJourney.activeTestAttempt?.status !== "USER_DECLARED_TEST_EXECUTED" &&
-          state.externalJourney.activeTestAttempt?.status !== "OBSERVATION_RECORDED") return SCREENS.RETURN;
-    }
-    if ([SCREENS.READINESS, SCREENS.DECISION, SCREENS.FREE_PATH, SCREENS.COMMERCIAL_SCOPE, SCREENS.COMMERCIAL_CONTACT, SCREENS.COMMERCIAL_SUBMIT].includes(requested) &&
-        !state.artifacts.prompt) return SCREENS.REVIEW;
-    if ([SCREENS.DECISION, SCREENS.FREE_PATH, SCREENS.COMMERCIAL_SCOPE, SCREENS.COMMERCIAL_CONTACT, SCREENS.COMMERCIAL_SUBMIT].includes(requested) &&
-        state.artifacts.readinessMap?.status !== "CURRENT") return SCREENS.READINESS;
-    return requested;
   };
 
   window.PredixJourneyContracts = Object.freeze({
@@ -413,10 +491,13 @@
     EVENTS,
     READINESS,
     SUBMISSION,
+    CONNECTIVITY,
+    OFFLINE_READINESS,
     createInitialState,
     transition,
     validateEnvelope,
     deriveCanonicalScreen,
+    validateObservation,
     randomId,
     clone
   });
