@@ -2,22 +2,39 @@
   "use strict";
 
   const contracts = window.PredixJourneyContracts;
+  if (!contracts) throw new Error("JOURNEY_CONTRACTS_REQUIRED");
+
   const list = (items) => items.map((item) => `- ${item}`).join("\n");
   const clean = (value, fallback = "Não informado") => {
     const text = String(value || "").trim();
     return text || fallback;
   };
 
+  const stableNormalize = (value) => {
+    if (Array.isArray(value)) return value.map(stableNormalize);
+    if (value && typeof value === "object") {
+      return Object.keys(value).sort().reduce((result, key) => {
+        if (value[key] !== undefined) result[key] = stableNormalize(value[key]);
+        return result;
+      }, {});
+    }
+    return value;
+  };
+
+  const stableStringify = (value) => JSON.stringify(stableNormalize(value));
+
   const simpleHash = async (text) => {
-    if (crypto?.subtle) {
+    if (globalThis.crypto?.subtle) {
       const bytes = new TextEncoder().encode(text);
-      const digest = await crypto.subtle.digest("SHA-256", bytes);
+      const digest = await globalThis.crypto.subtle.digest("SHA-256", bytes);
       return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
     }
     let hash = 2166136261;
     for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
     return (hash >>> 0).toString(16).padStart(8, "0");
   };
+
+  const hashPayload = async (payloadWithoutHash) => simpleHash(stableStringify(payloadWithoutHash));
 
   const containsRuleConflict = (text) => {
     const normalized = String(text || "").toLowerCase();
@@ -28,7 +45,9 @@
       /responda qualquer informação/,
       /invente/,
       /revele (senha|token|segredo)/,
-      /substitua (os )?controles/
+      /substitua (os )?controles/,
+      /remova (os )?controles/,
+      /não peça aprovação humana/
     ];
     return patterns.some((pattern) => pattern.test(normalized));
   };
@@ -41,19 +60,20 @@
       financeiro: ["agente-financeiro", "agente-cobranca"]
     };
     const candidates = objectiveMap[answers.objectiveId] || ["assistente-administrativo"];
-    const employeeId = candidates[0];
-    const alternativeIds = candidates.slice(1);
-    const employee = catalog.employees.find((item) => item.id === employeeId) || catalog.employees[0];
+    const available = candidates.filter((id) => catalog.employees.some((item) => item.id === id));
+    const employee = catalog.employees.find((item) => item.id === available[0]) || catalog.employees[0];
+    if (!employee) throw new Error("CATALOG_HAS_NO_EMPLOYEE");
     return {
       recommendationId: contracts.randomId("recommendation"),
       employeeId: employee.id,
-      alternativeIds,
+      alternativeIds: available.slice(1),
       appliedRules: [
         `objective:${answers.objectiveId}`,
         `segment:${answers.segment || "não informado"}`,
         `process:${answers.processModeId || "não informado"}`
       ],
       explanation: `A configuração ${employee.nome} foi relacionada ao objetivo informado, ao processo atual e aos resultados escolhidos.`,
+      catalogVersion: catalog.catalogVersion,
       createdAt: new Date().toISOString()
     };
   };
@@ -127,7 +147,7 @@ Antes de iniciar cada tarefa, confirme se ela está dentro das responsabilidades
       promptVersion: state.versions.promptVersion + 1,
       content,
       contentHash,
-      dependencyHash: await simpleHash(JSON.stringify({
+      dependencyHash: await simpleHash(stableStringify({
         configurationVersion: state.versions.configurationVersion,
         humanControlVersion: state.versions.humanControlVersion,
         authorizedContentVersion: state.versions.authorizedContentVersion,
@@ -193,6 +213,8 @@ Antes de iniciar cada tarefa, confirme se ela está dentro das responsabilidades
     generatePromptArtifact,
     buildReadinessMap,
     containsRuleConflict,
-    simpleHash
+    simpleHash,
+    stableStringify,
+    hashPayload
   });
 })();
