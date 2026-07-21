@@ -190,7 +190,7 @@ builder=Path('assets/js/employee-builder.js').read_text(encoding='utf-8')
 contracts=Path('assets/js/journey-contracts.js').read_text(encoding='utf-8')
 required_builder=[
  'payloadSnapshot','response.status >= 500','COMMERCIAL_SUBMIT_UNKNOWN','MANUAL_COPY_REQUIRED','confirm-manual-copy',
- 'historyPayload','popstate','BroadcastChannel','OFFLINE_READY','CATALOG_SELECTION_ORPHANED','READINESS_PREPARED','COMMERCIAL_PATH_SELECTED'
+ 'historyPayload','popstate','BroadcastChannel','CATALOG_SELECTION_ORPHANED','READINESS_PREPARED','COMMERCIAL_PATH_SELECTED'
 ]
 for marker in required_builder:
     if marker not in builder: raise SystemExit(f'hardening marker missing: {marker}')
@@ -200,7 +200,7 @@ for forbidden in [
  'state = C.transition(state, C.EVENTS.BACK, { screen: C.SCREENS.COMMERCIAL_SCOPE })'
 ]:
     if forbidden in builder: raise SystemExit(f'direct UI mutation remains: {forbidden}')
-for marker in ['PROMPT_COPY_REQUIRED','CONTRADICTORY_OBSERVATION','TAB_CONFLICT_DETECTED','CONNECTIVITY_EVIDENCE_CHANGED']:
+for marker in ['PROMPT_COPY_REQUIRED','CONTRADICTORY_OBSERVATION','TAB_CONFLICT_DETECTED','CONNECTIVITY_EVIDENCE_CHANGED','OFFLINE_READY','OFFLINE_PARTIAL','OFFLINE_NOT_READY']:
     if marker not in contracts: raise SystemExit(f'contract marker missing: {marker}')
 print('K77_EXACT_PAYLOAD_PREVIEW=PASS')
 print('K77_HTTP_5XX_UNKNOWN=PASS')
