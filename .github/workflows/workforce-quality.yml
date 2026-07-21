@@ -14,7 +14,9 @@ jobs:
       - name: Preparar validadores
         run: chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
       - name: Validar sintaxe do gerador
-        run: bash scripts/validate_employee_builder.sh syntax
+        run: |
+          bash scripts/validate_employee_builder.sh syntax
+          node --check assets/js/employee-builder-ux.js
       - name: Validar catálogo e HTML do gerador
         run: bash scripts/validate_employee_builder.sh contract
       - name: Validar geração de prompt e diagnóstico
@@ -29,6 +31,7 @@ jobs:
           grep -q 'href="/predixai-brand/solucoes/workforce/"' dist/index.html
           grep -q 'href="/predixai-brand/funcionario-ia-gratis/"' dist/index.html
           grep -q 'src="/predixai-brand/assets/js/employee-builder.js"' dist/funcionario-ia-gratis/index.html
+          grep -q 'src="/predixai-brand/assets/js/employee-builder-ux.js"' dist/funcionario-ia-gratis/index.html
           grep -q 'href="/predixai-brand/validacao/' dist/index.html
           echo 'GITHUB_PAGES_SECONDARY=PASS'
       - name: Garantir ausência de credenciais administrativas
