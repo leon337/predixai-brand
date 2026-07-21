@@ -38,6 +38,28 @@ const uniqueStrings = (value, maxItems, maxLength) => Array.isArray(value)
   ? [...new Set(value.map((item) => clean(item, maxLength)).filter(Boolean))].slice(0, maxItems)
   : [];
 
+const stableNormalize = (value) => {
+  if (Array.isArray(value)) return value.map(stableNormalize);
+  if (value && typeof value === "object") {
+    return Object.keys(value).sort().reduce((result, key) => {
+      if (value[key] !== undefined) result[key] = stableNormalize(value[key]);
+      return result;
+    }, {});
+  }
+  return value;
+};
+const stableStringify = (value) => JSON.stringify(stableNormalize(value));
+const sha256 = (text) => createHash("sha256").update(text).digest("hex");
+const fnv1a = (text) => {
+  let hash = 2166136261;
+  for (const char of text) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
+  return (hash >>> 0).toString(16).padStart(8, "0");
+};
+const expectedPayloadHash = (payload, suppliedHash) => {
+  const canonical = stableStringify(payload);
+  return suppliedHash.length === 8 ? fnv1a(canonical) : sha256(canonical);
+};
+
 const header = (request, name) => {
   const value = request.headers?.[name];
   return Array.isArray(value) ? value[0] : String(value || "");
@@ -146,7 +168,7 @@ const normalizeK6 = (body) => {
   const submissionAttemptId = clean(body.submission_attempt_id, 160);
   const idempotencyKey = clean(body.idempotency_key, 160);
   const payloadHash = clean(body.payload_hash, 64).toLowerCase();
-  const selectedScope = uniqueStrings(body.selected_technical_scope, 6, 80);
+  const selectedScope = uniqueStrings(body.selected_technical_scope, 6, 80).sort();
   const readinessSummary = Array.isArray(body.readiness_summary) ? body.readiness_summary.slice(0, 12) : [];
 
   if (submissionAttemptId.length < 8) throw new Error("INVALID_SUBMISSION_ATTEMPT");
@@ -162,19 +184,22 @@ const normalizeK6 = (body) => {
       throw new Error("INVALID_READINESS_SUMMARY");
     }
     return { capabilityId, classification };
-  });
+  }).sort((a, b) => a.capabilityId.localeCompare(b.capabilityId));
 
-  return {
-    ...common,
+  const canonicalWithoutHash = {
     schema_version: "2.0",
     submission_attempt_id: submissionAttemptId,
     idempotency_key: idempotencyKey,
-    payload_hash: payloadHash,
+    ...common,
     selected_technical_scope: selectedScope,
     readiness_summary: safeReadiness,
     consent_version: clean(body.consent_version, 40) || "1.0",
     privacy_notice_version: clean(body.privacy_notice_version, 40) || "4.0"
   };
+  const recomputed = expectedPayloadHash(canonicalWithoutHash, payloadHash);
+  if (recomputed !== payloadHash) throw new Error("PAYLOAD_HASH_MISMATCH");
+
+  return { ...canonicalWithoutHash, payload_hash: payloadHash };
 };
 
 const statusFor = (code) => code === "RATE_LIMIT" ? 429 :
@@ -182,6 +207,7 @@ const statusFor = (code) => code === "RATE_LIMIT" ? 429 :
   code === "ORIGIN_NOT_ALLOWED" ? 403 :
   code === "SERVICE_CONFIG_MISSING" ? 503 :
   code === "JSON_REQUIRED" ? 415 :
+  code === "PAYLOAD_HASH_MISMATCH" ? 409 :
   422;
 
 module.exports = async function handler(request, response) {
@@ -231,7 +257,7 @@ module.exports = async function handler(request, response) {
         [["api","key"].join("")]: publicToken,
         [["author","ization"].join("")]: ["Bear","er "].join("") + publicToken,
         "content-type": "application/json",
-        "x-client-info": "predixai-brand-site/4.0",
+        "x-client-info": "predixai-brand-site/4.1",
         "x-predixai-fingerprint": fingerprint(request)
       },
       body: JSON.stringify({ payload }),
@@ -246,10 +272,11 @@ module.exports = async function handler(request, response) {
       const message = typeof data === "object" && data ? String(data.message || data.error || "") : String(data || "");
       const known = [
         "RATE_LIMIT","SPAM_DETECTED","CONSENT_REQUIRED","IDEMPOTENCY_CONFLICT",
-        "INVALID_PAYLOAD","UNKNOWN_FIELDS","INVALID_TECHNICAL_SCOPE"
+        "INVALID_PAYLOAD","UNKNOWN_FIELDS","INVALID_TECHNICAL_SCOPE","PAYLOAD_HASH_MISMATCH"
       ].find((code) => message.includes(code));
       console.error("Lead API upstream rejection", { status: upstream.status, code: known || "UPSTREAM_REJECTED", rpc });
-      return response.status(known === "RATE_LIMIT" ? 429 : 422).json({ ok: false, error: known || "VALIDATION_REJECTED" });
+      if (upstream.status >= 500) return response.status(503).json({ ok: false, error: "UPSTREAM_UNAVAILABLE" });
+      return response.status(known === "RATE_LIMIT" ? 429 : known === "IDEMPOTENCY_CONFLICT" ? 409 : 422).json({ ok: false, error: known || "VALIDATION_REJECTED" });
     }
 
     const leadId = typeof data === "string" ? data : data?.id || data?.lead_id || null;
@@ -272,3 +299,5 @@ module.exports = async function handler(request, response) {
 module.exports.normalizeLegacy = normalizeLegacy;
 module.exports.normalizeK6 = normalizeK6;
 module.exports.allowedOrigin = allowedOrigin;
+module.exports.stableStringify = stableStringify;
+module.exports.expectedPayloadHash = expectedPayloadHash;
