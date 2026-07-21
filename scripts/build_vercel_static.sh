@@ -16,6 +16,8 @@ for required in \
   assets/css/workforce-base.css \
   assets/css/home-commercial.css \
   assets/css/employee-builder.css \
+  assets/js/journey-contracts.js \
+  assets/js/state-store.js \
   assets/js/employee-builder.js \
   assets/js/prompt-generator.js \
   assets/data/ai-employees.json \
@@ -28,7 +30,8 @@ for marker in 'PredixAI Workforce' 'id="como-funciona"' 'id="departamentos"' 'id
 grep -q 'workforce-base.css' "${DIST_DIR}/assets/css/workforce.css"||fail "importação CSS base ausente"
 if grep -q 'home-commercial.css' "${DIST_DIR}/assets/css/workforce.css";then fail "estilos exclusivos da Home carregados nas páginas internas";fi
 grep -q 'Plataforma de Funcionários de IA' "${DIST_DIR}/solucoes/workforce/index.html"||fail "página Workforce inválida"
-grep -q 'data-employee-builder' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "gerador de funcionário ausente"
+grep -q 'data-k6-app' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "jornada K6 ausente"
+grep -q 'journey-contracts.js' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "contratos K6 ausentes"
 grep -q '/funcionario-ia-gratis/' "${DIST_DIR}/sitemap.xml"||fail "Funcionário de IA Grátis ausente do sitemap"
 for forbidden in docs reports .github api supabase PROJECT_STATE.md predixai_context.json README.md .git .env .env.local;do [[ ! -e "${DIST_DIR}/${forbidden}" ]]||fail "arquivo proibido em dist/: ${forbidden}";done
 sensitive="$({ find "${DIST_DIR}" -type f \( -name '.env*' -o -name '*.pem' -o -name '*.key' -o -iname '*credential*' -o -iname '*secret*' -o -iname '*token*' \) -print -quit; }||true)";[[ -z "${sensitive}" ]]||fail "possível arquivo sensível: ${sensitive#${ROOT_DIR}/}"
