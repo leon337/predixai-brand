@@ -134,7 +134,7 @@ run_privacy(){
       exit 1
     fi
   done
-  if grep -En -- 'sk-[A-Za-z0-9_-]{20,}|sb_secret_|SUPABASE_SERVICE_ROLE' "${files[@]}"; then
+  if grep -En -- 'sk-[A-Za-z0-9_-]{20,}|sb[_]secret_|SUPABASE[_]SERVICE[_]ROLE' "${files[@]}"; then
     echo 'possible secret found in K6 delivery' >&2
     exit 1
   fi
