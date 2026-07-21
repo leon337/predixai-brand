@@ -1,0 +1,108 @@
+@layer components {
+  body.employee-builder-page.page-shell {
+    padding-top: 0;
+  }
+
+  .employee-builder-page,
+  .k6-root,
+  .k6-shell {
+    min-height: 100dvh;
+  }
+
+  .k6-shell {
+    padding-block-start: clamp(8px, 1.5vw, 14px);
+  }
+
+  .k6-card h1 {
+    max-inline-size: 20ch;
+    font-size: clamp(1.9rem, calc(1.35rem + 2.6vw), 3.2rem);
+    line-height: 1.02;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: balance;
+  }
+
+  .k6-hero-card {
+    min-height: auto;
+    align-content: start;
+  }
+
+  .k6-phase-nav li {
+    padding-inline: clamp(4px, 1vw, 10px);
+    font-size: clamp(.66rem, calc(.58rem + .35vw), .82rem);
+  }
+
+  .k6-option-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  }
+
+  .k6-action-bar {
+    position: static;
+  }
+
+  @media (max-width: 760px) {
+    .k6-shell {
+      padding: 8px 10px max(22px, env(safe-area-inset-bottom));
+    }
+
+    .k6-app-header {
+      min-height: 52px;
+    }
+
+    .k6-card {
+      padding: clamp(16px, 4.5vw, 20px);
+    }
+
+    .k6-card h1 {
+      max-inline-size: none;
+      font-size: clamp(1.72rem, 7.4vw, 2.3rem);
+      line-height: 1.04;
+      letter-spacing: -.035em;
+    }
+
+    .k6-card h2 {
+      font-size: clamp(1.15rem, 4.8vw, 1.5rem);
+    }
+
+    .k6-phase-nav {
+      margin: 8px 0 10px;
+    }
+
+    .k6-phase-nav ol {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .k6-phase-nav li {
+      min-height: 36px;
+      padding: 6px 3px;
+      gap: 3px;
+      font-size: clamp(.58rem, 2.35vw, .7rem);
+      white-space: nowrap;
+    }
+
+    .k6-option-grid {
+      margin-top: 16px;
+      gap: 8px;
+    }
+
+    .k6-option {
+      min-height: 54px;
+    }
+
+    .k6-option span {
+      padding: 12px 13px;
+    }
+
+    .k6-action-bar {
+      margin-top: 12px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .k6-option span,
+    .button {
+      transition: none;
+    }
+  }
+}
