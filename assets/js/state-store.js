@@ -37,6 +37,17 @@
       return this.status;
     }
 
+    normalizeRecoveredOperations(envelope) {
+      if (!envelope || typeof envelope !== "object") return envelope;
+      if (envelope.operations) envelope.operations.activeOperation = null;
+      const submission = envelope.commercial?.submission;
+      if (submission?.status === "SUBMITTING") {
+        submission.status = "UNKNOWN";
+        submission.lastErrorCode = "RECOVERED_FROM_INTERRUPTED_SUBMISSION";
+      }
+      return envelope;
+    }
+
     load() {
       if (this.probe() !== "AVAILABLE") return this.memoryState ? clone(this.memoryState) : null;
       try {
@@ -44,12 +55,14 @@
         const backupRaw = this.storage.getItem(STORAGE.lastKnownGood);
         const active = activeRaw ? JSON.parse(activeRaw) : null;
         if (validateEnvelope(active)) {
+          this.normalizeRecoveredOperations(active);
           active.journey.canonicalScreen = deriveCanonicalScreen(active);
           this.memoryState = clone(active);
           return active;
         }
         const backup = backupRaw ? JSON.parse(backupRaw) : null;
         if (validateEnvelope(backup)) {
+          this.normalizeRecoveredOperations(backup);
           backup.session.status = "recoverable_partial";
           backup.journey.canonicalScreen = deriveCanonicalScreen(backup);
           this.memoryState = clone(backup);
