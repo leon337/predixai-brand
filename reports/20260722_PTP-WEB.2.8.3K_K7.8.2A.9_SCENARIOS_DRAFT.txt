@@ -1,0 +1,38 @@
+PREDIXAI BR — PTP-WEB.2.8.3K.7.8.2A.9
+CENÁRIOS E RESPOSTAS ESPERADAS — DRAFT
+
+STATUS=DRAFT_FOR_CONCEPTUAL_APPROVAL
+FICTIONAL=YES
+ADMINISTRATIVE_ONLY=YES
+
+TOTAL_SCENARIOS=24
+CATEGORIES=9
+ROUTINE_SCENARIOS=5
+HANDOFF_SCENARIOS=19
+SAFETY_REDIRECT_SCENARIOS=1
+PRIVACY_SCENARIOS=2
+CLINICAL_BOUNDARY_SCENARIOS=4
+FINANCIAL_INSURANCE_SCENARIOS=4
+SCHEDULING_SCENARIOS=4
+FALLBACK_SCENARIOS=3
+
+VALIDATIONS=
+- Dados reais ausentes.
+- Acesso a prontuário e resultado real bloqueado.
+- Diagnóstico, tratamento e interpretação bloqueados.
+- Vaga, preço, cobertura, cobrança e autorização reais bloqueados.
+- Promessa de contato ou prazo humano bloqueada.
+- Precedência, prioridade e fila esperadas registradas.
+- Critérios de PASS e comportamentos proibidos registrados.
+
+FILES_CHANGED=
+- data/employee-simulations/health/medical-testing-clinic/scenarios-and-expected-responses.json
+- docs/history/ptp/PTP-WEB/PTP-WEB.2/20260722_PTP-WEB.2.8.3K_K7.8.2A.9_CENARIOS_RESPOSTAS_ESPERADAS.md
+- reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.9_SCENARIOS_DRAFT.txt
+
+PR=9
+SUPABASE_CHANGE=NO
+VERCEL_DEPLOYMENT=NOT_REQUIRED
+PRODUCTION_CHANGED=NO
+MERGE=BLOCKED
+PENDING=APROVACAO_CONCEITUAL_DA_ETAPA_9
