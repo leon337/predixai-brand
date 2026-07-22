@@ -1,0 +1,220 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "operationsId": "health-medical-testing-clinic-aurora-units-hours-channels",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os endereços, horários, canais, contatos e disponibilidades deste arquivo são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "administrativeOnly": true,
+    "realLocationLookup": false,
+    "realOpeningStatusLookup": false,
+    "realQueueLookup": false,
+    "realChannelIntegration": false
+  },
+  "timezone": "America/Recife",
+  "units": [
+    {
+      "id": "aurora-recife-centro",
+      "name": "Clínica Aurora — Unidade Recife Centro",
+      "type": "primary_unit",
+      "typeLabel": "Unidade principal",
+      "publicAccess": true,
+      "address": {
+        "street": "Avenida das Palmeiras, 120",
+        "district": "Boa Vista",
+        "city": "Recife",
+        "state": "PE",
+        "postalCode": "50000-000",
+        "country": "Brasil",
+        "fictional": true,
+        "displayText": "Avenida das Palmeiras, 120, Boa Vista, Recife/PE — endereço fictício"
+      },
+      "servicesSummary": [
+        "Análises laboratoriais fictícias",
+        "Exames cardiológicos fictícios",
+        "Exames de imagem fictícios",
+        "Atendimento ocupacional fictício"
+      ],
+      "accessibilitySummary": "A unidade fictícia possui acesso em nível, recepção sinalizada e atendimento prioritário conforme confirmação humana.",
+      "parkingSummary": "Disponibilidade de estacionamento não é confirmada pelo agente e deve ser verificada com a equipe humana.",
+      "locationConfirmationRequired": true
+    },
+    {
+      "id": "aurora-boa-viagem",
+      "name": "Clínica Aurora — Unidade Boa Viagem",
+      "type": "satellite_unit",
+      "typeLabel": "Unidade de apoio",
+      "publicAccess": true,
+      "address": {
+        "street": "Rua do Sol Nascente, 45",
+        "district": "Boa Viagem",
+        "city": "Recife",
+        "state": "PE",
+        "postalCode": "51000-000",
+        "country": "Brasil",
+        "fictional": true,
+        "displayText": "Rua do Sol Nascente, 45, Boa Viagem, Recife/PE — endereço fictício"
+      },
+      "servicesSummary": [
+        "Coletas laboratoriais fictícias",
+        "Ultrassonografias fictícias selecionadas",
+        "Atendimento administrativo"
+      ],
+      "limitations": [
+        "Nem todos os serviços do catálogo estão disponíveis nesta unidade fictícia.",
+        "Serviço, profissional, equipamento e horário devem ser confirmados por uma pessoa."
+      ],
+      "accessibilitySummary": "Acessibilidade e recursos específicos devem ser confirmados pelo atendimento humano.",
+      "parkingSummary": "Disponibilidade de estacionamento não é confirmada pelo agente.",
+      "locationConfirmationRequired": true
+    }
+  ],
+  "hours": {
+    "generalCustomerService": {
+      "label": "Atendimento administrativo geral",
+      "weeklySchedule": [
+        { "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "displayDays": "Segunda a sexta-feira", "opensAt": "07:00", "closesAt": "18:00" },
+        { "days": ["saturday"], "displayDays": "Sábado", "opensAt": "07:00", "closesAt": "12:00" },
+        { "days": ["sunday"], "displayDays": "Domingo", "closed": true }
+      ],
+      "publicMessage": "No cenário fictício, o atendimento administrativo funciona de segunda a sexta, das 7h às 18h, e aos sábados, das 7h às 12h. Feriados e alterações exigem confirmação humana."
+    },
+    "serviceWindows": [
+      {
+        "id": "laboratory_collection",
+        "label": "Coletas laboratoriais fictícias",
+        "unitIds": ["aurora-recife-centro", "aurora-boa-viagem"],
+        "weeklySchedule": [
+          { "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "displayDays": "Segunda a sexta-feira", "opensAt": "06:30", "closesAt": "15:00" },
+          { "days": ["saturday"], "displayDays": "Sábado", "opensAt": "07:00", "closesAt": "11:00" }
+        ],
+        "confirmationRequiredFor": ["preparo", "ordem de chegada", "coleta no mesmo dia", "serviço específico", "feriados"]
+      },
+      {
+        "id": "imaging_schedule",
+        "label": "Exames de imagem fictícios",
+        "unitIds": ["aurora-recife-centro", "aurora-boa-viagem"],
+        "weeklySchedule": [
+          { "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "displayDays": "Segunda a sexta-feira", "opensAt": "08:00", "closesAt": "17:00" }
+        ],
+        "appointmentRequired": true,
+        "confirmationRequiredFor": ["tipo de exame", "unidade", "profissional", "equipamento", "preparo", "vaga"]
+      },
+      {
+        "id": "cardiology_schedule",
+        "label": "Exames cardiológicos fictícios",
+        "unitIds": ["aurora-recife-centro"],
+        "weeklySchedule": [
+          { "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "displayDays": "Segunda a sexta-feira", "opensAt": "08:00", "closesAt": "16:00" }
+        ],
+        "appointmentRequired": true,
+        "confirmationRequiredFor": ["equipamento", "profissional", "instalação", "devolução", "vaga"]
+      },
+      {
+        "id": "occupational_service",
+        "label": "Atendimento ocupacional fictício",
+        "unitIds": ["aurora-recife-centro"],
+        "weeklySchedule": [
+          { "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "displayDays": "Segunda a sexta-feira", "opensAt": "08:00", "closesAt": "17:00" }
+        ],
+        "appointmentRequired": true,
+        "confirmationRequiredFor": ["quantidade de pessoas", "tipo de serviço", "documentos", "capacidade", "agenda em lote"]
+      }
+    ],
+    "exceptionPolicy": {
+      "holidaysAutomaticallyKnown": false,
+      "temporaryChangesAutomaticallyKnown": false,
+      "sameDayOpeningStatusAvailable": false,
+      "publicMessage": "Feriados, recessos, manutenção, indisponibilidade de equipamento e mudanças temporárias devem ser confirmados pela equipe humana."
+    }
+  },
+  "channels": [
+    {
+      "id": "whatsapp_demo",
+      "type": "whatsapp",
+      "label": "WhatsApp fictício",
+      "displayValue": "(81) 00000-0000 — fictício",
+      "contactValue": null,
+      "availableInDemo": true,
+      "realIntegration": false,
+      "supportedUses": ["dúvidas administrativas", "triagem", "pedido de encaminhamento"],
+      "notSupported": ["confirmação automática de vaga", "envio real de resultado", "consulta de prontuário", "pagamento"]
+    },
+    {
+      "id": "phone_demo",
+      "type": "phone",
+      "label": "Telefone fictício",
+      "displayValue": "(81) 0000-0000 — fictício",
+      "contactValue": null,
+      "availableInDemo": true,
+      "realIntegration": false,
+      "supportedUses": ["atendimento administrativo humano", "confirmações excepcionais"],
+      "notSupported": ["chamada real pelo agente", "confirmação automática de agenda"]
+    },
+    {
+      "id": "email_demo",
+      "type": "email",
+      "label": "E-mail fictício",
+      "displayValue": "atendimento@clinicaaurora.example",
+      "contactValue": null,
+      "availableInDemo": true,
+      "realIntegration": false,
+      "supportedUses": ["solicitações administrativas empresariais fictícias", "resumos simulados"],
+      "notSupported": ["envio real", "recebimento real", "documentos sensíveis"]
+    },
+    {
+      "id": "in_person",
+      "type": "in_person",
+      "label": "Atendimento presencial fictício",
+      "availableInDemo": true,
+      "realIntegration": false,
+      "supportedUses": ["recepção administrativa", "confirmação humana"],
+      "notSupported": ["garantia de atendimento sem confirmação", "priorização clínica automática"]
+    }
+  ],
+  "channelServicePolicy": {
+    "responseTimePromiseAllowed": false,
+    "automaticHumanAvailabilityLookup": false,
+    "outsideHoursMessage": "Recebi sua mensagem no ambiente fictício. O atendimento humano deve confirmar o retorno no próximo período administrativo disponível.",
+    "mandatoryDisclosures": [
+      "Os canais e contatos apresentados são fictícios.",
+      "Nenhuma mensagem, ligação ou e-mail real será enviado.",
+      "Horários e unidades podem ser personalizados antes da geração do prompt.",
+      "Disponibilidade no mesmo dia exige confirmação humana."
+    ]
+  },
+  "agentResponseRules": {
+    "whenAskedAboutHours": [
+      "Informar o horário fictício correspondente ao tipo de atendimento.",
+      "Diferenciar atendimento administrativo de janela de realização do serviço.",
+      "Alertar que feriados e alterações temporárias exigem confirmação humana."
+    ],
+    "whenAskedAboutLocation": [
+      "Informar somente endereços marcados como fictícios.",
+      "Perguntar qual serviço o cliente fictício procura para indicar a unidade compatível.",
+      "Não garantir que o serviço está disponível naquela unidade."
+    ],
+    "whenAskedAboutChannels": [
+      "Explicar quais canais existem no cenário fictício.",
+      "Não afirmar que enviou mensagem, realizou ligação ou consultou caixa de entrada.",
+      "Encaminhar para uma pessoa quando a solicitação exigir confirmação."
+    ],
+    "mandatoryHumanConfirmationTriggers": [
+      "feriado, recesso ou alteração temporária",
+      "disponibilidade no mesmo dia",
+      "serviço em unidade específica",
+      "acessibilidade específica",
+      "estacionamento",
+      "equipamento ou profissional",
+      "situação de urgência ou risco"
+    ]
+  },
+  "deferredToLaterSteps": {
+    "schedulingAndCancellationRules": "step_5",
+    "paymentsAndInsurance": "step_6",
+    "frequentlyAskedQuestions": "step_7",
+    "humanHandoffWorkflow": "step_8"
+  }
+}
