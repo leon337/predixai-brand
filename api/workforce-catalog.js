@@ -249,6 +249,20 @@ const sendDocument = (request, response, document) => {
   return response.status(200).json(document);
 };
 
+const sendIntegrityFailure = (response, packageId, contentVersion) => {
+  response.setHeader("Cache-Control", "no-store");
+  response.setHeader("X-PredixAI-Catalog-Source", "supabase_published_package");
+  return response.status(409).json({
+    packageId,
+    contentVersion,
+    source: "supabase_published_package",
+    status: "NOT_READY",
+    payload: null,
+    checksum: null,
+    error: "PACKAGE_INTEGRITY_FAILED"
+  });
+};
+
 module.exports = async function handler(request, response) {
   const origin = setCommonHeaders(request, response);
   if (origin === false) {
@@ -299,7 +313,11 @@ module.exports = async function handler(request, response) {
   try {
     const document = await readPublishedPackage(packageId, contentVersion, contract);
     return sendDocument(request, response, document);
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message === "PACKAGE_INTEGRITY_FAILED") {
+      return sendIntegrityFailure(response, packageId, contentVersion);
+    }
+
     try {
       const fallback = buildFallbackDocument(packageId, contentVersion, contract);
       return sendDocument(request, response, fallback);
