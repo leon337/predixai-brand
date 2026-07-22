@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "stepId": "K.7.8.2A.12",
+  "status": "published_pending_conceptual_approval",
+  "packageId": "health-medical-testing-clinic-aurora",
+  "contentVersion": "0.1.0",
+  "fictional": true,
+  "supabase": {
+    "projectId": "vcmvdmxmkmekcurcfdze",
+    "table": "public.workforce_catalog_packages",
+    "auditTable": "private.workforce_catalog_publication_audit",
+    "rowStatus": "published",
+    "publishedAt": "2026-07-22T15:36:32.373607Z",
+    "checksumAlgorithm": "sha256",
+    "checksumSha256": "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69"
+  },
+  "source": {
+    "repository": "leon337/predixai-brand",
+    "branch": "ptp-web-2-workforce-k6-questionnaire-r2",
+    "commitSha": "86a9ce55ec82938fd8c383e6f8227aeb76a06dd9",
+    "pullRequest": 9,
+    "approvalReference": "APROVO A K.7.8.2A.11 — CONTRATO JSON MESTRE"
+  },
+  "inventory": {
+    "servicesCategories": 4,
+    "services": 12,
+    "units": 2,
+    "channels": 4,
+    "faqItems": 24,
+    "handoffPriorities": 4,
+    "handoffQueues": 9,
+    "handoffLifecycleStates": 8,
+    "testScenarios": 24,
+    "promptSections": 13
+  },
+  "accessControl": {
+    "rlsEnabled": true,
+    "policies": 0,
+    "anonSelect": false,
+    "authenticatedSelect": false,
+    "serviceRoleSelect": true,
+    "directBrowserReadAllowed": false,
+    "directBrowserWriteAllowed": false,
+    "serviceRoleInBrowserAllowed": false
+  },
+  "validation": {
+    "allRequiredComponentsPresent": true,
+    "jsonSchemaValid": true,
+    "manifestValidAgainstSchema": true,
+    "crossComponentReferencesValid": true,
+    "expectedInventoryValid": true,
+    "safetyInvariantsValid": true,
+    "promptAlignmentValid": true,
+    "checksumGenerated": true,
+    "checksumRecomputed": true,
+    "checksumMatch": true
+  },
+  "remediation": {
+    "finding": "O uso de prefixItems com items=false no schema não foi aceito pelo pg_jsonschema 0.3.3.",
+    "resolution": "A propriedade sourcePriority passou a usar items com enum, minItems=2, maxItems=2 e uniqueItems=true; a ordem continua validada por invariante SQL explícita.",
+    "status": "PASS"
+  },
+  "runtime": {
+    "vercelApiImplemented": false,
+    "builderIntegrated": false,
+    "productionChanged": false,
+    "mergeBlocked": true
+  }
+}
