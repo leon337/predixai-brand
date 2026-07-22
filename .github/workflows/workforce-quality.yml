@@ -18,12 +18,15 @@ jobs:
           bash scripts/validate_employee_builder.sh syntax
           node --check assets/js/employee-builder-ux.js
           node --check api/workforce-catalog.js
+          node --check scripts/validate_workforce_catalog_api.js
       - name: Validar catálogo e HTML do gerador
         run: bash scripts/validate_employee_builder.sh contract
       - name: Validar geração de prompt e diagnóstico
         run: bash scripts/validate_employee_builder.sh runtime
       - name: Validar privacidade do gerador
         run: bash scripts/validate_employee_builder.sh privacy
+      - name: Validar API do catálogo Workforce
+        run: node scripts/validate_workforce_catalog_api.js
       - name: Validar Workforce e build estático
         run: bash scripts/validate_workforce.sh
       - name: Validar adaptação do GitHub Pages
