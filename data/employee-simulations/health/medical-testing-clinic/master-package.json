@@ -3,7 +3,7 @@
   "contentVersion": "0.1.0",
   "packageId": "health-medical-testing-clinic-aurora",
   "packageSlug": "health/medical-testing-clinic/aurora",
-  "status": "draft_for_review",
+  "status": "approved_for_publication",
   "fictional": true,
   "fictionalNotice": "Este pacote contém somente empresa, pessoas, serviços, contatos, agendas, pagamentos, convênios, cenários e registros fictícios para demonstração e teste.",
   "segment": {
@@ -196,7 +196,7 @@
       "package_checksum_generated"
     ],
     "checksumAlgorithm": "sha256",
-    "checksumStatus": "pending_step_12",
+    "checksumStatus": "verified",
     "serviceRoleInBrowserAllowed": false,
     "directBrowserWriteAllowed": false
   },
@@ -215,8 +215,8 @@
   },
   "review": {
     "requiresConceptualApproval": true,
-    "approved": false,
-    "approvedBy": null,
-    "approvedAt": null
+    "approved": true,
+    "approvedBy": "Leo",
+    "approvedAt": "2026-07-22 15:36:32.373607+00"
   }
 }
