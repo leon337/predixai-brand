@@ -1,0 +1,214 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "policyId": "health-medical-testing-clinic-aurora-payments-insurance",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os preços, formas de pagamento, convênios, coberturas, autorizações e protocolos deste pacote são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "administrativeOnly": true,
+    "realPaymentAllowed": false,
+    "realChargeAllowed": false,
+    "realRefundAllowed": false,
+    "realInsuranceEligibilityLookup": false,
+    "realPreauthorizationAllowed": false,
+    "externalBillingIntegration": false,
+    "cardDataCollectionAllowed": false,
+    "bankingDataCollectionAllowed": false,
+    "agentMayPrepareQuoteRequest": true,
+    "agentMayConfirmFinalPrice": false,
+    "agentMayConfirmCoverage": false
+  },
+  "quoteLifecycle": [
+    {
+      "id": "quote_requested",
+      "label": "Orçamento solicitado",
+      "description": "O Atendente de IA registrou uma solicitação fictícia de informação financeira."
+    },
+    {
+      "id": "awaiting_human_validation",
+      "label": "Aguardando validação humana",
+      "description": "Uma pessoa deve validar serviço, valor, forma de pagamento e eventual cobertura fictícia."
+    },
+    {
+      "id": "simulated_quote_available",
+      "label": "Orçamento disponível no cenário simulado",
+      "description": "Estado fictício usado somente após validação humana simulada."
+    },
+    {
+      "id": "insurance_review_required",
+      "label": "Análise de convênio necessária",
+      "description": "Cobertura, carência, coparticipação e autorização dependem de confirmação humana."
+    },
+    {
+      "id": "payment_pending_simulated",
+      "label": "Pagamento pendente no cenário simulado",
+      "description": "Nenhuma cobrança real foi iniciada ou concluída."
+    },
+    {
+      "id": "closed_without_transaction",
+      "label": "Encerrado sem transação",
+      "description": "A solicitação fictícia foi encerrada sem pagamento, cobrança ou autorização real."
+    }
+  ],
+  "fictionalPaymentMethods": [
+    {
+      "id": "pix_simulated",
+      "label": "PIX fictício",
+      "availableFor": ["individual_services"],
+      "agentPublicMessage": "O cenário inclui PIX fictício, mas nenhuma chave, QR Code ou cobrança real será gerada."
+    },
+    {
+      "id": "debit_card_simulated",
+      "label": "Cartão de débito fictício",
+      "availableFor": ["individual_services"],
+      "agentPublicMessage": "O cenário inclui débito fictício. O Atendente de IA não solicita número, validade, código de segurança ou senha."
+    },
+    {
+      "id": "credit_card_simulated",
+      "label": "Cartão de crédito fictício",
+      "availableFor": ["individual_services"],
+      "agentPublicMessage": "O cenário inclui crédito fictício, sem captura de dados de cartão e sem parcelamento confirmado automaticamente."
+    },
+    {
+      "id": "corporate_invoice_simulated",
+      "label": "Faturamento empresarial fictício",
+      "availableFor": ["corporate_services"],
+      "agentPublicMessage": "Condições empresariais fictícias dependem de análise humana e não geram boleto, nota ou cobrança real."
+    }
+  ],
+  "pricingPolicy": {
+    "mode": "human_confirmation_required",
+    "publicPriceListEnabled": false,
+    "agentMayProvidePriceRange": false,
+    "agentMayApplyDiscount": false,
+    "agentMayNegotiate": false,
+    "agentMayPromiseInstallments": false,
+    "agentMayCalculateFinalTotal": false,
+    "allowedActions": [
+      "Identificar o serviço fictício solicitado.",
+      "Perguntar se o atendimento é particular ou por convênio fictício.",
+      "Registrar a forma de pagamento fictícia preferida.",
+      "Preparar um resumo para validação humana.",
+      "Informar que valor final, descontos e condições dependem de uma pessoa."
+    ],
+    "prohibitedActions": [
+      "Inventar preço, desconto, parcelamento ou prazo de pagamento.",
+      "Gerar cobrança, chave PIX, boleto, link ou QR Code.",
+      "Solicitar número de cartão, CVV, senha ou dados bancários.",
+      "Confirmar pagamento, estorno, reembolso ou compensação.",
+      "Afirmar que um valor foi lançado em sistema externo."
+    ],
+    "publicMessage": "Valores e condições são fictícios e precisam de validação humana antes de qualquer decisão."
+  },
+  "fictionalInsurancePlans": [
+    {
+      "id": "aurora_saude_basico",
+      "label": "Aurora Saúde Básico — fictício",
+      "status": "fictional_demo_only",
+      "coverageMode": "human_validation_required",
+      "authorizationMode": "may_be_required",
+      "publicMessage": "A presença deste convênio no cenário não confirma cobertura, autorização, rede, carência ou coparticipação."
+    },
+    {
+      "id": "vida_plena_regional",
+      "label": "Vida Plena Regional — fictício",
+      "status": "fictional_demo_only",
+      "coverageMode": "human_validation_required",
+      "authorizationMode": "may_be_required",
+      "publicMessage": "Cobertura e condições são simuladas e dependem de confirmação humana."
+    },
+    {
+      "id": "empresa_cuidar_ocupacional",
+      "label": "Empresa Cuidar Ocupacional — fictício",
+      "status": "fictional_demo_only",
+      "coverageMode": "corporate_contract_review_required",
+      "authorizationMode": "company_request_required",
+      "publicMessage": "Atendimentos ocupacionais fictícios dependem de contrato e solicitação empresarial simulados."
+    }
+  ],
+  "insuranceValidation": {
+    "agentMayReceivePlanName": true,
+    "agentMayConfirmAcceptedPlan": false,
+    "agentMayConfirmCoverage": false,
+    "agentMayConfirmCopayment": false,
+    "agentMayConfirmWaitingPeriod": false,
+    "agentMayRequestRealCardImage": false,
+    "agentMayRequestRealMemberNumber": false,
+    "allowedSimulationFields": [
+      {
+        "id": "fictional_plan_id",
+        "label": "Convênio fictício selecionado",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "service_id",
+        "label": "Serviço fictício solicitado",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "fictional_authorization_status",
+        "label": "Status fictício de autorização",
+        "dataClass": "simulation_state"
+      }
+    ],
+    "humanConfirmationRequiredFor": [
+      "Aceitação do convênio pela unidade.",
+      "Cobertura do exame ou serviço.",
+      "Carência, coparticipação e limite contratual.",
+      "Necessidade e validade de autorização.",
+      "Documentação exigida.",
+      "Reembolso e faturamento empresarial.",
+      "Qualquer divergência entre solicitação e catálogo."
+    ]
+  },
+  "refundAndDisputePolicy": {
+    "agentMayReceiveRequest": true,
+    "agentMayApproveRefund": false,
+    "agentMayIssueRefund": false,
+    "agentMayResolveChargeDispute": false,
+    "process": [
+      "Receber somente uma descrição administrativa e não sensível.",
+      "Informar que nenhuma análise financeira foi concluída.",
+      "Gerar resumo da solicitação fictícia.",
+      "Encaminhar para a equipe humana responsável.",
+      "Não prometer prazo, valor ou resultado."
+    ]
+  },
+  "forbiddenData": [
+    "número real de cartão",
+    "código de segurança",
+    "senha",
+    "token",
+    "chave PIX real",
+    "dados bancários",
+    "imagem de cartão de convênio real",
+    "número real de beneficiário",
+    "CPF ou documento real durante o teste",
+    "comprovante de pagamento real",
+    "nota fiscal real"
+  ],
+  "humanConfirmationTriggers": [
+    "Preço, desconto, parcelamento ou cobrança.",
+    "Aceitação e cobertura de convênio.",
+    "Autorização, carência ou coparticipação.",
+    "Reembolso, estorno ou contestação.",
+    "Atendimento empresarial ou faturamento em lote.",
+    "Informação ausente, contraditória ou fora do catálogo.",
+    "Qualquer solicitação de dado financeiro ou identificador real."
+  ],
+  "agentResponseTemplates": {
+    "quoteRequestReceived": "Registrei sua solicitação de orçamento no cenário fictício. O valor final e as condições precisam ser confirmados pela equipe humana.",
+    "paymentMethodQuestion": "O cenário inclui formas de pagamento fictícias, mas nenhuma cobrança será iniciada e nenhum dado financeiro deve ser enviado.",
+    "insuranceQuestion": "Posso registrar o convênio fictício informado, mas cobertura, autorização, carência e coparticipação dependem de confirmação humana.",
+    "refundRequest": "Registrei a solicitação fictícia para análise. Não posso aprovar, executar ou prometer estorno ou reembolso.",
+    "sensitiveDataWarning": "Não envie dados bancários, cartão, senha, token, documento ou comprovante real neste ambiente de teste."
+  },
+  "deferredToLaterSteps": {
+    "frequentlyAskedQuestions": "step_7",
+    "humanHandoffWorkflow": "step_8",
+    "testScenarios": "step_9",
+    "finalPrompt": "step_10"
+  }
+}
