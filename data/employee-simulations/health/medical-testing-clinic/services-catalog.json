@@ -1,0 +1,463 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "catalogId": "health-medical-testing-clinic-aurora-services",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os serviços, nomes, disponibilidades, documentos e exemplos deste catálogo são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "purpose": "Fornecer informações administrativas simuladas para o Atendente de IA da Clínica Aurora Diagnósticos.",
+    "administrativeOnly": true,
+    "clinicalAdviceAllowed": false,
+    "resultInterpretationAllowed": false,
+    "realAvailabilityLookup": false,
+    "realPricingLookup": false
+  },
+  "catalogPolicies": {
+    "pricePolicy": {
+      "mode": "human_confirmation_required",
+      "publicMessage": "Valores não são informados pelo ambiente fictício. A equipe humana deve confirmar preços, condições e formas de pagamento."
+    },
+    "availabilityPolicy": {
+      "mode": "simulated_by_confirmation",
+      "publicMessage": "A disponibilidade exibida é simulada. Datas, horários, unidade e capacidade devem ser confirmados por uma pessoa."
+    },
+    "preparationPolicy": {
+      "mode": "published_administrative_summary_only",
+      "publicMessage": "O Atendente de IA pode informar apenas que existe preparo e orientar a consultar a instrução oficial fictícia. Duração de jejum, alteração de medicamentos e orientação clínica exigem confirmação humana.",
+      "allowedStatements": [
+        "Informar que o exame pode exigir preparo.",
+        "Orientar a levar documento com foto e solicitação médica quando aplicável.",
+        "Orientar a confirmar a instrução oficial antes do atendimento.",
+        "Encaminhar dúvidas específicas para a equipe humana."
+      ],
+      "prohibitedStatements": [
+        "Definir horas de jejum sem conteúdo publicado e aprovado.",
+        "Orientar suspensão ou alteração de medicamentos.",
+        "Interpretar sintomas, resultados ou condições clínicas.",
+        "Garantir que um preparo é adequado para uma pessoa específica."
+      ]
+    },
+    "humanConfirmationTriggers": [
+      "Preço, cobrança, reembolso ou forma de pagamento.",
+      "Data, horário, unidade ou vaga disponível.",
+      "Preparo específico ou dúvida clínica.",
+      "Necessidade de solicitação médica.",
+      "Atendimento de criança, gestante ou pessoa com condição específica.",
+      "Interpretação de resultado ou orientação após o exame.",
+      "Reclamação grave, urgência ou situação de risco.",
+      "Qualquer informação ausente ou contraditória no catálogo."
+    ]
+  },
+  "categories": [
+    {
+      "id": "laboratory_tests",
+      "label": "Análises laboratoriais",
+      "description": "Exames fictícios de coleta e análise laboratorial para demonstração administrativa."
+    },
+    {
+      "id": "cardiology_tests",
+      "label": "Exames cardiológicos",
+      "description": "Procedimentos fictícios de apoio diagnóstico cardiológico, sem interpretação automática."
+    },
+    {
+      "id": "imaging_tests",
+      "label": "Exames de imagem",
+      "description": "Exames fictícios de imagem com agendamento e preparo confirmados por atendimento humano."
+    },
+    {
+      "id": "occupational_services",
+      "label": "Atendimento ocupacional",
+      "description": "Serviços administrativos fictícios para organização de exames ocupacionais empresariais."
+    }
+  ],
+  "services": [
+    {
+      "id": "complete_blood_count",
+      "categoryId": "laboratory_tests",
+      "name": "Hemograma completo",
+      "shortDescription": "Exame laboratorial fictício usado para demonstrar dúvidas administrativas sobre coleta e preparo.",
+      "activeInDemo": true,
+      "appointmentMode": "walk_in_or_confirmation",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "Pode existir preparo conforme a solicitação e o protocolo fictício. O Atendente de IA deve orientar a confirmar a instrução oficial."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "preparo específico",
+        "necessidade de solicitação médica",
+        "disponibilidade de coleta",
+        "prazo de resultado"
+      ],
+      "searchKeywords": ["hemograma", "sangue", "coleta", "laboratório"]
+    },
+    {
+      "id": "fasting_glucose",
+      "categoryId": "laboratory_tests",
+      "name": "Glicose",
+      "shortDescription": "Exame laboratorial fictício incluído para testar perguntas sobre preparo sem fornecer orientação clínica individual.",
+      "activeInDemo": true,
+      "appointmentMode": "walk_in_or_confirmation",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "A necessidade e a duração de preparo não devem ser definidas pelo agente. A equipe humana confirma a instrução aplicável."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "qualquer dúvida sobre jejum",
+        "uso de medicamento",
+        "condição específica",
+        "prazo de resultado"
+      ],
+      "searchKeywords": ["glicose", "glicemia", "sangue", "jejum"]
+    },
+    {
+      "id": "lipid_profile",
+      "categoryId": "laboratory_tests",
+      "name": "Perfil lipídico",
+      "shortDescription": "Conjunto fictício de análises laboratoriais para demonstração de atendimento administrativo.",
+      "activeInDemo": true,
+      "appointmentMode": "walk_in_or_confirmation",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "O preparo varia conforme o protocolo fictício. O agente apenas informa que a confirmação humana é necessária."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_limited_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada limitada e sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "preparo",
+        "composição do exame",
+        "solicitação médica",
+        "prazo de resultado"
+      ],
+      "searchKeywords": ["colesterol", "triglicerídeos", "perfil lipídico"]
+    },
+    {
+      "id": "urinalysis",
+      "categoryId": "laboratory_tests",
+      "name": "Exame de urina",
+      "shortDescription": "Exame fictício para orientar administrativamente sobre recipiente, entrega e confirmação de preparo.",
+      "activeInDemo": true,
+      "appointmentMode": "walk_in_or_confirmation",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário.",
+        "Recipiente fornecido ou aprovado pela clínica fictícia, conforme confirmação humana."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "A equipe humana deve confirmar recipiente, forma de coleta, conservação e prazo de entrega."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "tipo de recipiente",
+        "forma de coleta",
+        "conservação",
+        "tempo para entrega",
+        "público infantil"
+      ],
+      "searchKeywords": ["urina", "coleta", "laboratório"]
+    },
+    {
+      "id": "electrocardiogram",
+      "categoryId": "cardiology_tests",
+      "name": "Eletrocardiograma",
+      "shortDescription": "Procedimento fictício de registro cardíaco para demonstração de agendamento e encaminhamento administrativo.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_recommended",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "O agente pode informar que orientações administrativas serão confirmadas, sem explicar adequação clínica ou resultado."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "indicação clínica",
+        "sintomas",
+        "urgência",
+        "interpretação do traçado",
+        "disponibilidade"
+      ],
+      "searchKeywords": ["eletrocardiograma", "ecg", "coração"]
+    },
+    {
+      "id": "holter_24h",
+      "categoryId": "cardiology_tests",
+      "name": "Holter 24 horas",
+      "shortDescription": "Monitorização fictícia usada para testar orientações administrativas sobre instalação, devolução e confirmação humana.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_required",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "Instalação, cuidados, devolução e restrições devem seguir instrução oficial fictícia confirmada por uma pessoa."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_limited_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada limitada e sujeita à confirmação do equipamento."
+      },
+      "humanConfirmationRequiredFor": [
+        "instalação",
+        "devolução",
+        "uso durante atividades",
+        "medicamentos",
+        "sintomas",
+        "disponibilidade do equipamento"
+      ],
+      "searchKeywords": ["holter", "monitor cardíaco", "24 horas"]
+    },
+    {
+      "id": "abpm_24h",
+      "categoryId": "cardiology_tests",
+      "name": "MAPA 24 horas",
+      "shortDescription": "Monitorização fictícia da pressão para demonstração de agendamento e uso de equipamento simulado.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_required",
+      "medicalRequestMode": "confirm_when_applicable",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "A equipe humana confirma instalação, devolução, cuidados e qualquer orientação específica."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_limited_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada limitada e sujeita à confirmação do equipamento."
+      },
+      "humanConfirmationRequiredFor": [
+        "instalação",
+        "devolução",
+        "condição individual",
+        "medicamentos",
+        "disponibilidade do equipamento"
+      ],
+      "searchKeywords": ["mapa", "pressão", "24 horas"]
+    },
+    {
+      "id": "abdominal_ultrasound",
+      "categoryId": "imaging_tests",
+      "name": "Ultrassonografia abdominal",
+      "shortDescription": "Exame de imagem fictício usado para testar perguntas sobre agenda, preparo e documentação.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_required",
+      "medicalRequestMode": "usually_required",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "O preparo específico não será informado automaticamente. O agente deve orientar a confirmar a instrução oficial da clínica fictícia."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "preparo específico",
+        "gestação",
+        "idade",
+        "solicitação médica",
+        "tipo de ultrassonografia",
+        "disponibilidade"
+      ],
+      "searchKeywords": ["ultrassom", "ultrassonografia", "abdome", "abdominal"]
+    },
+    {
+      "id": "thyroid_ultrasound",
+      "categoryId": "imaging_tests",
+      "name": "Ultrassonografia de tireoide",
+      "shortDescription": "Exame de imagem fictício para demonstração de agendamento administrativo.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_required",
+      "medicalRequestMode": "usually_required",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "O agente informa somente que documentos e instruções devem ser confirmados antes do exame."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "solicitação médica",
+        "indicação clínica",
+        "preparo",
+        "disponibilidade",
+        "resultado"
+      ],
+      "searchKeywords": ["ultrassom", "tireoide", "pescoço"]
+    },
+    {
+      "id": "chest_xray",
+      "categoryId": "imaging_tests",
+      "name": "Radiografia de tórax",
+      "shortDescription": "Exame fictício de imagem para testar confirmação de pedido, agendamento e encaminhamento.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_or_confirmation",
+      "medicalRequestMode": "usually_required",
+      "documentsSuggested": [
+        "Documento de identificação fictício com foto.",
+        "Solicitação médica fictícia quando exigida no cenário."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "A equipe humana confirma documentação, restrições e qualquer condição que altere o atendimento."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Disponibilidade simulada sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "gestação ou possibilidade de gestação",
+        "solicitação médica",
+        "urgência",
+        "disponibilidade",
+        "interpretação da imagem"
+      ],
+      "searchKeywords": ["raio-x", "radiografia", "tórax"]
+    },
+    {
+      "id": "occupational_exam_admin",
+      "categoryId": "occupational_services",
+      "name": "Atendimento administrativo para exame ocupacional",
+      "shortDescription": "Serviço fictício para organizar solicitações empresariais sem realizar decisão clínica ou emissão automática de documento.",
+      "activeInDemo": true,
+      "appointmentMode": "appointment_required",
+      "medicalRequestMode": "company_request_required",
+      "documentsSuggested": [
+        "Documento de identificação fictício.",
+        "Solicitação fictícia da empresa.",
+        "Dados mínimos do atendimento ocupacional simulado."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "A clínica fictícia confirma documentos, tipo de atendimento e instruções aplicáveis com a empresa e a equipe humana."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_available_by_confirmation",
+        "slotLookupAvailable": false,
+        "publicMessage": "Agenda empresarial fictícia sujeita à confirmação humana."
+      },
+      "humanConfirmationRequiredFor": [
+        "tipo de exame ocupacional",
+        "documentos empresariais",
+        "agenda em lote",
+        "resultado ou aptidão",
+        "dados sensíveis"
+      ],
+      "searchKeywords": ["ocupacional", "admissional", "periódico", "demissional", "empresa"]
+    },
+    {
+      "id": "corporate_batch_scheduling",
+      "categoryId": "occupational_services",
+      "name": "Organização de agenda empresarial",
+      "shortDescription": "Serviço administrativo fictício para demonstrar triagem de solicitações em lote.",
+      "activeInDemo": true,
+      "appointmentMode": "human_planning_required",
+      "medicalRequestMode": "company_request_required",
+      "documentsSuggested": [
+        "Solicitação empresarial fictícia.",
+        "Quantidade estimada de atendimentos fictícios.",
+        "Período desejado no cenário simulado."
+      ],
+      "preparation": {
+        "mode": "human_confirmation_required",
+        "safeAdministrativeSummary": "Não existe preparo único. Cada serviço do lote deve ser confirmado separadamente pela equipe humana."
+      },
+      "simulatedAvailability": {
+        "status": "simulated_planning_only",
+        "slotLookupAvailable": false,
+        "publicMessage": "Planejamento fictício sem reserva automática de vagas."
+      },
+      "humanConfirmationRequiredFor": [
+        "quantidade de pessoas",
+        "dados pessoais",
+        "datas",
+        "capacidade",
+        "preço",
+        "contrato",
+        "exames incluídos"
+      ],
+      "searchKeywords": ["empresa", "lote", "agenda", "ocupacional"]
+    }
+  ],
+  "agentResponseRules": {
+    "whenServiceFound": [
+      "Informar nome e descrição administrativa do serviço.",
+      "Explicar se o agendamento é recomendado ou obrigatório no cenário.",
+      "Listar documentos administrativos fictícios.",
+      "Declarar que preço e disponibilidade exigem confirmação humana.",
+      "Explicar somente o resumo de preparo permitido."
+    ],
+    "whenServiceNotFound": [
+      "Informar que o serviço não está no catálogo fictício atual.",
+      "Não inferir disponibilidade, preparo ou preço.",
+      "Oferecer encaminhamento para confirmação humana."
+    ],
+    "mandatoryDisclosure": "Este catálogo é fictício e não confirma atendimento, orientação clínica, preço, vaga ou resultado no mundo real."
+  },
+  "deferredToLaterSteps": {
+    "unitsHoursAndChannels": "step_4",
+    "schedulingAndCancellationRules": "step_5",
+    "paymentsAndInsurance": "step_6",
+    "frequentlyAskedQuestions": "step_7",
+    "humanHandoffWorkflow": "step_8"
+  }
+}
