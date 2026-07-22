@@ -41,12 +41,31 @@
     const isPages = globalThis.location?.hostname === "leon337.github.io";
     const base = isPages ? "https://predixai-brand.vercel.app" : "";
     const query = new URLSearchParams({ packageId: PACKAGE_ID, contentVersion: CONTENT_VERSION });
+    const previewShareToken = params.get("_vercel_share");
+    if (previewShareToken) query.set("_vercel_share", previewShareToken);
     return `${base}/api/workforce-catalog?${query.toString()}`;
   };
 
+  const normalizeFailureCode = (value, fallback) => {
+    if (typeof value === "string" && value.trim()) return value.trim().slice(0, 240);
+    if (value && typeof value === "object") {
+      for (const candidate of [value.code, value.message, value.error, value.reason]) {
+        if (typeof candidate === "string" && candidate.trim()) return candidate.trim().slice(0, 240);
+      }
+      try {
+        const serialized = JSON.stringify(value);
+        if (serialized && serialized !== "{}") return `PACKAGE_REMOTE_ERROR:${serialized.slice(0, 200)}`;
+      } catch {
+        // Mantém o fallback seguro abaixo.
+      }
+    }
+    return fallback;
+  };
+
   const fail = (code) => {
-    const error = new Error(code);
-    error.code = code;
+    const normalizedCode = normalizeFailureCode(code, "PACKAGE_LOAD_FAILED");
+    const error = new Error(normalizedCode);
+    error.code = normalizedCode;
     throw error;
   };
 
@@ -87,11 +106,11 @@
         method: "GET",
         headers: { Accept: "application/json" },
         cache: "no-store",
-        credentials: "omit",
+        credentials: "same-origin",
         signal: controller?.signal
       });
       const body = await response.json().catch(() => null);
-      if (!response.ok) fail(body?.error || `PACKAGE_HTTP_${response.status}`);
+      if (!response.ok) fail(normalizeFailureCode(body?.error ?? body, `PACKAGE_HTTP_${response.status}`));
       const document = validateDocument(body);
       runtime.document = document;
       runtime.status = "READY";
@@ -103,7 +122,7 @@
       runtime.status = "NOT_READY";
       runtime.source = "none";
       runtime.warnings = [];
-      runtime.error = error instanceof Error ? error.message : "PACKAGE_LOAD_FAILED";
+      runtime.error = error instanceof Error ? error.message : normalizeFailureCode(error, "PACKAGE_LOAD_FAILED");
       throw error;
     } finally {
       if (timer) globalThis.clearTimeout(timer);
@@ -117,6 +136,7 @@
     REQUIRED_COMPONENTS,
     ALLOWED_SOURCES,
     endpoint,
+    normalizeFailureCode,
     validateDocument,
     loadPackage
   });
