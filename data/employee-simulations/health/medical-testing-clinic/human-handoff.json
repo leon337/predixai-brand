@@ -1,0 +1,450 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "policyId": "health-medical-testing-clinic-aurora-human-handoff",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os encaminhamentos, filas, protocolos, prioridades e resoluções deste pacote são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "administrativeOnly": true,
+    "realMessageSendAllowed": false,
+    "realTicketCreationAllowed": false,
+    "realHumanContactGuaranteed": false,
+    "realRecordAccessAllowed": false,
+    "realClinicalDecisionAllowed": false,
+    "realFinancialDecisionAllowed": false,
+    "agentMayClassifyByPublishedRules": true,
+    "agentMayPrepareHandoffSummary": true,
+    "agentMayMarkSimulatedState": true,
+    "agentMayPromiseResponseTime": false
+  },
+  "routingPrecedence": [
+    "safety_or_immediate_risk",
+    "privacy_or_sensitive_data",
+    "clinical_content_or_result_interpretation",
+    "serious_complaint_or_conduct",
+    "financial_or_insurance_exception",
+    "scheduling_or_operational_exception",
+    "accessibility_or_special_support",
+    "corporate_request",
+    "general_administrative_request"
+  ],
+  "priorities": [
+    {
+      "id": "p0_safety_redirect",
+      "label": "Redirecionamento imediato de segurança",
+      "description": "Usado quando a mensagem indica risco imediato à saúde ou à segurança. O agente não avalia gravidade, não diagnostica e não mantém a solicitação na fila administrativa comum.",
+      "timePromiseAllowed": false,
+      "requiredAction": "Orientar a procurar ajuda presencial ou um serviço de emergência local imediatamente e interromper o fluxo administrativo comum."
+    },
+    {
+      "id": "p1_priority_human_review",
+      "label": "Revisão humana prioritária",
+      "description": "Usado para conteúdo clínico, privacidade, reclamações graves ou exceções que não podem aguardar o fluxo administrativo comum.",
+      "timePromiseAllowed": false,
+      "requiredAction": "Preparar resumo mínimo e sinalizar prioridade, sem afirmar que uma pessoa já foi acionada."
+    },
+    {
+      "id": "p2_operational_exception",
+      "label": "Exceção operacional",
+      "description": "Usado para agenda, unidade, equipamento, pagamento, convênio, acessibilidade ou informação contraditória.",
+      "timePromiseAllowed": false,
+      "requiredAction": "Preparar resumo administrativo e encaminhar no cenário simulado para a fila correspondente."
+    },
+    {
+      "id": "p3_routine_followup",
+      "label": "Acompanhamento administrativo",
+      "description": "Usado para dúvidas e solicitações rotineiras que dependem de confirmação humana, mas não indicam exceção crítica.",
+      "timePromiseAllowed": false,
+      "requiredAction": "Organizar a solicitação e registrar que ela aguarda revisão humana no cenário fictício."
+    }
+  ],
+  "queues": [
+    {
+      "id": "clinical_human_review",
+      "label": "Equipe clínica humana",
+      "acceptedTopics": [
+        "preparo individual",
+        "medicamentos",
+        "adequação de exame",
+        "interpretação de resultado",
+        "sintomas",
+        "gestação",
+        "criança ou condição específica"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "scheduling_operations",
+      "label": "Agendamento e operações",
+      "acceptedTopics": [
+        "vaga",
+        "reagendamento",
+        "cancelamento",
+        "atraso",
+        "mesmo dia",
+        "unidade",
+        "equipamento ou profissional"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "billing_finance",
+      "label": "Financeiro e faturamento",
+      "acceptedTopics": [
+        "preço",
+        "desconto",
+        "parcelamento",
+        "pagamento",
+        "estorno",
+        "reembolso",
+        "contestação"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "insurance_validation",
+      "label": "Validação de convênio",
+      "acceptedTopics": [
+        "aceitação",
+        "cobertura",
+        "autorização",
+        "carência",
+        "coparticipação",
+        "documentação do convênio"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "complaints_and_service_quality",
+      "label": "Reclamações e qualidade",
+      "acceptedTopics": [
+        "reclamação",
+        "conduta",
+        "tratamento inadequado",
+        "falha de atendimento",
+        "insatisfação grave"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "privacy_and_data_protection",
+      "label": "Privacidade e proteção de dados",
+      "acceptedTopics": [
+        "prontuário",
+        "resultado real",
+        "cadastro real",
+        "correção de dados",
+        "acesso indevido",
+        "exclusão de dados"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "accessibility_support",
+      "label": "Acessibilidade e apoio especial",
+      "acceptedTopics": [
+        "mobilidade",
+        "comunicação acessível",
+        "acompanhante",
+        "apoio especial",
+        "estrutura física"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "corporate_services",
+      "label": "Atendimento empresarial",
+      "acceptedTopics": [
+        "agenda em lote",
+        "exames ocupacionais",
+        "contrato empresarial",
+        "faturamento corporativo",
+        "relatório administrativo"
+      ],
+      "agentDecisionAllowed": false
+    },
+    {
+      "id": "general_administration",
+      "label": "Atendimento administrativo geral",
+      "acceptedTopics": [
+        "informação ausente",
+        "dúvida fora da FAQ",
+        "canal",
+        "horário especial",
+        "solicitação não classificada"
+      ],
+      "agentDecisionAllowed": false
+    }
+  ],
+  "handoffLifecycle": [
+    {
+      "id": "handoff_detected",
+      "label": "Necessidade de encaminhamento detectada"
+    },
+    {
+      "id": "limit_explained",
+      "label": "Limite do Atendente de IA explicado"
+    },
+    {
+      "id": "minimal_context_collected",
+      "label": "Contexto mínimo não sensível coletado"
+    },
+    {
+      "id": "classified_by_rule",
+      "label": "Prioridade e fila classificadas pelas regras publicadas"
+    },
+    {
+      "id": "summary_ready",
+      "label": "Resumo de encaminhamento pronto"
+    },
+    {
+      "id": "awaiting_human_review_simulated",
+      "label": "Aguardando revisão humana no cenário simulado"
+    },
+    {
+      "id": "resolved_simulated",
+      "label": "Resolvido no cenário simulado"
+    },
+    {
+      "id": "unable_to_route",
+      "label": "Não foi possível classificar com segurança"
+    }
+  ],
+  "handoffSummaryContract": {
+    "requiredFields": [
+      {
+        "id": "handoff_reason",
+        "label": "Motivo administrativo do encaminhamento",
+        "dataClass": "non_sensitive_text"
+      },
+      {
+        "id": "priority_id",
+        "label": "Prioridade calculada pelas regras",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "queue_id",
+        "label": "Fila fictícia selecionada",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "request_type",
+        "label": "Tipo de solicitação",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "user_summary",
+        "label": "Resumo objetivo fornecido pelo usuário",
+        "dataClass": "non_sensitive_text"
+      },
+      {
+        "id": "source_contract",
+        "label": "Contrato ou etapa que originou o encaminhamento",
+        "dataClass": "catalog_reference"
+      }
+    ],
+    "optionalFields": [
+      {
+        "id": "service_id",
+        "label": "Serviço fictício relacionado",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "unit_id",
+        "label": "Unidade fictícia relacionada",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "preferred_contact_channel",
+        "label": "Canal fictício preferido",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "fictional_request_id",
+        "label": "Identificador fictício da solicitação",
+        "dataClass": "simulation_identifier"
+      }
+    ],
+    "mustIncludeDisclosures": [
+      "Nenhuma mensagem real foi enviada.",
+      "Nenhum contato humano está garantido neste ambiente de teste.",
+      "O resumo usa somente dados fictícios ou informações administrativas não sensíveis."
+    ]
+  },
+  "routingRules": [
+    {
+      "id": "route_safety",
+      "whenAny": [
+        "risco imediato declarado",
+        "pedido de avaliação de urgência",
+        "situação descrita como emergência"
+      ],
+      "priorityId": "p0_safety_redirect",
+      "queueId": "clinical_human_review",
+      "stopNormalFlow": true
+    },
+    {
+      "id": "route_privacy",
+      "whenAny": [
+        "pedido de acesso a prontuário real",
+        "resultado real",
+        "alteração ou exclusão de dado real",
+        "suspeita de acesso indevido"
+      ],
+      "priorityId": "p1_priority_human_review",
+      "queueId": "privacy_and_data_protection",
+      "stopNormalFlow": true
+    },
+    {
+      "id": "route_clinical",
+      "whenAny": [
+        "interpretação de resultado",
+        "diagnóstico",
+        "preparo individual",
+        "medicamento",
+        "sintoma ou condição específica"
+      ],
+      "priorityId": "p1_priority_human_review",
+      "queueId": "clinical_human_review",
+      "stopNormalFlow": true
+    },
+    {
+      "id": "route_complaint",
+      "whenAny": [
+        "reclamação grave",
+        "conduta inadequada",
+        "falha relevante de atendimento"
+      ],
+      "priorityId": "p1_priority_human_review",
+      "queueId": "complaints_and_service_quality",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_finance",
+      "whenAny": [
+        "preço final",
+        "desconto",
+        "pagamento",
+        "reembolso",
+        "estorno ou contestação"
+      ],
+      "priorityId": "p2_operational_exception",
+      "queueId": "billing_finance",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_insurance",
+      "whenAny": [
+        "cobertura",
+        "carência",
+        "coparticipação",
+        "autorização",
+        "aceitação de convênio"
+      ],
+      "priorityId": "p2_operational_exception",
+      "queueId": "insurance_validation",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_scheduling",
+      "whenAny": [
+        "vaga",
+        "mesmo dia",
+        "atraso",
+        "reagendamento",
+        "cancelamento",
+        "equipamento ou profissional"
+      ],
+      "priorityId": "p2_operational_exception",
+      "queueId": "scheduling_operations",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_accessibility",
+      "whenAny": [
+        "acessibilidade",
+        "acompanhante",
+        "apoio especial"
+      ],
+      "priorityId": "p2_operational_exception",
+      "queueId": "accessibility_support",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_corporate",
+      "whenAny": [
+        "agenda empresarial",
+        "serviço ocupacional em lote",
+        "faturamento corporativo"
+      ],
+      "priorityId": "p2_operational_exception",
+      "queueId": "corporate_services",
+      "stopNormalFlow": false
+    },
+    {
+      "id": "route_fallback",
+      "whenAny": [
+        "informação ausente",
+        "informação contraditória",
+        "assunto fora da FAQ",
+        "classificação incerta"
+      ],
+      "priorityId": "p3_routine_followup",
+      "queueId": "general_administration",
+      "stopNormalFlow": false
+    }
+  ],
+  "agentProcedure": [
+    "Detectar que a solicitação ultrapassa a base autorizada ou a autonomia do Atendente de IA.",
+    "Explicar de forma objetiva o limite aplicável.",
+    "Coletar somente o contexto mínimo e não sensível necessário para classificar o assunto.",
+    "Aplicar a precedência e as regras de roteamento publicadas.",
+    "Gerar um resumo estruturado com motivo, prioridade, fila e pendências.",
+    "Informar que nenhuma mensagem real foi enviada e que o contato humano não está garantido no teste.",
+    "Marcar o estado como aguardando revisão humana no cenário simulado.",
+    "Não continuar oferecendo respostas que ultrapassem o limite identificado."
+  ],
+  "agentProhibitions": [
+    "Prometer prazo de resposta, retorno, solução ou contato humano.",
+    "Afirmar que enviou mensagem, abriu chamado, notificou equipe ou atualizou sistema real.",
+    "Tomar decisão clínica, financeira, jurídica ou operacional.",
+    "Solicitar prontuário, resultado, documento, credencial ou dado financeiro real.",
+    "Interpretar resultados, diagnosticar, recomendar tratamento ou orientar alteração de medicamento.",
+    "Confirmar vaga, preço, cobertura, autorização, reembolso ou cancelamento real.",
+    "Classificar risco clínico além de reconhecer a necessidade de ajuda humana imediata."
+  ],
+  "forbiddenData": [
+    "CPF ou documento real",
+    "número real de beneficiário",
+    "imagem de cartão de convênio",
+    "prontuário",
+    "resultado de exame real",
+    "diagnóstico",
+    "dados bancários",
+    "número de cartão",
+    "senha",
+    "token",
+    "comprovante real",
+    "credencial de sistema"
+  ],
+  "agentResponseTemplates": {
+    "genericHandoff": "Essa solicitação precisa de uma pessoa. Posso organizar um resumo fictício com o assunto e a pendência, mas nenhuma mensagem real será enviada neste ambiente de teste.",
+    "clinicalHandoff": "Não posso avaliar essa questão clínica nem interpretar resultados. Ela precisa de uma pessoa qualificada. Posso registrar somente um resumo administrativo fictício, sem dados reais.",
+    "privacyHandoff": "Não tenho acesso a cadastro, prontuário ou resultado real. Essa solicitação deve ser tratada por uma pessoa responsável pela privacidade e pelos dados.",
+    "financialHandoff": "Não posso confirmar preço, cobrança, cobertura, estorno ou reembolso. Posso preparar um resumo fictício para revisão humana.",
+    "schedulingHandoff": "Posso registrar sua preferência no cenário fictício, mas não consigo confirmar vaga, alteração ou cancelamento real.",
+    "complaintHandoff": "Vou organizar um resumo objetivo da reclamação para revisão humana no cenário fictício. Isso não significa que uma mensagem real foi enviada.",
+    "safetyRedirect": "Não posso avaliar a gravidade dessa situação. Se houver risco imediato à saúde ou à segurança, procure ajuda presencial ou um serviço de emergência local agora.",
+    "unableToRoute": "Não encontrei uma classificação segura para essa solicitação. Vou interromper a resposta automática e indicar revisão humana no cenário fictício."
+  },
+  "deferredToLaterSteps": {
+    "testScenarios": "step_9",
+    "finalPrompt": "step_10",
+    "masterJsonContract": "step_11",
+    "supabasePublication": "step_12",
+    "vercelApi": "step_13",
+    "builderIntegration": "step_14"
+  }
+}
