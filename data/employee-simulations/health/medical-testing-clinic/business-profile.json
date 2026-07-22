@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os nomes, dados, processos e exemplos deste pacote são fictícios e existem somente para demonstração e teste.",
+  "segment": {
+    "categoryId": "health",
+    "categoryLabel": "Saúde",
+    "segmentId": "medical-testing-clinic",
+    "segmentLabel": "Clínica de exames",
+    "subsegmentId": "diagnostic-services",
+    "subsegmentLabel": "Serviços de diagnóstico ambulatorial"
+  },
+  "company": {
+    "legalName": "Clínica Aurora Diagnósticos Ltda. — Empresa Fictícia",
+    "displayName": "Clínica Aurora Diagnósticos",
+    "shortName": "Clínica Aurora",
+    "tagline": "Exames e atendimento organizados com clareza e cuidado.",
+    "businessDescription": "Clínica fictícia de exames e serviços de diagnóstico ambulatorial criada para demonstrar a configuração, o treinamento e o teste de Funcionários de IA da PredixAI.",
+    "country": "Brasil",
+    "state": "Pernambuco",
+    "serviceRegion": "Região Metropolitana do Recife — cenário fictício",
+    "companySize": "small_business",
+    "companySizeLabel": "Pequena empresa",
+    "operatingModel": "single_primary_unit_with_centralized_service",
+    "operatingModelLabel": "Unidade principal com atendimento centralizado",
+    "maturityLevel": "structured_manual_operation",
+    "maturityLevelLabel": "Operação manual estruturada, com uso de ferramentas simples"
+  },
+  "positioning": {
+    "valueProposition": "Oferecer uma experiência administrativa clara, organizada e segura antes, durante e depois da realização dos exames.",
+    "servicePrinciples": [
+      "Clareza nas informações administrativas",
+      "Respeito aos limites clínicos e legais",
+      "Proteção de dados e privacidade",
+      "Encaminhamento humano em situações sensíveis",
+      "Comunicação simples e respeitosa",
+      "Nenhuma informação inventada"
+    ],
+    "brandPersonality": [
+      "profissional",
+      "clara",
+      "acolhedora",
+      "organizada",
+      "responsável"
+    ]
+  },
+  "audiences": {
+    "primary": [
+      {
+        "id": "individual_patients",
+        "label": "Pessoas que desejam informações administrativas sobre exames"
+      },
+      {
+        "id": "family_representatives",
+        "label": "Familiares ou responsáveis que buscam orientações administrativas"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "companies_occupational_health",
+        "label": "Empresas que solicitam informações sobre exames ocupacionais fictícios"
+      },
+      {
+        "id": "health_professionals_referrals",
+        "label": "Profissionais ou consultórios que encaminham pacientes no cenário simulado"
+      }
+    ],
+    "excludedFromAutomatedDecision": [
+      "Pessoas em situação de urgência ou risco",
+      "Solicitações de interpretação de resultado",
+      "Questões clínicas individualizadas",
+      "Reclamações graves ou conflitos",
+      "Solicitações envolvendo dados sensíveis não autorizados"
+    ]
+  },
+  "businessGoals": [
+    {
+      "id": "reduce_response_time",
+      "label": "Reduzir o tempo de resposta em dúvidas administrativas frequentes"
+    },
+    {
+      "id": "standardize_service",
+      "label": "Padronizar a comunicação sem perder clareza e respeito"
+    },
+    {
+      "id": "organize_requests",
+      "label": "Organizar solicitações antes do encaminhamento para uma pessoa"
+    },
+    {
+      "id": "avoid_information_loss",
+      "label": "Evitar perda de informações durante o atendimento"
+    },
+    {
+      "id": "prepare_human_handoff",
+      "label": "Preparar resumos objetivos para encaminhamento humano"
+    }
+  ],
+  "operationalProfile": {
+    "estimatedTeamSize": "8_to_15_people",
+    "estimatedTeamSizeLabel": "Equipe fictícia entre 8 e 15 pessoas",
+    "serviceDepartment": {
+      "name": "Atendimento",
+      "responsibilities": [
+        "Receber solicitações",
+        "Identificar o assunto",
+        "Responder dúvidas administrativas autorizadas",
+        "Coletar apenas dados mínimos necessários",
+        "Encaminhar exceções"
+      ]
+    },
+    "supportingDepartments": [
+      {
+        "id": "scheduling",
+        "label": "Agendamento"
+      },
+      {
+        "id": "billing",
+        "label": "Financeiro e faturamento"
+      },
+      {
+        "id": "clinical_team",
+        "label": "Equipe clínica humana"
+      },
+      {
+        "id": "management",
+        "label": "Gestão"
+      }
+    ],
+    "serviceComplexity": "medium",
+    "serviceComplexityLabel": "Média: dúvidas repetitivas, regras administrativas e exceções sensíveis"
+  },
+  "agentContext": {
+    "recommendedEmployeeType": "customer_service_ai",
+    "recommendedEmployeeLabel": "Atendente de IA",
+    "department": "Atendimento",
+    "primaryFunction": "Atender solicitações, identificar assuntos, responder dúvidas administrativas autorizadas e encaminhar exceções.",
+    "defaultTone": "Profissional, claro, respeitoso e acolhedor",
+    "defaultResponseLength": "Curta a média, com detalhes somente quando necessários",
+    "defaultGreetingStyle": "Cumprimento breve, identificação do atendente e pergunta objetiva sobre a necessidade",
+    "defaultHandoffStyle": "Explicar o limite, resumir a solicitação e encaminhar para o setor humano adequado"
+  },
+  "operationalBoundaries": {
+    "allowedAtProfileLevel": [
+      "Explicar o funcionamento geral da clínica fictícia",
+      "Identificar o tipo de solicitação",
+      "Usar somente informações publicadas no pacote fictício",
+      "Preparar resumo para encaminhamento humano",
+      "Declarar quando uma ação for simulada"
+    ],
+    "alwaysHuman": [
+      "Interpretação de resultados",
+      "Diagnóstico, prognóstico ou orientação clínica individual",
+      "Prescrição ou recomendação de medicamentos",
+      "Decisão sobre urgência clínica",
+      "Confirmação de pagamento ou movimentação financeira",
+      "Tratamento de reclamação grave",
+      "Acesso a prontuário, agenda, CRM ou sistema não integrado"
+    ],
+    "prohibited": [
+      "Inventar horários, preços, prazos, políticas ou disponibilidade",
+      "Solicitar senhas, tokens, dados bancários ou números de cartão",
+      "Alegar acesso a sistemas inexistentes",
+      "Usar dados reais de pacientes no ambiente de teste",
+      "Apresentar ações simuladas como concluídas no mundo real"
+    ]
+  },
+  "simulationDefaults": {
+    "dataMode": "fictional_only",
+    "realDataAllowed": false,
+    "promptGenerationMode": "local_in_browser",
+    "userCustomizationStorage": "session_storage",
+    "externalPlatformIntegration": false,
+    "externalResponseCollection": false,
+    "humanReviewRequiredForSensitiveCases": true
+  },
+  "deferredToLaterSteps": {
+    "questionsAndSuggestedAnswers": "step_2",
+    "servicesAndExamsCatalog": "step_3",
+    "unitsHoursAndChannels": "step_4",
+    "schedulingAndCancellationRules": "step_5",
+    "paymentsAndInsurance": "step_6",
+    "frequentlyAskedQuestions": "step_7",
+    "humanHandoffRules": "step_8",
+    "testScenarios": "step_9",
+    "completeAgentPrompt": "step_10",
+    "masterJsonContract": "step_11",
+    "supabasePublication": "step_12",
+    "vercelApi": "step_13",
+    "promptBuilderIntegration": "step_14"
+  },
+  "review": {
+    "requiresConceptualApproval": true,
+    "approved": false,
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}
