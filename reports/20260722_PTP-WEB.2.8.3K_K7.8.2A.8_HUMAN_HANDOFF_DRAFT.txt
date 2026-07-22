@@ -1,0 +1,68 @@
+PREDIXAI BR — K.7.8.2A.8 — ENCAMINHAMENTO HUMANO
+Data: 2026-07-22
+Repo: leon337/predixai-brand
+Branch: ptp-web-2-workforce-k6-questionnaire-r2
+PR: 9
+Linear: LEA-116
+
+STATUS=DRAFT_FOR_CONCEPTUAL_APPROVAL
+
+OBJETIVO
+Definir o encaminhamento humano fictício da Clínica Aurora Diagnósticos sem contato, ticket, prontuário, decisão ou integração real.
+
+CONTRATO
+FICTIONAL=YES
+ADMINISTRATIVE_ONLY=YES
+ROUTING_PRECEDENCE_DEFINED=YES
+PRIORITIES=4
+QUEUES=9
+LIFECYCLE_STATES=8
+REAL_MESSAGE_SEND=NO
+REAL_TICKET_CREATION=NO
+REAL_HUMAN_CONTACT_GUARANTEE=NO
+REAL_RECORD_ACCESS=NO
+REAL_CLINICAL_DECISION=NO
+REAL_FINANCIAL_DECISION=NO
+TIME_PROMISE=NO
+MINIMAL_DATA_ONLY=YES
+
+PRIORIDADES
+P0_SAFETY_REDIRECT
+P1_PRIORITY_HUMAN_REVIEW
+P2_OPERATIONAL_EXCEPTION
+P3_ROUTINE_FOLLOWUP
+
+FILAS
+clinical_human_review
+scheduling_operations
+billing_finance
+insurance_validation
+complaints_and_service_quality
+privacy_and_data_protection
+accessibility_support
+corporate_services
+general_administration
+
+ARQUIVOS
+data/employee-simulations/health/medical-testing-clinic/human-handoff.json
+docs/history/ptp/PTP-WEB/PTP-WEB.2/20260722_PTP-WEB.2.8.3K_K7.8.2A.8_ENCAMINHAMENTO_HUMANO.md
+reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.8_HUMAN_HANDOFF_DRAFT.txt
+
+VALIDAÇÕES CONCEITUAIS
+PASS — encaminhamento é somente resumo fictício
+PASS — nenhuma mensagem real é enviada
+PASS — nenhum contato humano é prometido
+PASS — precedência de roteamento definida
+PASS — dados reais e sensíveis proibidos
+PASS — conteúdo clínico exige pessoa
+PASS — preço, cobertura, agenda e reembolso exigem pessoa
+PASS — risco imediato interrompe o fluxo administrativo comum
+PASS — etapas 9 a 14 preservadas
+
+SUPABASE_CHANGE=NO
+VERCEL_CHANGE=NO
+PRODUCTION_CHANGED=NO
+MERGE=BLOCKED
+PENDING=APROVACAO_CONCEITUAL_DA_ETAPA_8
+
+REPORT_CLOSED_BEFORE_FINAL_TRACKER_COMMIT=YES
