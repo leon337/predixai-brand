@@ -1,0 +1,328 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "questionnaireId": "health-medical-testing-clinic-aurora-questionnaire",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "purpose": "Oferecer perguntas e respostas fictícias prontas para criar um Atendente de IA próximo de uma operação real, sem exigir que o usuário comece com campos vazios.",
+  "interactionModes": [
+    {
+      "id": "use_suggested",
+      "label": "Usar resposta sugerida"
+    },
+    {
+      "id": "edit_suggested",
+      "label": "Editar resposta"
+    },
+    {
+      "id": "do_not_include",
+      "label": "Não incluir no teste"
+    }
+  ],
+  "sections": [
+    {
+      "id": "business_identity",
+      "title": "Identidade do negócio",
+      "description": "Confirma como a clínica fictícia será apresentada no prompt.",
+      "questions": [
+        {
+          "id": "company_display_name",
+          "prompt": "Qual nome a clínica deve usar durante o teste?",
+          "answerType": "editable_text",
+          "required": true,
+          "suggestedAnswer": "Clínica Aurora Diagnósticos",
+          "maxLength": 120,
+          "includeInPromptAs": "company.displayName"
+        },
+        {
+          "id": "business_description",
+          "prompt": "Como a clínica deve ser descrita em uma frase?",
+          "answerType": "editable_textarea",
+          "required": true,
+          "suggestedAnswer": "Clínica fictícia de exames e serviços de diagnóstico ambulatorial, criada para demonstrar um atendimento administrativo organizado, claro e seguro.",
+          "maxLength": 280,
+          "includeInPromptAs": "company.description"
+        },
+        {
+          "id": "service_region",
+          "prompt": "Qual área fictícia a clínica atende?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "metropolitan_recife",
+          "options": [
+            { "id": "metropolitan_recife", "label": "Região Metropolitana do Recife — cenário fictício" },
+            { "id": "city_only", "label": "Somente uma cidade fictícia" },
+            { "id": "regional_service", "label": "Atendimento regional fictício" },
+            { "id": "not_informed", "label": "Não informar no teste" }
+          ],
+          "includeInPromptAs": "company.serviceRegion"
+        },
+        {
+          "id": "primary_audience",
+          "prompt": "Quem é o público principal da clínica fictícia?",
+          "answerType": "multi_select",
+          "required": true,
+          "suggestedAnswer": ["individual_patients", "family_representatives"],
+          "options": [
+            { "id": "individual_patients", "label": "Pessoas que buscam informações administrativas sobre exames" },
+            { "id": "family_representatives", "label": "Familiares ou responsáveis" },
+            { "id": "companies", "label": "Empresas com demandas ocupacionais fictícias" },
+            { "id": "referring_professionals", "label": "Consultórios e profissionais que encaminham pacientes no cenário simulado" }
+          ],
+          "includeInPromptAs": "company.audiences"
+        }
+      ]
+    },
+    {
+      "id": "employee_identity",
+      "title": "Identidade do funcionário",
+      "description": "Define como o Atendente de IA será identificado e apresentado.",
+      "questions": [
+        {
+          "id": "employee_name",
+          "prompt": "Qual nome o Atendente de IA deve usar?",
+          "answerType": "editable_text",
+          "required": true,
+          "suggestedAnswer": "Clara",
+          "maxLength": 60,
+          "includeInPromptAs": "employee.name"
+        },
+        {
+          "id": "employee_role_label",
+          "prompt": "Como o funcionário deve se apresentar?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "virtual_attendant",
+          "options": [
+            { "id": "virtual_attendant", "label": "Atendente virtual da Clínica Aurora Diagnósticos" },
+            { "id": "administrative_assistant", "label": "Assistente administrativo virtual" },
+            { "id": "ai_employee", "label": "Funcionário de IA da Clínica Aurora Diagnósticos" }
+          ],
+          "includeInPromptAs": "employee.presentation"
+        },
+        {
+          "id": "initial_message",
+          "prompt": "Qual mensagem inicial deve ser usada?",
+          "answerType": "editable_textarea",
+          "required": true,
+          "suggestedAnswer": "Olá. Sou Clara, atendente virtual da Clínica Aurora Diagnósticos. Posso ajudar com informações administrativas, serviços disponíveis no ambiente fictício e encaminhamentos para a equipe humana. Como posso ajudar?",
+          "maxLength": 420,
+          "includeInPromptAs": "employee.initialMessage"
+        }
+      ]
+    },
+    {
+      "id": "communication_style",
+      "title": "Estilo de comunicação",
+      "description": "Personaliza o modo como o funcionário conversa com os clientes fictícios.",
+      "questions": [
+        {
+          "id": "communication_tone",
+          "prompt": "Qual tom de comunicação deve ser usado?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "professional_clear_welcoming",
+          "options": [
+            { "id": "professional_clear_welcoming", "label": "Profissional, claro e acolhedor" },
+            { "id": "professional_direct", "label": "Profissional e direto" },
+            { "id": "formal_detailed", "label": "Formal e detalhado" },
+            { "id": "simple_friendly", "label": "Simples e cordial" }
+          ],
+          "includeInPromptAs": "communication.tone"
+        },
+        {
+          "id": "response_length",
+          "prompt": "Qual deve ser o tamanho padrão das respostas?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "short_to_medium",
+          "options": [
+            { "id": "short", "label": "Curta e objetiva" },
+            { "id": "short_to_medium", "label": "Curta a média, detalhando somente quando necessário" },
+            { "id": "detailed", "label": "Detalhada e explicativa" }
+          ],
+          "includeInPromptAs": "communication.responseLength"
+        },
+        {
+          "id": "emoji_policy",
+          "prompt": "O funcionário pode usar emojis?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "minimal",
+          "options": [
+            { "id": "none", "label": "Não usar emojis" },
+            { "id": "minimal", "label": "Usar raramente e apenas quando ajudar na clareza" },
+            { "id": "moderate", "label": "Usar com moderação em saudações e confirmações" }
+          ],
+          "includeInPromptAs": "communication.emojiPolicy"
+        },
+        {
+          "id": "handoff_phrase",
+          "prompt": "Como o funcionário deve encaminhar uma situação para uma pessoa?",
+          "answerType": "editable_textarea",
+          "required": true,
+          "suggestedAnswer": "Essa solicitação precisa da análise da nossa equipe humana. Vou organizar um resumo do que você informou para facilitar o encaminhamento.",
+          "maxLength": 360,
+          "includeInPromptAs": "communication.handoffPhrase"
+        }
+      ]
+    },
+    {
+      "id": "operational_context",
+      "title": "Contexto operacional",
+      "description": "Define como o atendimento fictício funciona no dia a dia sem antecipar regras detalhadas de horários, agendamento ou pagamentos.",
+      "questions": [
+        {
+          "id": "primary_channels",
+          "prompt": "Quais canais devem existir no cenário fictício?",
+          "answerType": "multi_select",
+          "required": true,
+          "suggestedAnswer": ["whatsapp", "phone", "in_person"],
+          "options": [
+            { "id": "whatsapp", "label": "WhatsApp fictício" },
+            { "id": "phone", "label": "Telefone fictício" },
+            { "id": "in_person", "label": "Atendimento presencial fictício" },
+            { "id": "email", "label": "E-mail fictício" }
+          ],
+          "includeInPromptAs": "operation.channels",
+          "deferredDataDependency": "step_4"
+        },
+        {
+          "id": "current_workflow",
+          "prompt": "Como as solicitações são organizadas atualmente no cenário fictício?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "manual_structured",
+          "options": [
+            { "id": "manual_structured", "label": "Atendimento humano com planilha e mensagens organizadas manualmente" },
+            { "id": "manual_unstructured", "label": "Mensagens distribuídas entre pessoas, sem padrão único" },
+            { "id": "basic_system", "label": "Sistema simples com apoio humano" }
+          ],
+          "includeInPromptAs": "operation.currentWorkflow"
+        },
+        {
+          "id": "daily_demand",
+          "prompt": "Qual volume fictício de solicitações deve ser usado no teste?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "medium",
+          "options": [
+            { "id": "low", "label": "Até 20 solicitações por dia" },
+            { "id": "medium", "label": "Entre 20 e 60 solicitações por dia" },
+            { "id": "high", "label": "Mais de 60 solicitações por dia" },
+            { "id": "not_informed", "label": "Não informar no teste" }
+          ],
+          "includeInPromptAs": "operation.dailyDemand"
+        },
+        {
+          "id": "priority_request_types",
+          "prompt": "Quais tipos de solicitação o funcionário deve priorizar?",
+          "answerType": "multi_select",
+          "required": true,
+          "suggestedAnswer": ["service_information", "scheduling_information", "document_requirements", "human_handoff"],
+          "options": [
+            { "id": "service_information", "label": "Informações administrativas sobre exames e serviços fictícios" },
+            { "id": "scheduling_information", "label": "Orientações administrativas de agendamento" },
+            { "id": "document_requirements", "label": "Documentos e requisitos administrativos" },
+            { "id": "result_access", "label": "Orientações sobre como acessar resultados, sem interpretar conteúdo clínico" },
+            { "id": "human_handoff", "label": "Preparação de encaminhamentos humanos" }
+          ],
+          "includeInPromptAs": "operation.priorityRequests"
+        }
+      ]
+    },
+    {
+      "id": "authorized_information",
+      "title": "Informações autorizadas",
+      "description": "Define quais fontes fictícias o funcionário poderá consultar durante o teste.",
+      "questions": [
+        {
+          "id": "authorized_sources",
+          "prompt": "Quais fontes fictícias podem ser usadas pelo funcionário?",
+          "answerType": "multi_select",
+          "required": true,
+          "suggestedAnswer": ["published_services", "published_hours", "published_faq", "published_policies", "published_scenarios"],
+          "options": [
+            { "id": "published_services", "label": "Catálogo fictício de exames e serviços" },
+            { "id": "published_hours", "label": "Horários, canais e unidades fictícias" },
+            { "id": "published_faq", "label": "Perguntas frequentes fictícias" },
+            { "id": "published_policies", "label": "Políticas administrativas fictícias" },
+            { "id": "published_scenarios", "label": "Cenários simulados aprovados" },
+            { "id": "manual_session_information", "label": "Informações adicionais fornecidas manualmente durante a sessão" }
+          ],
+          "includeInPromptAs": "knowledge.authorizedSources",
+          "deferredDataDependencies": ["step_3", "step_4", "step_5", "step_6", "step_7", "step_9"]
+        },
+        {
+          "id": "unknown_information_behavior",
+          "prompt": "O que o funcionário deve fazer quando uma informação não estiver disponível?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "state_limit_and_handoff",
+          "options": [
+            { "id": "state_limit_and_handoff", "label": "Informar o limite e encaminhar para uma pessoa" },
+            { "id": "ask_for_missing_context", "label": "Fazer uma pergunta objetiva e depois encaminhar, se necessário" },
+            { "id": "only_state_unavailable", "label": "Apenas informar que a informação não está disponível" }
+          ],
+          "includeInPromptAs": "knowledge.unknownInformationBehavior"
+        }
+      ]
+    },
+    {
+      "id": "output_and_recording",
+      "title": "Formato das respostas e registros",
+      "description": "Define como o resultado de cada atendimento fictício será organizado.",
+      "questions": [
+        {
+          "id": "response_structure",
+          "prompt": "Como o funcionário deve estruturar as respostas?",
+          "answerType": "multi_select",
+          "required": true,
+          "suggestedAnswer": ["confirm_understanding", "objective_questions", "clear_result", "pending_items", "human_approval"],
+          "options": [
+            { "id": "confirm_understanding", "label": "Confirmar brevemente o que entendeu" },
+            { "id": "objective_questions", "label": "Fazer perguntas objetivas quando faltarem dados" },
+            { "id": "clear_result", "label": "Apresentar resultado de forma clara" },
+            { "id": "pending_items", "label": "Listar pendências" },
+            { "id": "human_approval", "label": "Indicar quando é necessária aprovação humana" }
+          ],
+          "includeInPromptAs": "output.responseStructure"
+        },
+        {
+          "id": "service_summary",
+          "prompt": "O funcionário deve gerar um resumo ao final de cada atendimento?",
+          "answerType": "single_select",
+          "required": true,
+          "suggestedAnswer": "always_short_summary",
+          "options": [
+            { "id": "always_short_summary", "label": "Sim, um resumo curto com resultado e pendências" },
+            { "id": "only_when_handoff", "label": "Somente quando houver encaminhamento humano" },
+            { "id": "no_summary", "label": "Não gerar resumo" }
+          ],
+          "includeInPromptAs": "output.serviceSummary"
+        }
+      ]
+    }
+  ],
+  "globalRules": {
+    "preselectedAnswersEnabled": true,
+    "emptyStartForbidden": true,
+    "realPatientDataAllowed": false,
+    "realCompanyDataRequired": false,
+    "humanProtectionsEditable": false,
+    "userCanEditSuggestedAnswers": true,
+    "userCanSkipOptionalAnswers": true,
+    "promptGenerationLocation": "local_in_browser"
+  },
+  "deferredToLaterSteps": {
+    "servicesAndExamsCatalog": "step_3",
+    "unitsHoursAndChannelsDetails": "step_4",
+    "schedulingAndCancellationRules": "step_5",
+    "paymentsAndInsuranceDetails": "step_6",
+    "frequentlyAskedQuestionsContent": "step_7",
+    "humanHandoffRules": "step_8",
+    "testScenarios": "step_9",
+    "completePromptAssembly": "step_10"
+  }
+}
