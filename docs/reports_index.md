@@ -10,3 +10,4 @@
 | 2026-07-21 | PTP-WEB.2.8.3K-R1 | `reports/20260721_PTP-WEB.2.8.3K_R1_RECOVERY.txt` | Recuperação versionada para PR #8; CI e preview PASS; merge bloqueado |
 | 2026-07-21 | PTP-WEB.2.8.3K.7.7 | `reports/20260721_PTP-WEB.2.8.3K_K7.7_HARDENING.txt` | Doze achados corrigidos e automatizados; gates humanos aguardando execução de Leo |
 | 2026-07-22 | PTP-WEB.2.8.3K.7.8.2A.12 | `reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.12_SUPABASE_PUBLICATION.txt` | Pacote Clínica Aurora 0.1.0 publicado no Supabase com checksum, RLS e schema PASS |
+| 2026-07-22 | PTP-WEB.2.8.3K.7.8.2A.13 | `reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.13_VERCEL_API_QUERY.txt` | API Vercel implementada em preview, contrato funcional e CI PASS; produção inalterada |
