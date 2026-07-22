@@ -46,6 +46,21 @@ const allowedOrigin = (request) => {
   }
 };
 
+const supabaseHeaders = () => {
+  const headers = {
+    apikey: publicToken,
+    "content-type": "application/json",
+    Accept: "application/json",
+    "x-client-info": "predixai-brand-workforce-catalog-deep-health/1.1"
+  };
+
+  if (!publicToken.startsWith("sb_publishable_")) {
+    headers.Authorization = `Bearer ${publicToken}`;
+  }
+
+  return headers;
+};
+
 const validSafetyContract = (manifest) => {
   const safety = manifest?.safetyInvariants;
   const gate = manifest?.publicationGate;
@@ -80,7 +95,7 @@ const validRow = (row) => {
   return Object.keys(row.payload).length === 10;
 };
 
-const notReady = (response, statusCode, error) => {
+const notReady = (response, statusCode, error, upstreamStatus = null) => {
   response.setHeader("Cache-Control", "no-store");
   return response.status(statusCode).json({
     service: "predixai-workforce-catalog-deep-health",
@@ -93,7 +108,8 @@ const notReady = (response, statusCode, error) => {
     payloadComponents: 0,
     warnings: [],
     directBrowserDatabaseAccess: false,
-    error
+    error,
+    upstreamStatus
   });
 };
 
@@ -121,13 +137,7 @@ module.exports = async function handler(request, response) {
   try {
     const upstream = await fetch(`${serviceUrl}/rest/v1/rpc/get_published_workforce_catalog`, {
       method: "POST",
-      headers: {
-        [["api", "key"].join("")]: publicToken,
-        [["author", "ization"].join("")]: ["Bear", "er "].join("") + publicToken,
-        "content-type": "application/json",
-        Accept: "application/json",
-        "x-client-info": "predixai-brand-workforce-catalog-deep-health/1.0"
-      },
+      headers: supabaseHeaders(),
       body: JSON.stringify({
         p_package_id: packageId,
         p_content_version: contentVersion
@@ -135,17 +145,17 @@ module.exports = async function handler(request, response) {
       signal: controller.signal
     });
 
-    if (!upstream.ok) return notReady(response, 502, "UPSTREAM_QUERY_FAILED");
+    if (!upstream.ok) return notReady(response, 502, "UPSTREAM_QUERY_FAILED", upstream.status);
 
     let rows;
     try {
       rows = JSON.parse(await upstream.text());
     } catch {
-      return notReady(response, 502, "UPSTREAM_INVALID_JSON");
+      return notReady(response, 502, "UPSTREAM_INVALID_JSON", upstream.status);
     }
 
-    if (!Array.isArray(rows) || rows.length !== 1) return notReady(response, 404, "PACKAGE_NOT_FOUND");
-    if (!validRow(rows[0])) return notReady(response, 409, "PACKAGE_INTEGRITY_FAILED");
+    if (!Array.isArray(rows) || rows.length !== 1) return notReady(response, 404, "PACKAGE_NOT_FOUND", upstream.status);
+    if (!validRow(rows[0])) return notReady(response, 409, "PACKAGE_INTEGRITY_FAILED", upstream.status);
 
     const body = {
       service: "predixai-workforce-catalog-deep-health",
