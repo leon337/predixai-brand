@@ -1,0 +1,257 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://predixai.example/schemas/health-medical-testing-clinic-master-package.schema.json",
+  "title": "PredixAI Workforce — Pacote Mestre Clínica de Exames",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contentVersion",
+    "packageId",
+    "packageSlug",
+    "status",
+    "fictional",
+    "segment",
+    "architecture",
+    "components",
+    "assembly",
+    "expectedInventory",
+    "crossComponentRules",
+    "safetyInvariants",
+    "runtimeContract",
+    "userCustomizationContract",
+    "publicationGate",
+    "governance",
+    "deferredToLaterSteps",
+    "review"
+  ],
+  "properties": {
+    "schemaVersion": { "type": "string", "minLength": 1 },
+    "contentVersion": { "type": "string", "minLength": 1 },
+    "packageId": { "const": "health-medical-testing-clinic-aurora" },
+    "packageSlug": { "const": "health/medical-testing-clinic/aurora" },
+    "status": {
+      "enum": [
+        "draft_for_review",
+        "approved_for_publication",
+        "published",
+        "deprecated"
+      ]
+    },
+    "fictional": { "const": true },
+    "fictionalNotice": { "type": "string", "minLength": 20 },
+    "segment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categoryId", "categoryLabel", "segmentId", "segmentLabel", "subsegmentId", "subsegmentLabel"],
+      "properties": {
+        "categoryId": { "const": "health" },
+        "categoryLabel": { "const": "Saúde" },
+        "segmentId": { "const": "medical-testing-clinic" },
+        "segmentLabel": { "const": "Clínica de exames" },
+        "subsegmentId": { "const": "diagnostic-services" },
+        "subsegmentLabel": { "type": "string", "minLength": 1 }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": ["sourceOfTruth", "runtimeCatalog", "deliveryLayer", "temporaryUserState", "realCustomerDataAllowed", "browserAdministrativeCredentialAllowed"],
+      "properties": {
+        "sourceOfTruth": { "const": "github" },
+        "runtimeCatalog": { "const": "supabase" },
+        "deliveryLayer": { "const": "vercel_api" },
+        "temporaryUserState": { "const": "session_storage" },
+        "realCustomerDataAllowed": { "const": false },
+        "browserAdministrativeCredentialAllowed": { "const": false },
+        "developmentMethod": { "const": "one_segment_at_a_time" }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "required", "format", "sourcePath", "runtimeTarget"],
+        "properties": {
+          "id": {
+            "enum": [
+              "businessProfile",
+              "questionnaire",
+              "servicesCatalog",
+              "unitsHoursChannels",
+              "schedulingCancellations",
+              "paymentsInsurance",
+              "faq",
+              "humanHandoff",
+              "scenarios",
+              "operationalPrompt"
+            ]
+          },
+          "required": { "const": true },
+          "format": { "enum": ["json", "markdown"] },
+          "sourcePath": {
+            "type": "string",
+            "pattern": "^data/employee-simulations/health/medical-testing-clinic/"
+          },
+          "runtimeTarget": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "assembly": {
+      "type": "object",
+      "required": ["mode", "sourceComponentsRemainCanonical", "silentFallbackAllowed", "missingRequiredComponentBehavior", "outputShape"],
+      "properties": {
+        "mode": { "const": "self_contained_payload_at_publication" },
+        "sourceComponentsRemainCanonical": { "const": true },
+        "silentFallbackAllowed": { "const": false },
+        "missingRequiredComponentBehavior": { "const": "block_generation" },
+        "outputShape": { "type": "object", "minProperties": 10 }
+      },
+      "additionalProperties": false
+    },
+    "expectedInventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["servicesCategories", "services", "units", "channels", "faqItems", "handoffPriorities", "handoffQueues", "handoffLifecycleStates", "testScenarios", "promptSections"],
+      "properties": {
+        "servicesCategories": { "const": 4 },
+        "services": { "const": 12 },
+        "units": { "const": 2 },
+        "channels": { "const": 4 },
+        "faqItems": { "const": 24 },
+        "handoffPriorities": { "const": 4 },
+        "handoffQueues": { "const": 9 },
+        "handoffLifecycleStates": { "const": 8 },
+        "testScenarios": { "const": 24 },
+        "promptSections": { "const": 13 }
+      }
+    },
+    "crossComponentRules": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "safetyInvariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "administrativeOnly",
+        "realCustomerDataAllowed",
+        "realPatientDataAllowed",
+        "realRecordAccessAllowed",
+        "realBookingAllowed",
+        "realCancellationAllowed",
+        "realPaymentAllowed",
+        "realInsuranceLookupAllowed",
+        "clinicalAdviceAllowed",
+        "resultInterpretationAllowed",
+        "externalActionAllowed",
+        "humanContactGuaranteeAllowed",
+        "responseTimePromiseAllowed"
+      ],
+      "properties": {
+        "administrativeOnly": { "const": true },
+        "realCustomerDataAllowed": { "const": false },
+        "realPatientDataAllowed": { "const": false },
+        "realRecordAccessAllowed": { "const": false },
+        "realBookingAllowed": { "const": false },
+        "realCancellationAllowed": { "const": false },
+        "realPaymentAllowed": { "const": false },
+        "realInsuranceLookupAllowed": { "const": false },
+        "clinicalAdviceAllowed": { "const": false },
+        "resultInterpretationAllowed": { "const": false },
+        "externalActionAllowed": { "const": false },
+        "humanContactGuaranteeAllowed": { "const": false },
+        "responseTimePromiseAllowed": { "const": false }
+      }
+    },
+    "runtimeContract": {
+      "type": "object",
+      "required": ["sourcePriority", "successStatus", "partialStatus", "failureStatus", "requiredResponseFields", "fallbackPolicy"],
+      "properties": {
+        "sourcePriority": {
+          "type": "array",
+          "prefixItems": [
+            { "const": "supabase_published_package" },
+            { "const": "github_build_fallback" }
+          ],
+          "items": false
+        },
+        "successStatus": { "const": "READY" },
+        "partialStatus": { "const": "PARTIAL" },
+        "failureStatus": { "const": "NOT_READY" },
+        "requiredResponseFields": {
+          "type": "array",
+          "minItems": 6,
+          "contains": { "const": "checksum" }
+        },
+        "fallbackPolicy": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "userCustomizationContract": {
+      "type": "object",
+      "required": ["storage", "sameTabOnly", "atomicNamespaceRequired", "persistToSupabase", "realPersonalDataAllowed", "allowedOperations"],
+      "properties": {
+        "storage": { "const": "sessionStorage" },
+        "sameTabOnly": { "const": true },
+        "atomicNamespaceRequired": { "const": true },
+        "persistToSupabase": { "const": false },
+        "realPersonalDataAllowed": { "const": false },
+        "allowedOperations": { "type": "array", "minItems": 4 }
+      },
+      "additionalProperties": false
+    },
+    "publicationGate": {
+      "type": "object",
+      "required": ["requiredStatusBeforeSupabase", "requiredChecks", "checksumAlgorithm", "checksumStatus", "serviceRoleInBrowserAllowed", "directBrowserWriteAllowed"],
+      "properties": {
+        "requiredStatusBeforeSupabase": { "const": "approved_for_publication" },
+        "requiredChecks": { "type": "array", "minItems": 7 },
+        "checksumAlgorithm": { "const": "sha256" },
+        "checksumStatus": { "enum": ["pending_step_12", "generated", "verified"] },
+        "serviceRoleInBrowserAllowed": { "const": false },
+        "directBrowserWriteAllowed": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "governance": {
+      "type": "object",
+      "required": ["linearIssue", "githubPr", "trackerPath", "currentStep", "mergeBlocked", "productionChanged"],
+      "properties": {
+        "linearIssue": { "const": "LEA-116" },
+        "githubPr": { "const": 9 },
+        "trackerPath": { "type": "string", "minLength": 1 },
+        "currentStep": { "const": "K.7.8.2A.11" },
+        "mergeBlocked": { "const": true },
+        "productionChanged": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "deferredToLaterSteps": {
+      "type": "object",
+      "required": ["supabasePublication", "vercelApi", "builderIntegration"],
+      "properties": {
+        "supabasePublication": { "const": "K.7.8.2A.12" },
+        "vercelApi": { "const": "K.7.8.2A.13" },
+        "builderIntegration": { "const": "K.7.8.2A.14" }
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["requiresConceptualApproval", "approved", "approvedBy", "approvedAt"],
+      "properties": {
+        "requiresConceptualApproval": { "const": true },
+        "approved": { "type": "boolean" },
+        "approvedBy": { "type": ["string", "null"] },
+        "approvedAt": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}
