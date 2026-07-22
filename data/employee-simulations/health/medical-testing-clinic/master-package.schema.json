@@ -175,11 +175,12 @@
       "properties": {
         "sourcePriority": {
           "type": "array",
-          "prefixItems": [
-            { "const": "supabase_published_package" },
-            { "const": "github_build_fallback" }
-          ],
-          "items": false
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["supabase_published_package", "github_build_fallback"]
+          }
         },
         "successStatus": { "const": "READY" },
         "partialStatus": { "const": "PARTIAL" },
