@@ -9,6 +9,7 @@ copy_required_dir(){ local p="$1";[[ -d "${ROOT_DIR}/${p}" ]]||fail "diretório 
 log "validando integração K.7.8.2A.14"
 node "${ROOT_DIR}/scripts/validate_workforce_package_builder.js"
 node "${ROOT_DIR}/scripts/validate_workforce_catalog_v2_contract.js"
+node "${ROOT_DIR}/scripts/validate_workforce_preview_protection.js"
 log "validações K.7.8.2A.14 concluídas"
 
 log "limpando saída anterior";rm -rf "${DIST_DIR}";mkdir -p "${DIST_DIR}"
