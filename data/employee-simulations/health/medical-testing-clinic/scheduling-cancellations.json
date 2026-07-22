@@ -1,0 +1,228 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "policyId": "health-medical-testing-clinic-aurora-scheduling-cancellations",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todos os agendamentos, horários, identificadores e cancelamentos deste pacote são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "administrativeOnly": true,
+    "realBookingAllowed": false,
+    "realCancellationAllowed": false,
+    "realReschedulingAllowed": false,
+    "realCalendarLookup": false,
+    "externalSystemIntegration": false,
+    "agentMayCreateRequestSummary": true,
+    "agentMayConfirmRealSlot": false
+  },
+  "requestLifecycle": [
+    {
+      "id": "request_received",
+      "label": "Solicitação recebida",
+      "description": "O Atendente de IA registrou somente uma intenção fictícia de agendamento."
+    },
+    {
+      "id": "awaiting_human_confirmation",
+      "label": "Aguardando confirmação humana",
+      "description": "Uma pessoa deve validar serviço, unidade, data, horário, preparo e disponibilidade."
+    },
+    {
+      "id": "confirmed_simulated",
+      "label": "Confirmado no cenário simulado",
+      "description": "Estado fictício usado apenas em testes após confirmação humana simulada."
+    },
+    {
+      "id": "reschedule_requested",
+      "label": "Reagendamento solicitado",
+      "description": "O usuário pediu outra data ou horário, sem alteração automática."
+    },
+    {
+      "id": "cancellation_requested",
+      "label": "Cancelamento solicitado",
+      "description": "O usuário pediu cancelamento, ainda dependente de confirmação humana."
+    },
+    {
+      "id": "canceled_simulated",
+      "label": "Cancelado no cenário simulado",
+      "description": "Cancelamento fictício confirmado por uma pessoa durante o teste."
+    },
+    {
+      "id": "expired",
+      "label": "Solicitação expirada",
+      "description": "A solicitação fictícia não recebeu confirmação dentro do cenário de teste."
+    }
+  ],
+  "schedulingRequest": {
+    "requiredFields": [
+      {
+        "id": "service_id",
+        "label": "Exame ou serviço fictício",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "preferred_unit_id",
+        "label": "Unidade fictícia preferida",
+        "dataClass": "catalog_reference"
+      },
+      {
+        "id": "preferred_date_window",
+        "label": "Data ou período fictício preferido",
+        "dataClass": "simulation_preference"
+      },
+      {
+        "id": "preferred_time_window",
+        "label": "Faixa de horário fictícia preferida",
+        "dataClass": "simulation_preference"
+      },
+      {
+        "id": "preferred_contact_channel",
+        "label": "Canal fictício para retorno",
+        "dataClass": "catalog_reference"
+      }
+    ],
+    "optionalFields": [
+      {
+        "id": "fictional_contact_name",
+        "label": "Nome fictício para o cenário",
+        "dataClass": "fictional_identity"
+      },
+      {
+        "id": "administrative_notes",
+        "label": "Observação administrativa não sensível",
+        "dataClass": "non_sensitive_text"
+      },
+      {
+        "id": "accessibility_request",
+        "label": "Necessidade de acessibilidade a confirmar",
+        "dataClass": "human_confirmation_required"
+      }
+    ],
+    "forbiddenFields": [
+      "senha",
+      "token",
+      "dados bancários",
+      "número de cartão",
+      "resultado de exame real",
+      "prontuário",
+      "diagnóstico",
+      "documento real durante o teste"
+    ],
+    "agentActions": [
+      "Identificar o serviço no catálogo fictício.",
+      "Coletar preferências de unidade, data, horário e canal.",
+      "Gerar um resumo administrativo da solicitação.",
+      "Marcar o status como aguardando confirmação humana.",
+      "Informar que nenhuma vaga real foi reservada."
+    ],
+    "agentProhibitions": [
+      "Criar compromisso em agenda real.",
+      "Prometer data, horário, profissional ou equipamento.",
+      "Confirmar preparo clínico individual.",
+      "Afirmar que enviou mensagem ou atualizou sistema externo.",
+      "Solicitar dados sensíveis desnecessários."
+    ]
+  },
+  "schedulingRules": {
+    "sameDayRequest": {
+      "mode": "human_confirmation_required",
+      "publicMessage": "Solicitações para o mesmo dia dependem de confirmação humana e não representam vaga reservada."
+    },
+    "advanceRequest": {
+      "individualServicesSuggestedMinimum": "1 dia útil fictício",
+      "equipmentDependentServicesSuggestedMinimum": "2 dias úteis fictícios",
+      "corporateBatchSuggestedMinimum": "3 dias úteis fictícios",
+      "binding": false,
+      "publicMessage": "Os prazos são referências fictícias de organização e não garantem disponibilidade."
+    },
+    "lateArrival": {
+      "simulatedTolerance": "10 minutos fictícios",
+      "rule": "Após esse período, a equipe humana decide entre manter, reorganizar ou reagendar.",
+      "agentMayDecide": false
+    },
+    "noShow": {
+      "rule": "Ausência no cenário simulado encerra o horário e exige nova solicitação.",
+      "automaticPenalty": false,
+      "financialConsequence": "deferred_to_step_6"
+    },
+    "preparationConcern": {
+      "rule": "Dúvida ou falha de preparo bloqueia confirmação automática e exige avaliação humana.",
+      "agentMayAssessClinicalAdequacy": false
+    }
+  },
+  "reschedulingPolicy": {
+    "agentMayReceiveRequest": true,
+    "agentMayApplyChange": false,
+    "requiredInformation": [
+      "Identificador fictício da solicitação, quando disponível.",
+      "Serviço fictício.",
+      "Nova preferência de data ou faixa de horário.",
+      "Motivo administrativo opcional e não sensível."
+    ],
+    "process": [
+      "Receber o pedido de reagendamento.",
+      "Confirmar que a alteração ainda não foi realizada.",
+      "Gerar resumo da nova preferência.",
+      "Encaminhar para confirmação humana.",
+      "Somente uma pessoa pode marcar o estado como confirmado no cenário simulado."
+    ]
+  },
+  "cancellationPolicy": {
+    "agentMayReceiveRequest": true,
+    "agentMayApplyCancellation": false,
+    "simulatedNoticeWindows": [
+      {
+        "serviceGroup": "individual_standard",
+        "suggestedNotice": "4 horas fictícias de antecedência"
+      },
+      {
+        "serviceGroup": "equipment_dependent",
+        "suggestedNotice": "12 horas fictícias de antecedência"
+      },
+      {
+        "serviceGroup": "corporate_batch",
+        "suggestedNotice": "1 dia útil fictício de antecedência"
+      }
+    ],
+    "binding": false,
+    "requiredInformation": [
+      "Identificador fictício da solicitação, quando disponível.",
+      "Serviço fictício.",
+      "Data e horário simulados.",
+      "Motivo administrativo opcional e não sensível."
+    ],
+    "process": [
+      "Receber a solicitação de cancelamento.",
+      "Informar que o cancelamento ainda não foi efetivado.",
+      "Gerar resumo administrativo.",
+      "Encaminhar para confirmação humana.",
+      "Somente uma pessoa pode marcar o estado como cancelado no cenário simulado."
+    ],
+    "publicMessage": "O Atendente de IA registra a solicitação, mas uma pessoa precisa confirmar o cancelamento."
+  },
+  "humanConfirmationTriggers": [
+    "Pedido para o mesmo dia.",
+    "Criança, gestante ou pessoa com condição específica.",
+    "Dúvida sobre preparo, medicamento ou adequação clínica.",
+    "Serviço dependente de equipamento.",
+    "Agenda empresarial em lote.",
+    "Necessidade de acessibilidade ou apoio especial.",
+    "Atraso, ausência ou pedido fora da janela fictícia.",
+    "Urgência, risco ou sintomas.",
+    "Informação ausente, contraditória ou fora do catálogo."
+  ],
+  "agentResponseTemplates": {
+    "schedulingRequestReceived": "Registrei sua preferência no cenário fictício. Isso ainda não representa uma vaga reservada. A equipe humana precisa confirmar serviço, unidade, data e horário.",
+    "reschedulingRequestReceived": "Registrei a nova preferência para o cenário fictício. O horário anterior não foi alterado automaticamente e a equipe humana precisa confirmar o reagendamento.",
+    "cancellationRequestReceived": "Registrei a solicitação de cancelamento no cenário fictício. Ela ainda precisa ser confirmada por uma pessoa.",
+    "sameDayRequest": "Posso organizar a solicitação, mas pedidos para o mesmo dia dependem de confirmação humana e não garantem vaga.",
+    "clinicalConcern": "Essa situação exige avaliação humana. Não posso confirmar preparo, adequação clínica ou segurança individual."
+  },
+  "deferredToLaterSteps": {
+    "paymentsAndInsurance": "step_6",
+    "frequentlyAskedQuestions": "step_7",
+    "completeHumanHandoffWorkflow": "step_8",
+    "testScenarios": "step_9",
+    "masterJsonContract": "step_11"
+  }
+}
