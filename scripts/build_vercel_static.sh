@@ -5,6 +5,12 @@ log(){ printf '[build_vercel_static] %s\n' "$*"; }; fail(){ printf '[build_verce
 copy_required_file(){ local p="$1"; [[ -f "${ROOT_DIR}/${p}" ]]||fail "arquivo público obrigatório ausente: ${p}"; mkdir -p "$(dirname "${DIST_DIR}/${p}")"; cp -p "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}"; }
 copy_optional_file(){ local p="$1"; if [[ -f "${ROOT_DIR}/${p}" ]];then mkdir -p "$(dirname "${DIST_DIR}/${p}")";cp -p "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}";fi; }
 copy_required_dir(){ local p="$1";[[ -d "${ROOT_DIR}/${p}" ]]||fail "diretório público obrigatório ausente: ${p}";cp -a "${ROOT_DIR}/${p}" "${DIST_DIR}/${p}"; }
+
+log "validando integração K.7.8.2A.14"
+node "${ROOT_DIR}/scripts/validate_workforce_package_builder.js"
+node "${ROOT_DIR}/scripts/validate_workforce_catalog_v2_contract.js"
+log "validações K.7.8.2A.14 concluídas"
+
 log "limpando saída anterior";rm -rf "${DIST_DIR}";mkdir -p "${DIST_DIR}"
 for file in index.html 404.html manifest.webmanifest robots.txt sitemap.xml;do copy_required_file "${file}";done
 copy_optional_file .nojekyll;copy_required_dir assets
@@ -16,10 +22,17 @@ for required in \
   assets/css/workforce-base.css \
   assets/css/home-commercial.css \
   assets/css/employee-builder.css \
+  assets/css/workforce-package.css \
   assets/js/journey-contracts.js \
   assets/js/state-store.js \
   assets/js/employee-builder.js \
   assets/js/prompt-generator.js \
+  assets/js/workforce-package-client.js \
+  assets/js/workforce-package-adapter.js \
+  assets/js/workforce-package-bootstrap.js \
+  assets/js/workforce-package-state.js \
+  assets/js/workforce-package-prompt.js \
+  assets/js/workforce-package-ui.js \
   assets/data/ai-employees.json \
   assets/img/predixai-workforce-flow.svg \
   assets/img/social-card.svg
@@ -32,6 +45,8 @@ if grep -q 'home-commercial.css' "${DIST_DIR}/assets/css/workforce.css";then fai
 grep -q 'Plataforma de Funcionários de IA' "${DIST_DIR}/solucoes/workforce/index.html"||fail "página Workforce inválida"
 grep -q 'data-k6-app' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "jornada K6 ausente"
 grep -q 'journey-contracts.js' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "contratos K6 ausentes"
+grep -q 'workforce-package-client.js' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "cliente de pacote ausente"
+grep -q 'workforce-package-ui.js' "${DIST_DIR}/funcionario-ia-gratis/index.html"||fail "interface de pacote ausente"
 grep -q '/funcionario-ia-gratis/' "${DIST_DIR}/sitemap.xml"||fail "Funcionário de IA Grátis ausente do sitemap"
 for forbidden in docs reports .github api supabase PROJECT_STATE.md predixai_context.json README.md .git .env .env.local;do [[ ! -e "${DIST_DIR}/${forbidden}" ]]||fail "arquivo proibido em dist/: ${forbidden}";done
 sensitive="$({ find "${DIST_DIR}" -type f \( -name '.env*' -o -name '*.pem' -o -name '*.key' -o -iname '*credential*' -o -iname '*secret*' -o -iname '*token*' \) -print -quit; }||true)";[[ -z "${sensitive}" ]]||fail "possível arquivo sensível: ${sensitive#${ROOT_DIR}/}"
