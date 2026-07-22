@@ -18,6 +18,16 @@ if (vercelEnv !== "preview" || branch !== targetBranch) {
 const serviceUrl = String(process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
 const publicToken = String(process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
 const actualKeySha256 = crypto.createHash("sha256").update(publicToken).digest("hex");
+const keyKind = publicToken.startsWith("sb_publishable_")
+  ? "MODERN_PUBLISHABLE"
+  : publicToken.split(".").length === 3
+    ? "LEGACY_JWT"
+    : "UNKNOWN";
+
+console.log(`SUPABASE_ENV_URL_SHA256=${crypto.createHash("sha256").update(serviceUrl).digest("hex")}`);
+console.log(`SUPABASE_ENV_KEY_SHA256=${actualKeySha256}`);
+console.log(`SUPABASE_ENV_KEY_LENGTH=${publicToken.length}`);
+console.log(`SUPABASE_ENV_KEY_KIND=${keyKind}`);
 
 if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(serviceUrl)) {
   throw new Error("SUPABASE_URL_INVALID_OR_MISSING");
@@ -25,7 +35,7 @@ if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(serviceUrl)) {
 if (serviceUrl !== expectedUrl) {
   throw new Error("SUPABASE_URL_PROJECT_MISMATCH");
 }
-if (!publicToken.startsWith("sb_publishable_") && publicToken.split(".").length !== 3) {
+if (keyKind === "UNKNOWN") {
   throw new Error("SUPABASE_PUBLISHABLE_KEY_INVALID_OR_MISSING");
 }
 if (actualKeySha256 !== expectedKeySha256) {
@@ -39,7 +49,7 @@ const headers = {
   apikey: publicToken,
   "content-type": "application/json",
   Accept: "application/json",
-  "x-client-info": "predixai-brand-vercel-preview-check/1.1"
+  "x-client-info": "predixai-brand-vercel-preview-check/1.2"
 };
 if (!publicToken.startsWith("sb_publishable_")) headers.Authorization = `Bearer ${publicToken}`;
 
