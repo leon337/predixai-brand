@@ -1,7 +1,11 @@
+const crypto = require("node:crypto");
+
 const targetBranch = "ptp-web-2-workforce-k6-questionnaire-r2";
 const packageId = "health-medical-testing-clinic-aurora";
 const contentVersion = "0.1.0";
 const checksum = "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69";
+const expectedUrl = "https://vcmvdmxmkmekcurcfdze.supabase.co";
+const expectedKeySha256 = "a5d28a5e4a5be457184ecebde66df47523a75e4459bacad7acc7197e2ae42fde";
 
 const vercelEnv = String(process.env.VERCEL_ENV || "");
 const branch = String(process.env.VERCEL_GIT_COMMIT_REF || "");
@@ -13,19 +17,29 @@ if (vercelEnv !== "preview" || branch !== targetBranch) {
 
 const serviceUrl = String(process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
 const publicToken = String(process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
+const actualKeySha256 = crypto.createHash("sha256").update(publicToken).digest("hex");
 
 if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(serviceUrl)) {
   throw new Error("SUPABASE_URL_INVALID_OR_MISSING");
 }
+if (serviceUrl !== expectedUrl) {
+  throw new Error("SUPABASE_URL_PROJECT_MISMATCH");
+}
 if (!publicToken.startsWith("sb_publishable_") && publicToken.split(".").length !== 3) {
   throw new Error("SUPABASE_PUBLISHABLE_KEY_INVALID_OR_MISSING");
 }
+if (actualKeySha256 !== expectedKeySha256) {
+  throw new Error("SUPABASE_PUBLISHABLE_KEY_FINGERPRINT_MISMATCH");
+}
+
+console.log("SUPABASE_URL_MATCH=YES");
+console.log("SUPABASE_PUBLISHABLE_KEY_FINGERPRINT_MATCH=YES");
 
 const headers = {
   apikey: publicToken,
   "content-type": "application/json",
   Accept: "application/json",
-  "x-client-info": "predixai-brand-vercel-preview-check/1.0"
+  "x-client-info": "predixai-brand-vercel-preview-check/1.1"
 };
 if (!publicToken.startsWith("sb_publishable_")) headers.Authorization = `Bearer ${publicToken}`;
 
