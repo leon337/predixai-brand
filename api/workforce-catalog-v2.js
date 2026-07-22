@@ -54,7 +54,7 @@ const supabaseHeaders = () => {
     apikey: publicToken,
     "content-type": "application/json",
     Accept: "application/json",
-    "x-client-info": "predixai-brand-workforce-catalog/2.0"
+    "x-client-info": "predixai-brand-workforce-catalog/2.1"
   };
   if (!publicToken.startsWith("sb_publishable_")) headers.Authorization = `Bearer ${publicToken}`;
   return headers;
@@ -87,7 +87,8 @@ const validRow = (row, packageId, contentVersion) => {
   if (row.checksum_sha256 !== expectedChecksum) return false;
   if (row.manifest?.packageId !== packageId || row.manifest?.contentVersion !== contentVersion) return false;
   if (row.manifest?.review?.approved !== true) return false;
-  if (row.manifest?.publicationGate?.packageChecksum !== expectedChecksum) return false;
+  const manifestChecksum = row.manifest?.publicationGate?.packageChecksum;
+  if (manifestChecksum && manifestChecksum !== expectedChecksum) return false;
   if (!validSafetyContract(row.manifest) || !validInventory(row.inventory)) return false;
   if (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload)) return false;
   return Object.keys(row.payload).length === 10;

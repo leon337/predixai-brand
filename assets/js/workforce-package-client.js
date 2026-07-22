@@ -57,7 +57,8 @@
     if (!ALLOWED_SOURCES.has(document.source)) fail("PACKAGE_SOURCE_NOT_ALLOWED");
     if (document.checksum?.algorithm !== "sha256" || document.checksum?.value !== CHECKSUM_SHA256) fail("PACKAGE_CHECKSUM_MISMATCH");
     if (document.manifest?.packageId !== PACKAGE_ID || document.manifest?.contentVersion !== CONTENT_VERSION) fail("PACKAGE_MANIFEST_IDENTITY_MISMATCH");
-    if (document.manifest?.publicationGate?.packageChecksum !== CHECKSUM_SHA256) fail("PACKAGE_MANIFEST_CHECKSUM_MISMATCH");
+    const manifestChecksum = document.manifest?.publicationGate?.packageChecksum;
+    if (manifestChecksum && manifestChecksum !== CHECKSUM_SHA256) fail("PACKAGE_MANIFEST_CHECKSUM_MISMATCH");
     if (document.manifest?.safetyInvariants?.realCustomerDataAllowed !== false) fail("PACKAGE_REAL_DATA_GUARD_MISSING");
     if (document.manifest?.publicationGate?.serviceRoleInBrowserAllowed !== false) fail("PACKAGE_BROWSER_SECRET_GUARD_MISSING");
     if (!document.payload || typeof document.payload !== "object" || Array.isArray(document.payload)) fail("PACKAGE_PAYLOAD_INVALID");
