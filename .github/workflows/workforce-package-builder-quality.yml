@@ -1,0 +1,39 @@
+name: Validar K.7.8.2A.14 Package Builder
+
+on:
+  pull_request:
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/css/workforce-package.css"
+      - "scripts/validate_workforce_package_builder.js"
+      - ".github/workflows/workforce-package-builder-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-builder-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validar sintaxe dos módulos K.7.8.2A.14
+        run: |
+          node --check assets/js/workforce-package-client.js
+          node --check assets/js/workforce-package-adapter.js
+          node --check assets/js/workforce-package-bootstrap.js
+          node --check assets/js/workforce-package-state.js
+          node --check assets/js/workforce-package-prompt.js
+          node --check assets/js/workforce-package-ui.js
+          node --check scripts/validate_workforce_package_builder.js
+      - name: Validar integração do pacote no criador
+        run: node scripts/validate_workforce_package_builder.js
+      - name: Validar referências estáticas e privacidade
+        run: |
+          grep -q 'workforce-package.css' funcionario-ia-gratis/index.html
+          grep -q 'workforce-package-client.js' funcionario-ia-gratis/index.html
+          grep -q 'workforce-package-ui.js' funcionario-ia-gratis/index.html
+          ! grep -REn 'SUPABASE_SERVICE_ROLE|sb_secret_|service_role' assets/js/workforce-package-*.js
+          ! grep -REn '\.supabase\.co' assets/js/workforce-package-*.js
+          echo 'K7_8_2A_14_STATIC_PRIVACY=PASS'
