@@ -1,12 +1,25 @@
 name: Validar K.7.8.2A.14 Package Builder
 
 on:
+  push:
+    branches:
+      - ptp-web-2-workforce-k6-questionnaire-r2
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/css/workforce-package.css"
+      - "api/workforce-catalog-v2.js"
+      - "scripts/validate_workforce_package_builder.js"
+      - "scripts/validate_workforce_catalog_v2_contract.js"
+      - ".github/workflows/workforce-package-builder-quality.yml"
   pull_request:
     paths:
       - "funcionario-ia-gratis/**"
       - "assets/js/workforce-package-*.js"
       - "assets/css/workforce-package.css"
+      - "api/workforce-catalog-v2.js"
       - "scripts/validate_workforce_package_builder.js"
+      - "scripts/validate_workforce_catalog_v2_contract.js"
       - ".github/workflows/workforce-package-builder-quality.yml"
   workflow_dispatch:
 
@@ -26,9 +39,13 @@ jobs:
           node --check assets/js/workforce-package-state.js
           node --check assets/js/workforce-package-prompt.js
           node --check assets/js/workforce-package-ui.js
+          node --check api/workforce-catalog-v2.js
           node --check scripts/validate_workforce_package_builder.js
+          node --check scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar integração do pacote no criador
         run: node scripts/validate_workforce_package_builder.js
+      - name: Validar contrato do handler Vercel
+        run: node scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar referências estáticas e privacidade
         run: |
           grep -q 'workforce-package.css' funcionario-ia-gratis/index.html
