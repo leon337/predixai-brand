@@ -161,6 +161,18 @@ const makeRequest = (overrides = {}) => ({
     assert.equal(head.statusCode, 200);
     assert.equal(head.ended, true);
 
+    global.fetch = async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify([{ ...publishedRow, checksum_sha256: "0".repeat(64) }])
+    });
+    const integrityFailure = await call(primaryHandler, makeRequest());
+    assert.equal(integrityFailure.statusCode, 409);
+    assert.equal(integrityFailure.body.status, "NOT_READY");
+    assert.equal(integrityFailure.body.source, "supabase_published_package");
+    assert.equal(integrityFailure.body.error, "PACKAGE_INTEGRITY_FAILED");
+    assert.equal(integrityFailure.headers["cache-control"], "no-store");
+
     global.fetch = async () => {
       throw new Error("simulated upstream outage");
     };
@@ -202,6 +214,7 @@ const makeRequest = (overrides = {}) => ({
     console.log("WORKFORCE_CATALOG_API_TESTS=PASS");
     console.log("PRIMARY_SOURCE=SUPABASE_PUBLISHED_PACKAGE");
     console.log("FALLBACK_SOURCE=GITHUB_BUILD_FALLBACK");
+    console.log("INTEGRITY_FAILURE=FAIL_CLOSED_409");
     console.log("REQUIRED_RESPONSE_FIELDS=PASS");
   } finally {
     global.fetch = originalFetch;
