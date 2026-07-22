@@ -62,7 +62,8 @@ global.fetch = async () => ({
   text: async () => JSON.stringify(upstreamRows)
 });
 
-const handler = require(path.join(root, "api", "workforce-catalog-v2.js"));
+// Importa o arquivo físico chamado pelo navegador, não o v2 diretamente.
+const handler = require(path.join(root, "api", "workforce-catalog.js"));
 
 const invoke = async (method = "GET", query = {}) => {
   const headers = {};
@@ -116,6 +117,7 @@ const query = {
   assert(blocked.body?.error === "PACKAGE_INTEGRITY_FAILED", "API_TAMPER_ERROR_INVALID");
   assert(blocked.body?.failedChecks?.includes("checksum"), "API_PREVIEW_DIAGNOSTIC_MISSING");
 
+  console.log("K7_8_2A_14_API_PHYSICAL_ROUTE_TO_V2=PASS");
   console.log("K7_8_2A_14_API_SUPABASE_DOCUMENT=PASS");
   console.log("K7_8_2A_14_API_RPC_SERIALIZATION_NORMALIZATION=PASS");
   console.log("K7_8_2A_14_API_INVENTORY_VALIDATION=PASS");
