@@ -1,16 +1,28 @@
 const legacyHandler = require("./workforce-catalog.js");
 
-const serviceUrl = String(process.env[["SUPABASE", "URL"].join("_")] || "").trim().replace(/\/+$/, "");
-const publicToken = String(process.env[["SUPABASE", "PUBLISHABLE", "KEY"].join("_")] || "").trim();
+const serviceUrl = String(process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
+const publicToken = String(process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
 const configured = /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(serviceUrl) && publicToken.length >= 20;
 const UPSTREAM_TIMEOUT_MS = 8000;
 const PACKAGE_ID = "health-medical-testing-clinic-aurora";
 const CONTENT_VERSION = "0.1.0";
 const EXPECTED_CHECKSUM = "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69";
-const REQUIRED_PAYLOAD_KEYS = new Set([
+const REQUIRED_PAYLOAD_KEYS = Object.freeze([
   "businessProfile", "questions", "services", "operations", "scheduling",
   "paymentsAndInsurance", "faq", "handoffRules", "scenarios", "agentTemplate"
 ]);
+const EXPECTED_INVENTORY = Object.freeze({
+  servicesCategories: 4,
+  services: 12,
+  units: 2,
+  channels: 4,
+  faqItems: 24,
+  handoffPriorities: 4,
+  handoffQueues: 9,
+  handoffLifecycleStates: 8,
+  testScenarios: 24,
+  promptSections: 13
+});
 
 const clean = (value, maxLength) => {
   const selected = Array.isArray(value) ? value[0] : value;
@@ -20,6 +32,23 @@ const clean = (value, maxLength) => {
 const header = (request, name) => {
   const value = request.headers?.[name];
   return Array.isArray(value) ? value[0] : String(value || "");
+};
+
+const parseObject = (value) => {
+  if (value && typeof value === "object" && !Array.isArray(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return null;
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+};
+
+const strictBoolean = (value) => {
+  if (value === true || value === "true") return true;
+  if (value === false || value === "false") return false;
+  return null;
 };
 
 const allowedOrigin = (request) => {
@@ -42,43 +71,87 @@ const supabaseHeaders = () => {
     apikey: publicToken,
     "content-type": "application/json",
     Accept: "application/json",
-    "x-client-info": "predixai-brand-workforce-catalog/2.2"
+    "x-client-info": "predixai-brand-workforce-catalog/2.3"
   };
   if (!publicToken.startsWith("sb_publishable_")) headers.Authorization = `Bearer ${publicToken}`;
   return headers;
 };
 
-const checkRow = (row, packageId, contentVersion) => {
+const normalizeRow = (raw) => {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  return {
+    ...raw,
+    fictional: strictBoolean(raw.fictional),
+    manifest: parseObject(raw.manifest),
+    payload: parseObject(raw.payload),
+    inventory: parseObject(raw.inventory)
+  };
+};
+
+const checkRow = (raw, packageId, contentVersion) => {
+  const row = normalizeRow(raw);
   const failed = [];
-  if (!row || typeof row !== "object" || Array.isArray(row)) return ["row_shape"];
+  if (!row) return { row: null, failed: ["row_shape"] };
+
   if (row.package_id !== packageId) failed.push("package_id");
   if (row.content_version !== contentVersion) failed.push("content_version");
   if (row.status !== "published") failed.push("status");
   if (row.fictional !== true) failed.push("fictional");
   if (row.checksum_sha256 !== EXPECTED_CHECKSUM) failed.push("checksum");
-  if (row.manifest?.packageId !== packageId) failed.push("manifest_package_id");
-  if (row.manifest?.contentVersion !== contentVersion) failed.push("manifest_content_version");
-  if (row.manifest?.review?.approved !== true) failed.push("manifest_review");
-  const duplicateChecksum = row.manifest?.publicationGate?.packageChecksum;
-  if (duplicateChecksum && duplicateChecksum !== EXPECTED_CHECKSUM) failed.push("manifest_checksum");
-  if (row.manifest?.safetyInvariants?.realCustomerDataAllowed !== false) failed.push("real_customer_data_guard");
-  if (row.manifest?.safetyInvariants?.realPatientDataAllowed !== false) failed.push("real_patient_data_guard");
-  if (row.manifest?.publicationGate?.serviceRoleInBrowserAllowed !== false) failed.push("browser_service_role_guard");
-  if (row.manifest?.publicationGate?.directBrowserWriteAllowed !== false) failed.push("browser_write_guard");
-  if (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload)) {
+
+  const manifest = row.manifest;
+  if (!manifest) {
+    failed.push("manifest_shape");
+  } else {
+    if (manifest.packageId !== packageId) failed.push("manifest_package_id");
+    if (manifest.contentVersion !== contentVersion) failed.push("manifest_content_version");
+    if (strictBoolean(manifest.review?.approved) !== true) failed.push("manifest_review");
+    const duplicateChecksum = manifest.publicationGate?.packageChecksum;
+    if (duplicateChecksum && duplicateChecksum !== EXPECTED_CHECKSUM) failed.push("manifest_checksum");
+
+    const requiredFalse = [
+      ["real_customer_data_guard", manifest.safetyInvariants?.realCustomerDataAllowed],
+      ["real_patient_data_guard", manifest.safetyInvariants?.realPatientDataAllowed],
+      ["real_record_access_guard", manifest.safetyInvariants?.realRecordAccessAllowed],
+      ["real_booking_guard", manifest.safetyInvariants?.realBookingAllowed],
+      ["real_payment_guard", manifest.safetyInvariants?.realPaymentAllowed],
+      ["clinical_advice_guard", manifest.safetyInvariants?.clinicalAdviceAllowed],
+      ["result_interpretation_guard", manifest.safetyInvariants?.resultInterpretationAllowed],
+      ["browser_service_role_guard", manifest.publicationGate?.serviceRoleInBrowserAllowed],
+      ["browser_write_guard", manifest.publicationGate?.directBrowserWriteAllowed]
+    ];
+    for (const [code, value] of requiredFalse) {
+      if (strictBoolean(value) !== false) failed.push(code);
+    }
+    if (strictBoolean(manifest.safetyInvariants?.administrativeOnly) !== true) failed.push("administrative_only_guard");
+  }
+
+  if (!row.payload) {
     failed.push("payload_shape");
   } else {
-    const keys = Object.keys(row.payload);
-    if (keys.length !== REQUIRED_PAYLOAD_KEYS.size || keys.some((key) => !REQUIRED_PAYLOAD_KEYS.has(key))) failed.push("payload_keys");
+    const keys = Object.keys(row.payload).sort();
+    const expectedKeys = [...REQUIRED_PAYLOAD_KEYS].sort();
+    if (keys.length !== expectedKeys.length || keys.some((key, index) => key !== expectedKeys[index])) failed.push("payload_keys");
   }
-  return failed;
+
+  if (!row.inventory) {
+    failed.push("inventory_shape");
+  } else {
+    for (const [key, expected] of Object.entries(EXPECTED_INVENTORY)) {
+      if (Number(row.inventory[key]) !== expected) failed.push(`inventory_${key}`);
+    }
+  }
+
+  return { row, failed };
 };
 
 const sendIntegrityFailure = (response, packageId, contentVersion, failed) => {
-  console.error(`WORKFORCE_CATALOG_INTEGRITY_FAILED=${failed.join(",") || "unknown"}`);
+  const safeFailures = [...new Set(failed)].slice(0, 20);
+  console.error(`WORKFORCE_CATALOG_INTEGRITY_FAILED=${safeFailures.join(",") || "unknown"}`);
   response.setHeader("Cache-Control", "no-store");
   response.setHeader("X-PredixAI-Catalog-Source", "supabase_published_package");
-  return response.status(409).json({
+  response.setHeader("X-PredixAI-Integrity-Failures", safeFailures.join(","));
+  const body = {
     packageId,
     contentVersion,
     source: "supabase_published_package",
@@ -86,7 +159,9 @@ const sendIntegrityFailure = (response, packageId, contentVersion, failed) => {
     payload: null,
     checksum: null,
     error: "PACKAGE_INTEGRITY_FAILED"
-  });
+  };
+  if (process.env.VERCEL_ENV === "preview") body.failedChecks = safeFailures;
+  return response.status(409).json(body);
 };
 
 const sendDocument = (request, response, row) => {
@@ -168,6 +243,7 @@ module.exports = async function handler(request, response) {
       console.error(`WORKFORCE_CATALOG_UPSTREAM_HTTP=${upstream.status}`);
       return legacyHandler(request, response);
     }
+
     let rows;
     try {
       rows = JSON.parse(await upstream.text());
@@ -179,9 +255,10 @@ module.exports = async function handler(request, response) {
       console.error(`WORKFORCE_CATALOG_UPSTREAM_ROWS=${Array.isArray(rows) ? rows.length : "not_array"}`);
       return legacyHandler(request, response);
     }
-    const failed = checkRow(rows[0], packageId, contentVersion);
-    if (failed.length) return sendIntegrityFailure(response, packageId, contentVersion, failed);
-    return sendDocument(request, response, rows[0]);
+
+    const checked = checkRow(rows[0], packageId, contentVersion);
+    if (checked.failed.length) return sendIntegrityFailure(response, packageId, contentVersion, checked.failed);
+    return sendDocument(request, response, checked.row);
   } catch (error) {
     console.error(`WORKFORCE_CATALOG_UPSTREAM_ERROR=${error instanceof Error ? error.message : "unknown"}`);
     return legacyHandler(request, response);
