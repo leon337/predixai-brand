@@ -18,7 +18,9 @@ jobs:
           bash scripts/validate_employee_builder.sh syntax
           node --check assets/js/employee-builder-ux.js
           node --check api/workforce-catalog.js
+          node --check api/workforce-catalog-deep-health.js
           node --check scripts/validate_workforce_catalog_api.js
+          node --check scripts/validate_workforce_catalog_deep_health.js
       - name: Validar catálogo e HTML do gerador
         run: bash scripts/validate_employee_builder.sh contract
       - name: Validar geração de prompt e diagnóstico
@@ -26,7 +28,9 @@ jobs:
       - name: Validar privacidade do gerador
         run: bash scripts/validate_employee_builder.sh privacy
       - name: Validar API do catálogo Workforce
-        run: node scripts/validate_workforce_catalog_api.js
+        run: |
+          node scripts/validate_workforce_catalog_api.js
+          node scripts/validate_workforce_catalog_deep_health.js
       - name: Validar Workforce e build estático
         run: bash scripts/validate_workforce.sh
       - name: Validar adaptação do GitHub Pages
@@ -41,9 +45,11 @@ jobs:
       - name: Validar contrato da função Vercel
         run: |
           grep -q 'api/workforce-catalog.js' vercel.json
+          grep -q 'api/workforce-catalog-deep-health.js' vercel.json
           grep -q 'health-medical-testing-clinic-aurora@0.1.0' api/workforce-catalog.js
           grep -q 'PACKAGE_INTEGRITY_FAILED' api/workforce-catalog.js
           grep -q 'directBrowserDatabaseAccess: false' api/workforce-catalog.js
+          grep -q 'supabase_published_package' api/workforce-catalog-deep-health.js
           echo 'VERCEL_WORKFORCE_API_CONTRACT=PASS'
       - name: Garantir ausência de credenciais administrativas
         run: |
