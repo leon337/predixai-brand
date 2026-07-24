@@ -29,6 +29,7 @@ const deeplyFrozen = (value, seen = new Set()) => {
   assert.equal(first.package.contentVersion, "0.1.0");
   assert.equal(first.metadata.questionCount, 19);
   assert.equal(first.metadata.bindingCount, 19);
+  assert.equal(first.metadata.bindingSchemaVersion, effective.BINDING_SCHEMA_VERSION);
   assert.equal(first.metadata.omittedOptionalCount, 0);
   assert.equal(first.resolvedAnswers.length, 19);
   assert.equal(first.traceability.effectiveConfigHash, second.traceability.effectiveConfigHash);
@@ -46,6 +47,7 @@ const deeplyFrozen = (value, seen = new Set()) => {
       answerModes: { employee_name: "edit_suggested" },
       answers: { employee_name: "Clara NFC" },
       omittedOptionalFields: [],
+      bindingSchemaVersion: effective.BINDING_SCHEMA_VERSION,
       updatedAt: "2026-07-24T00:00:00Z"
     }
   });
@@ -81,6 +83,10 @@ const deeplyFrozen = (value, seen = new Set()) => {
     packageDocument: questionnaire,
     packageCustomization: { answerModes: { service_region: "edit_suggested" }, answers: { service_region: "unknown" } }
   }));
+  await expectCode("BINDING_SCHEMA_VERSION_MISMATCH", () => effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { bindingSchemaVersion: "0.9.0", answerModes: {}, answers: {}, omittedOptionalFields: [] }
+  }));
 
   const duplicateBinding = clone(questionnaire);
   duplicateBinding.sections[0].questions[1].includeInPromptAs = "company.displayName";
@@ -89,6 +95,14 @@ const deeplyFrozen = (value, seen = new Set()) => {
   const unknownBinding = clone(questionnaire);
   unknownBinding.sections[0].questions[0].includeInPromptAs = "company.unknown";
   await expectCode("UNKNOWN_BINDING", () => effective.buildEffectiveAgentConfig({ packageDocument: unknownBinding }));
+
+  const partialDocument = clone(questionnaire);
+  partialDocument.sections = [{ ...partialDocument.sections[0], questions: [partialDocument.sections[0].questions[0]] }];
+  await expectCode("REQUIRED_BINDINGS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: partialDocument }));
+
+  const missingBindingDocument = clone(questionnaire);
+  missingBindingDocument.sections[0].questions.splice(0, 1);
+  await expectCode("REQUIRED_BINDINGS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: missingBindingDocument }));
 
   for (const malicious of ["__proto__.polluted", "company.prototype.value", "company.constructor.value", "company..name", "a.b.c.d.e"]) {
     assert.throws(() => effective.validateBindingPath(malicious));
@@ -117,6 +131,9 @@ const deeplyFrozen = (value, seen = new Set()) => {
   console.log("LEA_166_EFFECTIVE_CONFIG_CONTRACT=PASS");
   console.log("PACKAGE_QUESTIONS=19");
   console.log("BINDING_COVERAGE=100%");
+  console.log("EXACT_BINDING_SET=PASS");
+  console.log("PARTIAL_DOCUMENT_REJECTED=PASS");
+  console.log("BINDING_SCHEMA_VERSION_MISMATCH_REJECTED=PASS");
   console.log("UNKNOWN_BINDINGS=0");
   console.log("DUPLICATE_BINDINGS=0");
   console.log("PROMPT_INSTRUCTION_COVERAGE=100%");
