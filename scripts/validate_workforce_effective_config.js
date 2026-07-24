@@ -30,6 +30,7 @@ const deeplyFrozen = (value, seen = new Set()) => {
   assert.equal(first.metadata.questionCount, 19);
   assert.equal(first.metadata.bindingCount, 19);
   assert.equal(first.metadata.bindingSchemaVersion, effective.BINDING_SCHEMA_VERSION);
+  assert.equal(first.metadata.promptInstructionMapVersion, effective.PROMPT_INSTRUCTION_MAP_VERSION);
   assert.equal(first.metadata.omittedOptionalCount, 0);
   assert.equal(first.resolvedAnswers.length, 19);
   assert.equal(first.traceability.effectiveConfigHash, second.traceability.effectiveConfigHash);
@@ -88,6 +89,30 @@ const deeplyFrozen = (value, seen = new Set()) => {
     packageCustomization: { bindingSchemaVersion: "0.9.0", answerModes: {}, answers: {}, omittedOptionalFields: [] }
   }));
 
+  for (const field of ["answerModes", "answers", "omittedOptionalFields"]) {
+    const customization = { answerModes: {}, answers: {}, omittedOptionalFields: [] };
+    if (field === "omittedOptionalFields") customization[field] = ["unknown_question"];
+    else customization[field] = { unknown_question: field === "answerModes" ? "use_suggested" : "orphan" };
+    await expectCode("UNKNOWN_CUSTOMIZATION_ID", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, packageCustomization: customization }));
+  }
+
+  await expectCode("ORPHAN_CUSTOMIZATION_ANSWER", () => effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { answerModes: {}, answers: { employee_name: "resposta órfã" }, omittedOptionalFields: [] }
+  }));
+  await expectCode("ORPHAN_CUSTOMIZATION_ANSWER", () => effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { answerModes: { employee_name: "use_suggested" }, answers: { employee_name: "resposta órfã" }, omittedOptionalFields: [] }
+  }));
+  await expectCode("EDITED_ANSWER_REQUIRED", () => effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { answerModes: { employee_name: "edit_suggested" }, answers: {}, omittedOptionalFields: [] }
+  }));
+  await expectCode("DUPLICATE_OMITTED_OPTIONAL_ID", () => effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { answerModes: {}, answers: {}, omittedOptionalFields: ["company_display_name", "company_display_name"] }
+  }));
+
   const duplicateBinding = clone(questionnaire);
   duplicateBinding.sections[0].questions[1].includeInPromptAs = "company.displayName";
   await expectCode("DUPLICATE_BINDING", () => effective.buildEffectiveAgentConfig({ packageDocument: duplicateBinding }));
@@ -98,11 +123,35 @@ const deeplyFrozen = (value, seen = new Set()) => {
 
   const partialDocument = clone(questionnaire);
   partialDocument.sections = [{ ...partialDocument.sections[0], questions: [partialDocument.sections[0].questions[0]] }];
-  await expectCode("REQUIRED_BINDINGS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: partialDocument }));
+  await expectCode("REQUIRED_QUESTION_IDS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: partialDocument }));
 
-  const missingBindingDocument = clone(questionnaire);
-  missingBindingDocument.sections[0].questions.splice(0, 1);
-  await expectCode("REQUIRED_BINDINGS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: missingBindingDocument }));
+  const unknownQuestionId = clone(questionnaire);
+  unknownQuestionId.sections[0].questions[0].id = "unknown_question";
+  await expectCode("REQUIRED_QUESTION_IDS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: unknownQuestionId }));
+
+  const duplicateQuestionId = clone(questionnaire);
+  duplicateQuestionId.sections[0].questions[1].id = duplicateQuestionId.sections[0].questions[0].id;
+  await expectCode("DUPLICATE_QUESTION_ID", () => effective.buildEffectiveAgentConfig({ packageDocument: duplicateQuestionId }));
+
+  const materializerMissing = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  delete materializerMissing.instructions.employee_name;
+  await expectCode("MATERIALIZER_INSTRUCTIONS_MISSING", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: materializerMissing }));
+
+  const materializerExtra = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  materializerExtra.instructions.unknown_question = "Não permitido";
+  await expectCode("MATERIALIZER_INSTRUCTIONS_UNKNOWN", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: materializerExtra }));
+
+  const materializerVersion = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  materializerVersion.version = 999;
+  await expectCode("MATERIALIZER_MAP_VERSION_MISMATCH", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: materializerVersion }));
+
+  const materializerPackage = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  materializerPackage.packageId = "outro-pacote";
+  await expectCode("MATERIALIZER_MAP_PACKAGE_MISMATCH", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: materializerPackage }));
+
+  const materializerInvalid = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  materializerInvalid.instructions.employee_name = "";
+  await expectCode("MATERIALIZER_INSTRUCTION_INVALID", () => effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: materializerInvalid }));
 
   for (const malicious of ["__proto__.polluted", "company.prototype.value", "company.constructor.value", "company..name", "a.b.c.d.e"]) {
     assert.throws(() => effective.validateBindingPath(malicious));
@@ -113,7 +162,7 @@ const deeplyFrozen = (value, seen = new Set()) => {
   optional.sections[0].questions[0].required = false;
   const omitted = await effective.buildEffectiveAgentConfig({
     packageDocument: optional,
-    packageCustomization: { answerModes: { company_display_name: "do_not_include" }, omittedOptionalFields: ["company_display_name"] }
+    packageCustomization: { answerModes: {}, answers: {}, omittedOptionalFields: ["company_display_name"] }
   });
   assert.equal(omitted.metadata.omittedOptionalCount, 1);
   assert.equal(omitted.company?.displayName, undefined);
@@ -130,6 +179,12 @@ const deeplyFrozen = (value, seen = new Set()) => {
 
   console.log("LEA_166_EFFECTIVE_CONFIG_CONTRACT=PASS");
   console.log("PACKAGE_QUESTIONS=19");
+  console.log("QUESTION_ID_SET=EXACT");
+  console.log("CUSTOMIZATION_IDS_VALIDATED=PASS");
+  console.log("ORPHAN_CUSTOMIZATION_ANSWERS=REJECTED");
+  console.log("EDITED_ANSWER_REQUIRED=PASS");
+  console.log("MATERIALIZER_MAP_CONTRACT=CLOSED");
+  console.log("MATERIALIZER_INSTRUCTION_SET=EXACT");
   console.log("BINDING_COVERAGE=100%");
   console.log("EXACT_BINDING_SET=PASS");
   console.log("PARTIAL_DOCUMENT_REJECTED=PASS");
