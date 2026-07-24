@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "faqId": "health-medical-testing-clinic-aurora-faq",
+  "profileId": "health-medical-testing-clinic-aurora",
+  "status": "draft_for_review",
+  "fictional": true,
+  "fictionalNotice": "Todas as perguntas, respostas, horários, unidades, serviços, convênios e procedimentos deste arquivo são fictícios e existem somente para demonstração e teste.",
+  "scope": {
+    "administrativeOnly": true,
+    "clinicalAdviceAllowed": false,
+    "resultInterpretationAllowed": false,
+    "realRecordAccess": false,
+    "realAvailabilityLookup": false,
+    "realPaymentProcessing": false,
+    "agentMayUsePublishedAnswers": true,
+    "agentMayInventMissingAnswer": false
+  },
+  "responsePolicy": {
+    "whenAnswerExists": [
+      "Responder usando somente a resposta publicada e o contexto do pacote fictício.",
+      "Declarar quando preço, disponibilidade, cobertura ou confirmação dependem de uma pessoa.",
+      "Manter a resposta administrativa, clara e objetiva."
+    ],
+    "whenAnswerIsMissing": [
+      "Informar que a informação não consta na base fictícia atual.",
+      "Não completar a lacuna por suposição.",
+      "Oferecer encaminhamento para confirmação humana simulada."
+    ],
+    "whenQuestionIsClinical": [
+      "Não interpretar sintomas, resultados ou adequação individual.",
+      "Informar que a situação exige avaliação humana.",
+      "Em situação descrita como urgente ou de risco, orientar a procurar atendimento humano apropriado sem realizar diagnóstico."
+    ],
+    "mandatoryDisclosure": "Este atendimento utiliza uma empresa e dados fictícios para demonstração. Nenhuma resposta confirma operação, registro, atendimento ou transação no mundo real."
+  },
+  "categories": [
+    {"id": "general", "label": "Informações gerais"},
+    {"id": "services", "label": "Exames e serviços"},
+    {"id": "scheduling", "label": "Agendamento e cancelamento"},
+    {"id": "preparation", "label": "Preparo administrativo"},
+    {"id": "units_hours", "label": "Unidades e horários"},
+    {"id": "payments_insurance", "label": "Pagamentos e convênios"},
+    {"id": "results_records", "label": "Resultados e registros"},
+    {"id": "special_cases", "label": "Situações especiais"}
+  ],
+  "items": [
+    {
+      "id": "faq_001",
+      "categoryId": "general",
+      "question": "Quais serviços a Clínica Aurora oferece?",
+      "answer": "No cenário fictício, a Clínica Aurora oferece análises laboratoriais, exames cardiológicos, exames de imagem e atendimento administrativo ocupacional. A disponibilidade de cada serviço depende da unidade e de confirmação humana.",
+      "humanConfirmationRequired": true,
+      "keywords": ["serviços", "exames", "oferece", "catálogo"]
+    },
+    {
+      "id": "faq_002",
+      "categoryId": "general",
+      "question": "O atendimento é real?",
+      "answer": "Não. A Clínica Aurora Diagnósticos, seus dados e todos os atendimentos deste ambiente são fictícios e existem somente para demonstração do Funcionário de IA.",
+      "humanConfirmationRequired": false,
+      "keywords": ["real", "fictício", "teste", "demonstração"]
+    },
+    {
+      "id": "faq_003",
+      "categoryId": "services",
+      "question": "A clínica realiza hemograma completo?",
+      "answer": "Sim, o hemograma completo consta no catálogo fictício de análises laboratoriais. Preparo, documentos, prazo de resultado e disponibilidade precisam ser confirmados pela equipe humana simulada.",
+      "humanConfirmationRequired": true,
+      "serviceId": "complete_blood_count",
+      "keywords": ["hemograma", "sangue", "laboratório"]
+    },
+    {
+      "id": "faq_004",
+      "categoryId": "services",
+      "question": "A clínica realiza ultrassonografia abdominal?",
+      "answer": "Sim, a ultrassonografia abdominal consta no catálogo fictício. O exame exige agendamento simulado e a equipe humana deve confirmar unidade, disponibilidade, solicitação médica e preparo aplicável.",
+      "humanConfirmationRequired": true,
+      "serviceId": "abdominal_ultrasound",
+      "keywords": ["ultrassom", "ultrassonografia", "abdome"]
+    },
+    {
+      "id": "faq_005",
+      "categoryId": "services",
+      "question": "A clínica realiza exames ocupacionais?",
+      "answer": "O cenário inclui atendimento administrativo para exames ocupacionais e organização de agenda empresarial. Tipo de exame, documentos, contrato, agenda e qualquer decisão clínica dependem de validação humana.",
+      "humanConfirmationRequired": true,
+      "serviceId": "occupational_exam_admin",
+      "keywords": ["ocupacional", "admissional", "periódico", "demissional", "empresa"]
+    },
+    {
+      "id": "faq_006",
+      "categoryId": "scheduling",
+      "question": "Como faço para agendar um exame?",
+      "answer": "Posso registrar no cenário fictício o serviço, a unidade, o período e o canal de retorno preferidos. Isso não reserva uma vaga. Uma pessoa precisa confirmar serviço, unidade, data e horário.",
+      "humanConfirmationRequired": true,
+      "keywords": ["agendar", "marcar", "horário", "vaga"]
+    },
+    {
+      "id": "faq_007",
+      "categoryId": "scheduling",
+      "question": "Tem vaga para hoje?",
+      "answer": "Não consigo consultar agenda real nem confirmar vaga. Posso organizar a solicitação fictícia, mas pedidos para o mesmo dia dependem de confirmação humana.",
+      "humanConfirmationRequired": true,
+      "keywords": ["hoje", "vaga", "disponibilidade", "mesmo dia"]
+    },
+    {
+      "id": "faq_008",
+      "categoryId": "scheduling",
+      "question": "Como reagendar meu exame?",
+      "answer": "Posso registrar uma nova preferência fictícia de data ou horário e preparar um resumo. O horário anterior não será alterado automaticamente; uma pessoa precisa confirmar o reagendamento.",
+      "humanConfirmationRequired": true,
+      "keywords": ["reagendar", "mudar", "nova data", "novo horário"]
+    },
+    {
+      "id": "faq_009",
+      "categoryId": "scheduling",
+      "question": "Como cancelar um agendamento?",
+      "answer": "Posso registrar a solicitação de cancelamento no cenário fictício. O cancelamento não é efetivado automaticamente e precisa ser confirmado por uma pessoa.",
+      "humanConfirmationRequired": true,
+      "keywords": ["cancelar", "cancelamento", "desmarcar"]
+    },
+    {
+      "id": "faq_010",
+      "categoryId": "scheduling",
+      "question": "O que acontece se eu me atrasar?",
+      "answer": "No cenário fictício existe uma referência de tolerância de 10 minutos. Depois disso, a equipe humana decide se mantém, reorganiza ou reage agenda. O Atendente de IA não toma essa decisão.",
+      "humanConfirmationRequired": true,
+      "keywords": ["atraso", "atrasar", "tolerância"]
+    },
+    {
+      "id": "faq_011",
+      "categoryId": "preparation",
+      "question": "Preciso estar em jejum?",
+      "answer": "A necessidade e a duração de jejum variam conforme o exame e o protocolo fictício. Não posso definir um preparo individual. A equipe humana deve confirmar a instrução oficial aplicável.",
+      "humanConfirmationRequired": true,
+      "keywords": ["jejum", "preparo", "comer", "alimentação"]
+    },
+    {
+      "id": "faq_012",
+      "categoryId": "preparation",
+      "question": "Posso tomar meus medicamentos antes do exame?",
+      "answer": "Não posso orientar suspensão, alteração ou manutenção de medicamentos para uma pessoa específica. Essa dúvida precisa ser confirmada com a equipe humana responsável.",
+      "humanConfirmationRequired": true,
+      "keywords": ["medicamento", "remédio", "suspender", "tomar"]
+    },
+    {
+      "id": "faq_013",
+      "categoryId": "preparation",
+      "question": "Quais documentos devo levar?",
+      "answer": "No cenário fictício, normalmente são sugeridos documento de identificação e solicitação médica quando aplicável. A lista exata depende do serviço, da unidade e do tipo de atendimento e deve ser confirmada por uma pessoa.",
+      "humanConfirmationRequired": true,
+      "keywords": ["documentos", "identidade", "pedido médico", "solicitação"]
+    },
+    {
+      "id": "faq_014",
+      "categoryId": "units_hours",
+      "question": "Qual é o horário de atendimento?",
+      "answer": "No cenário fictício, o atendimento administrativo funciona de segunda a sexta, das 7h às 18h, e aos sábados, das 7h às 12h. Horários de serviços específicos, feriados e alterações temporárias precisam de confirmação humana.",
+      "humanConfirmationRequired": true,
+      "keywords": ["horário", "abre", "fecha", "sábado"]
+    },
+    {
+      "id": "faq_015",
+      "categoryId": "units_hours",
+      "question": "Onde ficam as unidades?",
+      "answer": "O cenário possui duas unidades fictícias: Recife Centro, na Avenida das Palmeiras, 120, Boa Vista; e Boa Viagem, na Rua do Sol Nascente, 45. Esses endereços são apenas demonstrativos e não devem ser usados como localização real.",
+      "humanConfirmationRequired": false,
+      "keywords": ["endereço", "localização", "unidade", "onde fica"]
+    },
+    {
+      "id": "faq_016",
+      "categoryId": "units_hours",
+      "question": "A clínica abre aos domingos ou feriados?",
+      "answer": "No cenário fictício, as unidades ficam fechadas aos domingos. O funcionamento em feriados, recessos ou datas especiais não está confirmado e depende de validação humana.",
+      "humanConfirmationRequired": true,
+      "keywords": ["domingo", "feriado", "recesso", "abre"]
+    },
+    {
+      "id": "faq_017",
+      "categoryId": "payments_insurance",
+      "question": "Qual é o preço do exame?",
+      "answer": "Os valores não estão publicados no ambiente fictício. Posso registrar o serviço para uma solicitação de orçamento, mas preço final, desconto, parcelamento e condições dependem de validação humana.",
+      "humanConfirmationRequired": true,
+      "keywords": ["preço", "valor", "quanto custa", "orçamento"]
+    },
+    {
+      "id": "faq_018",
+      "categoryId": "payments_insurance",
+      "question": "Quais formas de pagamento são aceitas?",
+      "answer": "O cenário inclui PIX, débito, crédito e faturamento empresarial fictícios. Nenhuma chave, QR Code, boleto, link ou cobrança real será gerada, e nenhum dado financeiro deve ser enviado.",
+      "humanConfirmationRequired": true,
+      "keywords": ["pagamento", "pix", "cartão", "boleto"]
+    },
+    {
+      "id": "faq_019",
+      "categoryId": "payments_insurance",
+      "question": "A clínica aceita meu convênio?",
+      "answer": "Posso registrar o nome de um convênio fictício, mas aceitação, cobertura, carência, coparticipação e autorização precisam ser confirmadas pela equipe humana. Não envie cartão, número de beneficiário ou documento real neste teste.",
+      "humanConfirmationRequired": true,
+      "keywords": ["convênio", "plano", "cobertura", "aceita"]
+    },
+    {
+      "id": "faq_020",
+      "categoryId": "results_records",
+      "question": "Quando meu resultado fica pronto?",
+      "answer": "O prazo de resultado não está publicado de forma geral neste pacote fictício e varia conforme o serviço. A equipe humana precisa confirmar o prazo aplicável.",
+      "humanConfirmationRequired": true,
+      "keywords": ["resultado", "prazo", "fica pronto", "laudo"]
+    },
+    {
+      "id": "faq_021",
+      "categoryId": "results_records",
+      "question": "Você pode explicar meu resultado?",
+      "answer": "Não. O Atendente de IA não interpreta resultados, não faz diagnóstico e não recomenda tratamento. A interpretação deve ser realizada por um profissional humano habilitado.",
+      "humanConfirmationRequired": true,
+      "keywords": ["interpretar", "resultado", "diagnóstico", "laudo"]
+    },
+    {
+      "id": "faq_022",
+      "categoryId": "results_records",
+      "question": "Você consegue acessar meu cadastro ou meus exames?",
+      "answer": "Não. Este ambiente não possui acesso a cadastro, prontuário, agenda, resultados ou sistemas reais. Não envie dados pessoais, documentos ou resultados reais durante o teste.",
+      "humanConfirmationRequired": false,
+      "keywords": ["cadastro", "acessar", "prontuário", "meus exames"]
+    },
+    {
+      "id": "faq_023",
+      "categoryId": "special_cases",
+      "question": "A clínica atende crianças ou gestantes?",
+      "answer": "O pacote fictício não confirma automaticamente atendimento, preparo ou adequação para crianças, gestantes ou pessoas com condição específica. Uma pessoa precisa validar o serviço, a unidade e as orientações aplicáveis.",
+      "humanConfirmationRequired": true,
+      "keywords": ["criança", "gestante", "grávida", "idade"]
+    },
+    {
+      "id": "faq_024",
+      "categoryId": "special_cases",
+      "question": "Estou passando mal. O que devo fazer?",
+      "answer": "Não posso avaliar sintomas nem definir a gravidade. Procure atendimento humano apropriado. Quando houver risco imediato ou piora importante, utilize o serviço de emergência disponível na sua região.",
+      "humanConfirmationRequired": true,
+      "keywords": ["passando mal", "urgência", "emergência", "sintomas"]
+    }
+  ],
+  "prohibitedTopicsForAutomaticAnswer": [
+    "Interpretação de resultado ou imagem.",
+    "Diagnóstico, prognóstico ou tratamento.",
+    "Alteração ou suspensão de medicamento.",
+    "Adequação clínica individual.",
+    "Confirmação de urgência ou gravidade.",
+    "Preço, cobertura, vaga ou prazo não publicado.",
+    "Acesso a cadastro, prontuário ou sistema real."
+  ],
+  "deferredToLaterSteps": {
+    "humanHandoffWorkflow": "step_8",
+    "testScenarios": "step_9",
+    "finalPrompt": "step_10"
+  }
+}

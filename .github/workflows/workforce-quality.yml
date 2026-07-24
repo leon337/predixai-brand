@@ -13,14 +13,28 @@ jobs:
       - uses: actions/checkout@v6
       - name: Preparar validadores
         run: chmod +x scripts/build_vercel_static.sh scripts/validate_workforce.sh scripts/validate_employee_builder.sh scripts/prepare_github_pages.sh
-      - name: Validar sintaxe do gerador
-        run: bash scripts/validate_employee_builder.sh syntax
+      - name: Validar sintaxe do gerador e APIs
+        run: |
+          bash scripts/validate_employee_builder.sh syntax
+          node --check assets/js/employee-builder-ux.js
+          node --check api/workforce-catalog.js
+          node --check api/workforce-catalog-v2.js
+          node --check api/workforce-catalog-fallback.js
+          node --check api/workforce-catalog-deep-health.js
+          node --check scripts/validate_workforce_catalog_api.js
+          node --check scripts/validate_workforce_catalog_deep_health.js
+          node --check scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar catálogo e HTML do gerador
         run: bash scripts/validate_employee_builder.sh contract
       - name: Validar geração de prompt e diagnóstico
         run: bash scripts/validate_employee_builder.sh runtime
       - name: Validar privacidade do gerador
         run: bash scripts/validate_employee_builder.sh privacy
+      - name: Validar API do catálogo Workforce
+        run: |
+          node scripts/validate_workforce_catalog_api.js
+          node scripts/validate_workforce_catalog_deep_health.js
+          node scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar Workforce e build estático
         run: bash scripts/validate_workforce.sh
       - name: Validar adaptação do GitHub Pages
@@ -29,15 +43,30 @@ jobs:
           grep -q 'href="/predixai-brand/solucoes/workforce/"' dist/index.html
           grep -q 'href="/predixai-brand/funcionario-ia-gratis/"' dist/index.html
           grep -q 'src="/predixai-brand/assets/js/employee-builder.js"' dist/funcionario-ia-gratis/index.html
+          grep -q 'src="/predixai-brand/assets/js/employee-builder-ux.js"' dist/funcionario-ia-gratis/index.html
           grep -q 'href="/predixai-brand/validacao/' dist/index.html
           echo 'GITHUB_PAGES_SECONDARY=PASS'
+      - name: Validar contrato da função Vercel
+        run: |
+          grep -q 'api/workforce-catalog.js' vercel.json
+          grep -q 'api/workforce-catalog-deep-health.js' vercel.json
+          grep -q 'workforce-catalog-v2.js' api/workforce-catalog.js
+          grep -q 'workforce-catalog-fallback.js' api/workforce-catalog.js
+          grep -q 'health-medical-testing-clinic-aurora' api/workforce-catalog-v2.js
+          grep -q 'PACKAGE_INTEGRITY_FAILED' api/workforce-catalog-v2.js
+          grep -q 'directBrowserDatabaseAccess: false' api/workforce-catalog-v2.js
+          grep -q 'github_build_fallback' api/workforce-catalog-fallback.js
+          grep -q 'supabase_published_package' api/workforce-catalog-deep-health.js
+          echo 'VERCEL_WORKFORCE_API_CONTRACT=PASS'
       - name: Garantir ausência de credenciais administrativas
         run: |
           set -Eeuo pipefail
           if git grep -nE 'SUPABASE_SERVICE_ROLE|sb_secret_|sk-[A-Za-z0-9_-]{20,}' -- \
             ':!*.md' \
             ':!reports/**' \
-            ':!.github/workflows/workforce-quality.yml'
+            ':!scripts/validate_workforce_package_builder.js' \
+            ':!.github/workflows/workforce-quality.yml' \
+            ':!.github/workflows/workforce-package-builder-quality.yml'
           then
             echo 'Possível credencial administrativa encontrada.' >&2
             exit 1

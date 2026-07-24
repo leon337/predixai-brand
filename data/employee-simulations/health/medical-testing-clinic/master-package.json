@@ -1,0 +1,222 @@
+{
+  "schemaVersion": "1.0.0-draft",
+  "contentVersion": "0.1.0",
+  "packageId": "health-medical-testing-clinic-aurora",
+  "packageSlug": "health/medical-testing-clinic/aurora",
+  "status": "approved_for_publication",
+  "fictional": true,
+  "fictionalNotice": "Este pacote contém somente empresa, pessoas, serviços, contatos, agendas, pagamentos, convênios, cenários e registros fictícios para demonstração e teste.",
+  "segment": {
+    "categoryId": "health",
+    "categoryLabel": "Saúde",
+    "segmentId": "medical-testing-clinic",
+    "segmentLabel": "Clínica de exames",
+    "subsegmentId": "diagnostic-services",
+    "subsegmentLabel": "Serviços de diagnóstico ambulatorial"
+  },
+  "architecture": {
+    "sourceOfTruth": "github",
+    "runtimeCatalog": "supabase",
+    "deliveryLayer": "vercel_api",
+    "temporaryUserState": "session_storage",
+    "realCustomerDataAllowed": false,
+    "browserAdministrativeCredentialAllowed": false,
+    "developmentMethod": "one_segment_at_a_time"
+  },
+  "components": [
+    {
+      "id": "businessProfile",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/business-profile.json",
+      "runtimeTarget": "businessProfile"
+    },
+    {
+      "id": "questionnaire",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/questions-and-suggested-answers.json",
+      "runtimeTarget": "questions"
+    },
+    {
+      "id": "servicesCatalog",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/services-catalog.json",
+      "runtimeTarget": "services"
+    },
+    {
+      "id": "unitsHoursChannels",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/units-hours-channels.json",
+      "runtimeTarget": "operations"
+    },
+    {
+      "id": "schedulingCancellations",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/scheduling-cancellations.json",
+      "runtimeTarget": "scheduling"
+    },
+    {
+      "id": "paymentsInsurance",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/payments-insurance.json",
+      "runtimeTarget": "paymentsAndInsurance"
+    },
+    {
+      "id": "faq",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/faq.json",
+      "runtimeTarget": "faq"
+    },
+    {
+      "id": "humanHandoff",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/human-handoff.json",
+      "runtimeTarget": "handoffRules"
+    },
+    {
+      "id": "scenarios",
+      "required": true,
+      "format": "json",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/scenarios-and-expected-responses.json",
+      "runtimeTarget": "scenarios"
+    },
+    {
+      "id": "operationalPrompt",
+      "required": true,
+      "format": "markdown",
+      "sourcePath": "data/employee-simulations/health/medical-testing-clinic/operational-prompt.md",
+      "runtimeTarget": "agentTemplate.promptText"
+    }
+  ],
+  "assembly": {
+    "mode": "self_contained_payload_at_publication",
+    "sourceComponentsRemainCanonical": true,
+    "silentFallbackAllowed": false,
+    "missingRequiredComponentBehavior": "block_generation",
+    "outputShape": {
+      "businessProfile": "component:businessProfile",
+      "questions": "component:questionnaire",
+      "services": "component:servicesCatalog",
+      "operations": "component:unitsHoursChannels",
+      "scheduling": "component:schedulingCancellations",
+      "paymentsAndInsurance": "component:paymentsInsurance",
+      "faq": "component:faq",
+      "handoffRules": "component:humanHandoff",
+      "scenarios": "component:scenarios",
+      "agentTemplate": {
+        "promptText": "component:operationalPrompt"
+      }
+    }
+  },
+  "expectedInventory": {
+    "servicesCategories": 4,
+    "services": 12,
+    "units": 2,
+    "channels": 4,
+    "faqItems": 24,
+    "handoffPriorities": 4,
+    "handoffQueues": 9,
+    "handoffLifecycleStates": 8,
+    "testScenarios": 24,
+    "promptSections": 13
+  },
+  "crossComponentRules": [
+    "Todos os componentes JSON devem declarar fictional=true.",
+    "Todos os componentes devem usar o mesmo profileId health-medical-testing-clinic-aurora quando o campo existir.",
+    "Identificadores de serviço, unidade, fila e prioridade referenciados devem existir no componente canônico correspondente.",
+    "O prompt operacional não pode ampliar serviços, horários, políticas, preços, convênios ou permissões além dos componentes publicados.",
+    "Ausência ou contradição entre componentes deve bloquear geração completa e produzir estado de revisão humana."
+  ],
+  "safetyInvariants": {
+    "administrativeOnly": true,
+    "realCustomerDataAllowed": false,
+    "realPatientDataAllowed": false,
+    "realRecordAccessAllowed": false,
+    "realBookingAllowed": false,
+    "realCancellationAllowed": false,
+    "realPaymentAllowed": false,
+    "realInsuranceLookupAllowed": false,
+    "clinicalAdviceAllowed": false,
+    "resultInterpretationAllowed": false,
+    "externalActionAllowed": false,
+    "humanContactGuaranteeAllowed": false,
+    "responseTimePromiseAllowed": false
+  },
+  "runtimeContract": {
+    "sourcePriority": [
+      "supabase_published_package",
+      "github_build_fallback"
+    ],
+    "successStatus": "READY",
+    "partialStatus": "PARTIAL",
+    "failureStatus": "NOT_READY",
+    "requiredResponseFields": [
+      "packageId",
+      "contentVersion",
+      "source",
+      "status",
+      "payload",
+      "checksum"
+    ],
+    "fallbackPolicy": {
+      "supabaseUnavailable": "use_versioned_build_fallback",
+      "bothSourcesUnavailable": "block_generation",
+      "partialComponentRecovery": "allowlist_only"
+    }
+  },
+  "userCustomizationContract": {
+    "storage": "sessionStorage",
+    "sameTabOnly": true,
+    "atomicNamespaceRequired": true,
+    "persistToSupabase": false,
+    "realPersonalDataAllowed": false,
+    "allowedOperations": [
+      "use_suggested_value",
+      "edit_suggested_value",
+      "omit_optional_field",
+      "reset_session"
+    ]
+  },
+  "publicationGate": {
+    "requiredStatusBeforeSupabase": "approved_for_publication",
+    "requiredChecks": [
+      "all_required_components_present",
+      "json_schema_valid",
+      "cross_component_references_valid",
+      "expected_inventory_valid",
+      "safety_invariants_valid",
+      "prompt_alignment_valid",
+      "package_checksum_generated"
+    ],
+    "checksumAlgorithm": "sha256",
+    "checksumStatus": "verified",
+    "serviceRoleInBrowserAllowed": false,
+    "directBrowserWriteAllowed": false
+  },
+  "governance": {
+    "linearIssue": "LEA-116",
+    "githubPr": 9,
+    "trackerPath": "docs/history/ptp/PTP-WEB/PTP-WEB.2/20260722_PTP-WEB.2.8.3K_K7.8.2A_CLINICA_EXAMES_TRACKER.md",
+    "currentStep": "K.7.8.2A.11",
+    "mergeBlocked": true,
+    "productionChanged": false
+  },
+  "deferredToLaterSteps": {
+    "supabasePublication": "K.7.8.2A.12",
+    "vercelApi": "K.7.8.2A.13",
+    "builderIntegration": "K.7.8.2A.14"
+  },
+  "review": {
+    "requiresConceptualApproval": true,
+    "approved": true,
+    "approvedBy": "Leo",
+    "approvedAt": "2026-07-22 15:36:32.373607+00"
+  }
+}

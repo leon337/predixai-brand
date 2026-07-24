@@ -1,0 +1,190 @@
+@layer components {
+  body.employee-builder-page.page-shell {
+    padding-top: 0;
+  }
+
+  .employee-builder-page,
+  .k6-root,
+  .k6-shell {
+    min-height: 100dvh;
+  }
+
+  .k6-shell {
+    width: min(100%, 1320px);
+    padding-block-start: clamp(8px, 1.5vw, 14px);
+  }
+
+  .k6-card h1 {
+    max-inline-size: 18ch;
+    font-size: clamp(1.9rem, calc(1.3rem + 2vw), 2.8rem);
+    line-height: 1.04;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: balance;
+  }
+
+  .k6-hero-card {
+    min-height: auto;
+    align-content: start;
+  }
+
+  .k6-phase-nav li {
+    padding-inline: clamp(4px, 1vw, 10px);
+    font-size: clamp(.66rem, calc(.58rem + .35vw), .82rem);
+  }
+
+  .k6-option-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  }
+
+  .k6-action-bar {
+    position: static;
+  }
+
+  .k6-protection-panel {
+    border-color: rgba(82, 242, 210, .24);
+    background: linear-gradient(145deg, rgba(82, 242, 210, .055), rgba(93, 168, 255, .035));
+  }
+
+  .k6-protection-panel h2 {
+    margin: 0;
+    font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+  }
+
+  .k6-protection-intro {
+    max-width: 64ch;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: .92rem;
+    line-height: 1.5;
+  }
+
+  .k6-protection-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 8px 14px !important;
+    margin-top: 14px !important;
+    padding: 0 !important;
+    list-style: none;
+  }
+
+  .k6-protection-list li {
+    position: relative;
+    min-width: 0;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid rgba(82, 242, 210, .13);
+    border-radius: 12px;
+    color: #dce9f8;
+    background: rgba(7, 17, 31, .5);
+    line-height: 1.35;
+  }
+
+  .k6-protection-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 13px;
+    top: 9px;
+    color: var(--cyan);
+    font-weight: 900;
+  }
+
+  .k6-protection-help {
+    color: var(--muted);
+  }
+
+  @media (min-width: 980px) {
+    .k6-configuration-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+      column-gap: clamp(20px, 3vw, 34px);
+      align-items: start;
+    }
+
+    .k6-configuration-card > .eyebrow,
+    .k6-configuration-card > h1 {
+      grid-column: 1 / -1;
+    }
+
+    .k6-configuration-card > .k6-protection-panel {
+      grid-column: 2;
+      grid-row: 3 / span 5;
+      margin-top: 18px;
+    }
+
+    .k6-configuration-card > .k6-field,
+    .k6-configuration-card > .k6-fieldset,
+    .k6-configuration-card > .k6-field-help {
+      grid-column: 1;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .k6-shell {
+      padding: 8px 10px max(22px, env(safe-area-inset-bottom));
+    }
+
+    .k6-app-header {
+      min-height: 52px;
+    }
+
+    .k6-card {
+      padding: clamp(16px, 4.5vw, 20px);
+    }
+
+    .k6-card h1 {
+      max-inline-size: none;
+      font-size: clamp(1.72rem, 7.4vw, 2.3rem);
+      line-height: 1.04;
+      letter-spacing: -.035em;
+    }
+
+    .k6-card h2 {
+      font-size: clamp(1.15rem, 4.8vw, 1.5rem);
+    }
+
+    .k6-phase-nav {
+      margin: 8px 0 10px;
+    }
+
+    .k6-phase-nav ol {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .k6-phase-nav li {
+      min-height: 36px;
+      padding: 6px 3px;
+      gap: 3px;
+      font-size: clamp(.58rem, 2.35vw, .7rem);
+      white-space: nowrap;
+    }
+
+    .k6-option-grid {
+      margin-top: 16px;
+      gap: 8px;
+    }
+
+    .k6-option {
+      min-height: 54px;
+    }
+
+    .k6-option span {
+      padding: 12px 13px;
+    }
+
+    .k6-action-bar {
+      margin-top: 12px;
+    }
+
+    .k6-protection-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .k6-option span,
+    .button {
+      transition: none;
+    }
+  }
+}

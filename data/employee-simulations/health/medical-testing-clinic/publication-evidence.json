@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.1.0",
+  "stepId": "K.7.8.2A.12",
+  "status": "published_approved",
+  "packageId": "health-medical-testing-clinic-aurora",
+  "contentVersion": "0.1.0",
+  "fictional": true,
+  "approval": {
+    "step12Approved": true,
+    "approvedBy": "Leo",
+    "approvalReference": "APROVO A K.7.8.2A.12 — PUBLICAÇÃO CONTROLADA NO SUPABASE"
+  },
+  "supabase": {
+    "projectId": "vcmvdmxmkmekcurcfdze",
+    "table": "public.workforce_catalog_packages",
+    "auditTable": "private.workforce_catalog_publication_audit",
+    "readRpc": "public.get_published_workforce_catalog",
+    "rowStatus": "published",
+    "publishedAt": "2026-07-22T15:36:32.373607Z",
+    "checksumAlgorithm": "sha256",
+    "checksumSha256": "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69"
+  },
+  "source": {
+    "repository": "leon337/predixai-brand",
+    "branch": "ptp-web-2-workforce-k6-questionnaire-r2",
+    "commitSha": "86a9ce55ec82938fd8c383e6f8227aeb76a06dd9",
+    "pullRequest": 9,
+    "approvalReference": "APROVO A K.7.8.2A.11 — CONTRATO JSON MESTRE"
+  },
+  "inventory": {
+    "servicesCategories": 4,
+    "services": 12,
+    "units": 2,
+    "channels": 4,
+    "faqItems": 24,
+    "handoffPriorities": 4,
+    "handoffQueues": 9,
+    "handoffLifecycleStates": 8,
+    "testScenarios": 24,
+    "promptSections": 13
+  },
+  "accessControl": {
+    "rlsEnabled": true,
+    "policies": 0,
+    "anonTableSelect": false,
+    "authenticatedTableSelect": false,
+    "serviceRoleTableSelect": true,
+    "publishedReadRpcExecuteRoles": [
+      "anon",
+      "authenticated",
+      "service_role"
+    ],
+    "directBrowserReadAllowed": false,
+    "directBrowserWriteAllowed": false,
+    "serviceRoleInBrowserAllowed": false
+  },
+  "validation": {
+    "allRequiredComponentsPresent": true,
+    "jsonSchemaValid": true,
+    "manifestValidAgainstSchema": true,
+    "crossComponentReferencesValid": true,
+    "expectedInventoryValid": true,
+    "safetyInvariantsValid": true,
+    "promptAlignmentValid": true,
+    "checksumGenerated": true,
+    "checksumRecomputed": true,
+    "checksumMatch": true,
+    "readRpcApplied": true,
+    "readRpcPayloadKeys": 10,
+    "readRpcGrantsValid": true
+  },
+  "remediation": {
+    "finding": "O uso de prefixItems com items=false no schema não foi aceito pelo pg_jsonschema 0.3.3.",
+    "resolution": "A propriedade sourcePriority passou a usar items com enum, minItems=2, maxItems=2 e uniqueItems=true; a ordem continua validada por invariante SQL explícita.",
+    "status": "PASS"
+  },
+  "runtime": {
+    "vercelApiImplemented": true,
+    "vercelApiStatus": "preview_ready_pending_conceptual_approval",
+    "vercelProjectId": "prj_pBk9kj1FRPluMRHPyeblhwAhqN7G",
+    "vercelDeploymentId": "dpl_F3bJnp2THAFaV6SGrxFqzV3Czgsc",
+    "vercelPreviewCommit": "72bf1c221cb345a1b4c92cd5c6f81c6e058df440",
+    "healthCheckStatus": 200,
+    "supabaseEnvironmentConfiguredInPreview": false,
+    "fallbackAvailable": true,
+    "observedDeliverySource": "github_build_fallback",
+    "builderIntegrated": false,
+    "productionChanged": false,
+    "mergeBlocked": true
+  }
+}

@@ -1,0 +1,54 @@
+PREDIXAI BR — PTP-WEB.2.8.3K.7.8.2A.10
+PROMPT OPERACIONAL COMPLETO — CLÍNICA AURORA DIAGNÓSTICOS
+DATA=2026-07-22
+LINEAR=LEA-116
+PR=9
+
+STATUS=DRAFT_FOR_CONCEPTUAL_APPROVAL
+
+ARTEFATO=data/employee-simulations/health/medical-testing-clinic/operational-prompt.md
+DOCUMENTACAO=docs/history/ptp/PTP-WEB/PTP-WEB.2/20260722_PTP-WEB.2.8.3K_K7.8.2A.10_PROMPT_OPERACIONAL_COMPLETO.md
+
+SECTIONS=13
+COMPANY=CLINICA_AURORA_DIAGNOSTICOS
+EMPLOYEE=CLARA
+SERVICE_CATEGORIES=4
+SERVICES=12
+UNITS=2
+CHANNELS=4
+FICTIONAL_INSURANCE_PLANS=3
+FAQ_SOURCE_ITEMS=24
+TEST_SCENARIOS=24
+HANDOFF_PRIORITIES=4
+HANDOFF_QUEUES=9
+
+FICTIONAL=YES
+ADMINISTRATIVE_ONLY=YES
+REAL_CUSTOMER_DATA=NO
+REAL_RECORD_ACCESS=NO
+REAL_BOOKING=NO
+REAL_PAYMENT=NO
+REAL_MESSAGE_SEND=NO
+REAL_TICKET_CREATION=NO
+CLINICAL_ADVICE=NO
+RESULT_INTERPRETATION=NO
+HUMAN_CONTACT_GUARANTEE=NO
+TIME_PROMISE=NO
+
+VALIDATIONS_PLANNED=
+- markdown presente e legível
+- treze seções presentes
+- base empresarial incorporada
+- unidades, horários, canais e serviços incorporados
+- limites clínicos e financeiros presentes
+- encaminhamento humano presente
+- cenários de teste incorporados
+- Supabase e Vercel não alterados
+- produção não alterada
+
+PENDING=
+- aprovação conceitual da etapa 10
+- contrato JSON mestre da etapa 11
+- teste posterior do prompt completo contra a matriz aprovada
+
+MERGE=BLOCKED

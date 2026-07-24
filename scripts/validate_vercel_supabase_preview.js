@@ -1,0 +1,86 @@
+const crypto = require("node:crypto");
+
+const targetBranch = "ptp-web-2-workforce-k6-questionnaire-r2";
+const packageId = "health-medical-testing-clinic-aurora";
+const contentVersion = "0.1.0";
+const checksum = "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69";
+const expectedUrl = "https://vcmvdmxmkmekcurcfdze.supabase.co";
+const expectedKeySha256 = "a5d28a5e4a5be457184ecebde66df47523a75e4459bacad7acc7197e2ae42fde";
+
+const vercelEnv = String(process.env.VERCEL_ENV || "");
+const branch = String(process.env.VERCEL_GIT_COMMIT_REF || "");
+
+if (vercelEnv !== "preview" || branch !== targetBranch) {
+  console.log("VERCEL_SUPABASE_PREVIEW_CHECK=SKIP_NON_TARGET");
+  process.exit(0);
+}
+
+const serviceUrl = String(process.env.SUPABASE_URL || "").trim().replace(/\/+$/, "");
+const publicToken = String(process.env.SUPABASE_PUBLISHABLE_KEY || "").trim();
+const actualKeySha256 = crypto.createHash("sha256").update(publicToken).digest("hex");
+const keyKind = publicToken.startsWith("sb_publishable_")
+  ? "MODERN_PUBLISHABLE"
+  : publicToken.split(".").length === 3
+    ? "LEGACY_JWT"
+    : "UNKNOWN";
+
+console.log(`SUPABASE_ENV_URL_SHA256=${crypto.createHash("sha256").update(serviceUrl).digest("hex")}`);
+console.log(`SUPABASE_ENV_KEY_SHA256=${actualKeySha256}`);
+console.log(`SUPABASE_ENV_KEY_LENGTH=${publicToken.length}`);
+console.log(`SUPABASE_ENV_KEY_KIND=${keyKind}`);
+
+if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(serviceUrl)) {
+  throw new Error("SUPABASE_URL_INVALID_OR_MISSING");
+}
+if (serviceUrl !== expectedUrl) {
+  throw new Error("SUPABASE_URL_PROJECT_MISMATCH");
+}
+if (keyKind === "UNKNOWN") {
+  throw new Error("SUPABASE_PUBLISHABLE_KEY_INVALID_OR_MISSING");
+}
+if (actualKeySha256 !== expectedKeySha256) {
+  throw new Error("SUPABASE_PUBLISHABLE_KEY_FINGERPRINT_MISMATCH");
+}
+
+console.log("SUPABASE_URL_MATCH=YES");
+console.log("SUPABASE_PUBLISHABLE_KEY_FINGERPRINT_MATCH=YES");
+
+const headers = {
+  apikey: publicToken,
+  "content-type": "application/json",
+  Accept: "application/json",
+  "x-client-info": "predixai-brand-vercel-preview-check/1.2"
+};
+if (!publicToken.startsWith("sb_publishable_")) headers.Authorization = `Bearer ${publicToken}`;
+
+(async () => {
+  const response = await fetch(`${serviceUrl}/rest/v1/rpc/get_published_workforce_catalog`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      p_package_id: packageId,
+      p_content_version: contentVersion
+    })
+  });
+
+  if (!response.ok) throw new Error(`SUPABASE_RPC_HTTP_${response.status}`);
+  const rows = JSON.parse(await response.text());
+  if (!Array.isArray(rows) || rows.length !== 1) throw new Error("SUPABASE_RPC_ROW_COUNT_INVALID");
+
+  const row = rows[0];
+  if (row.package_id !== packageId || row.content_version !== contentVersion) throw new Error("PACKAGE_IDENTITY_MISMATCH");
+  if (row.status !== "published" || row.fictional !== true) throw new Error("PACKAGE_STATUS_INVALID");
+  if (row.checksum_sha256 !== checksum) throw new Error("PACKAGE_CHECKSUM_MISMATCH");
+  if (!row.payload || typeof row.payload !== "object" || Array.isArray(row.payload)) throw new Error("PACKAGE_PAYLOAD_INVALID");
+  if (Object.keys(row.payload).length !== 10) throw new Error("PACKAGE_COMPONENT_COUNT_INVALID");
+
+  console.log("VERCEL_SUPABASE_PREVIEW_CHECK=PASS");
+  console.log("SOURCE=supabase_published_package");
+  console.log(`PACKAGE_ID=${packageId}`);
+  console.log(`CONTENT_VERSION=${contentVersion}`);
+  console.log(`CHECKSUM_SHA256=${checksum}`);
+  console.log("PAYLOAD_COMPONENTS=10");
+})().catch((error) => {
+  console.error(`VERCEL_SUPABASE_PREVIEW_CHECK=FAIL:${error.message}`);
+  process.exit(1);
+});
