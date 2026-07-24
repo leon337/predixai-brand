@@ -38,22 +38,27 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save @playwright/test@1.55.0
           npx playwright install --with-deps chromium
-      - name: Iniciar servidor estático local
-        run: |
-          python3 -m http.server 4173 > /tmp/lea167-http.log 2>&1 &
-          echo $! > /tmp/lea167-http.pid
-          for attempt in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4173/funcionario-ia-gratis/ >/dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat /tmp/lea167-http.log
-          exit 1
       - name: Executar cenários desktop e mobile
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
         run: |
+          set -euo pipefail
+          python3 -m http.server 4173 > /tmp/lea167-http.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            kill "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/funcionario-ia-gratis/ >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/lea167-http.log
+              exit 1
+            fi
+            sleep 1
+          done
           npx playwright test tests/e2e/lea-167-visual-projection.spec.js \
             --browser=chromium \
             --reporter=line \
