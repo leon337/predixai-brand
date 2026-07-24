@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -67,6 +67,43 @@ jobs:
             --browser=chromium \
             --reporter=line \
             --workers=1 2>&1 | tee /tmp/lea167-e2e.log
+      - name: Persistir primeira falha para auditoria
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: ptp-web-2-workforce-effective-projection-r1
+        run: |
+          set -euo pipefail
+          DIAG_PATH=".github/lea-167-first-failure.txt"
+          {
+            echo "LEA_167_E2E_FIRST_FAILURE"
+            echo "RUN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "HEAD=${GITHUB_SHA}"
+            echo
+            if [ -f /tmp/lea167-e2e.log ]; then
+              awk '
+                /  1\) \[chromium\]/ {capture=1}
+                capture {print}
+                capture && /Error Context:/ {exit}
+              ' /tmp/lea167-e2e.log | head -n 100
+            else
+              echo "LOG_E2E_NOT_FOUND"
+            fi
+          } > /tmp/lea167-first-failure.txt
+          CONTENT=$(base64 -w0 /tmp/lea167-first-failure.txt)
+          EXISTING_SHA=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}?ref=${TARGET_BRANCH}" --jq .sha 2>/dev/null || true)
+          if [ -n "$EXISTING_SHA" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}" \
+              -f message="LEA-167 registrar primeira falha E2E" \
+              -f content="$CONTENT" \
+              -f branch="$TARGET_BRANCH" \
+              -f sha="$EXISTING_SHA" >/dev/null
+          else
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}" \
+              -f message="LEA-167 registrar primeira falha E2E" \
+              -f content="$CONTENT" \
+              -f branch="$TARGET_BRANCH" >/dev/null
+          fi
       - name: Publicar diagnóstico no PR #11
         if: failure()
         env:
