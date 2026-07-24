@@ -1,0 +1,46 @@
+PTP=PTP-WEB.2.8.3K.7.8.2A.14.1A
+ISSUE=LEA-166
+ACTION=CONTRACT_HARDENING
+BASE_HEAD=d6b32fd6e86648f4272fc91e07c7ed915833b0fb
+FUNCTIONAL_HEAD=fd8e099906193b39ebe2903cbe94d28a362ec8b2
+PR=10
+PR_DRAFT=YES
+MERGE=BLOCKED
+LEA_167_STARTED=NO
+
+OBJECTIVE=Validar IDs das customizações, eliminar respostas órfãs e fechar o contrato do materializerMap.
+
+CHANGES:
+- conjunto exato dos 19 IDs de perguntas validado;
+- IDs de answerModes, answers e omittedOptionalFields validados contra o documento;
+- IDs desconhecidos rejeitados;
+- respostas sem modo edit_suggested rejeitadas;
+- modo edit_suggested sem resposta rejeitado;
+- IDs opcionais omitidos duplicados rejeitados;
+- conflito entre omittedOptionalFields e answerModes rejeitado;
+- materializerMap estruturado com packageId, version e instructions;
+- pacote ou versão incompatível rejeitados;
+- instruções ausentes, extras ou vazias rejeitadas;
+- conjunto do materializerMap vinculado exatamente aos IDs do questionário.
+
+VALIDATION:
+QUESTION_ID_SET=EXACT
+CUSTOMIZATION_IDS_VALIDATED=PASS
+ORPHAN_CUSTOMIZATION_ANSWERS=REJECTED
+EDITED_ANSWER_REQUIRED=PASS
+MATERIALIZER_MAP_CONTRACT=CLOSED
+MATERIALIZER_INSTRUCTION_SET=EXACT
+PACKAGE_BUILDER_RUN=30064870746
+PACKAGE_BUILDER_RESULT=SUCCESS
+WORKFORCE_RUN=30064870745
+WORKFORCE_RESULT=SUCCESS
+
+DIFF_FROM_BASE:
+assets/js/workforce-package-effective-config.js=MODIFIED
+scripts/validate_workforce_effective_config.js=MODIFIED
+API_CHANGED=NO
+SUPABASE_CHANGED=NO
+VERCEL_JSON_CHANGED=NO
+PRODUCTION_CHANGED=NO
+
+FINAL_STATUS=PASS_HARDENED_PENDING_INDEPENDENT_REVIEW
