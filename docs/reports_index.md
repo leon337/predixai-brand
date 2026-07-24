@@ -17,3 +17,4 @@
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-H1 | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_CONTRACT_HARDENING.txt` | IDs, respostas órfãs e materializerMap endurecidos; CI PASS; revisão independente obrigatória |
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-H2 | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_CANONICAL_HASH.txt` | Modos redundantes canonicalizados e materializerMap vinculado a SHA-256; CI PASS; revisão independente obrigatória |
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-CLOSE | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_FECHAMENTO_DOCUMENTAL.txt` | LEA-166 concluída documentalmente após PASS independente; PR #10 draft, sem merge; LEA-167 bloqueada |
+| 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1B | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1B_LEA-167_VISUAL_PROJECTION.txt` | Implementação automatizada PASS e Preview READY; validação visual humana e revisão independente final pendentes; PR #11 draft |
