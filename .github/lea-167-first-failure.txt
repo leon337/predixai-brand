@@ -1,6 +1,6 @@
 LEA_167_E2E_FIRST_FAILURE
-RUN=https://github.com/leon337/predixai-brand/actions/runs/30082760259
-HEAD=50ae6c5b904c63a5a6c718776178de1f8a4b02af
+RUN=https://github.com/leon337/predixai-brand/actions/runs/30082763649
+HEAD=577b1c08db8a7405327f481106aa97d97023d923
 
 [1A[2K  1) [chromium] › tests/e2e/lea-167-visual-projection.spec.js:122:3 › LEA-167 projeta Sophia e Clínica Ciame em desktop 
 
