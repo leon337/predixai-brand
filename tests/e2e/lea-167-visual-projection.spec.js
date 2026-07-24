@@ -72,6 +72,31 @@ async function assertNoHorizontalOverflow(page, label) {
   expect(metrics.scrollWidth, `${label}: rolagem horizontal detectada`).toBeLessThanOrEqual(metrics.innerWidth + 1);
 }
 
+async function ensureRequiredJourneyInput(page, heading) {
+  if (heading === "O que você quer melhorar primeiro?") {
+    const selected = page.locator('input[name="objective"]:checked');
+    if (await selected.count() === 0) await page.locator('input[name="objective"]').first().check();
+    return;
+  }
+
+  if (heading === "Qual é o ramo do seu negócio?") {
+    const segment = page.locator('input[name="segment"]');
+    if (!(await segment.inputValue()).trim()) await segment.fill("Clínica de exames");
+    return;
+  }
+
+  if (heading === "Como esse trabalho é feito atualmente?") {
+    const selected = page.locator('input[name="processMode"]:checked');
+    if (await selected.count() === 0) await page.locator('input[name="processMode"]').first().check();
+    return;
+  }
+
+  if (heading === "Onde esse trabalho acontece hoje?") {
+    const selected = page.locator('input[name="channels"]:checked');
+    if (await selected.count() === 0) await page.locator('input[name="channels"]').first().check();
+  }
+}
+
 async function advancePackageJourney(page) {
   await installCatalogRoute(page);
   await page.goto(PACKAGE_URL);
@@ -86,6 +111,7 @@ async function advancePackageJourney(page) {
     "Onde esse trabalho acontece hoje?"
   ]) {
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+    await ensureRequiredJourneyInput(page, heading);
     await page.getByRole("button", { name: "Continuar" }).click();
   }
 
