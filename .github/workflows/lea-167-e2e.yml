@@ -9,6 +9,7 @@ on:
       - "assets/js/workforce-package-*.js"
       - "assets/js/employee-builder.js"
       - "assets/css/**"
+      - "data/employee-simulations/health/medical-testing-clinic/**"
       - "tests/e2e/lea-167-visual-projection.spec.js"
       - ".github/workflows/lea-167-e2e.yml"
   pull_request:
@@ -17,6 +18,7 @@ on:
       - "assets/js/workforce-package-*.js"
       - "assets/js/employee-builder.js"
       - "assets/css/**"
+      - "data/employee-simulations/health/medical-testing-clinic/**"
       - "tests/e2e/lea-167-visual-projection.spec.js"
       - ".github/workflows/lea-167-e2e.yml"
   workflow_dispatch:
@@ -40,24 +42,27 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --silent --no-save @playwright/test@1.55.0 >/tmp/lea167-npm.log 2>&1
           npx playwright install --with-deps chromium >/tmp/lea167-playwright-install.log 2>&1
-      - name: Aguardar Preview da branch
+      - name: Executar cenários desktop e mobile com fallback versionado
         env:
-          PREVIEW_URL: https://predixai-brand-git-ptp-web-2-workforce-effe-8be7f8-predix-ai-br.vercel.app
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
         run: |
           set -euo pipefail
-          for attempt in $(seq 1 60); do
-            if curl -fsSL "$PREVIEW_URL/funcionario-ia-gratis/" >/dev/null; then
-              exit 0
+          python3 -m http.server 4173 > /tmp/lea167-http.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            kill "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/funcionario-ia-gratis/ >/dev/null; then
+              break
             fi
-            sleep 5
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/lea167-http.log
+              exit 1
+            fi
+            sleep 1
           done
-          echo "PREVIEW_NOT_READY"
-          exit 1
-      - name: Executar cenários desktop e mobile no Preview
-        env:
-          PLAYWRIGHT_BASE_URL: https://predixai-brand-git-ptp-web-2-workforce-effe-8be7f8-predix-ai-br.vercel.app
-        run: |
-          set -euo pipefail
           npx playwright test tests/e2e/lea-167-visual-projection.spec.js \
             --browser=chromium \
             --reporter=line \
