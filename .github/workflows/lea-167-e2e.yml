@@ -23,6 +23,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   lea-167-e2e:
@@ -64,15 +65,26 @@ jobs:
             --browser=chromium \
             --reporter=line \
             --workers=1 2>&1 | tee /tmp/lea167-e2e.log
-      - name: Resumir falha E2E
+      - name: Publicar diagnóstico no PR #11
         if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "===== LEA-167 E2E FAILURE ====="
-          if [ -f /tmp/lea167-e2e.log ]; then
-            tail -n 160 /tmp/lea167-e2e.log
-          else
-            echo "LOG_E2E_NOT_FOUND"
-          fi
+          {
+            echo "## LEA-167 — diagnóstico automático do E2E"
+            echo
+            echo '```txt'
+            if [ -f /tmp/lea167-e2e.log ]; then
+              tail -n 120 /tmp/lea167-e2e.log
+            else
+              echo "LOG_E2E_NOT_FOUND"
+            fi
+            echo '```'
+            echo
+            echo "RUN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "HEAD=${GITHUB_SHA}"
+          } > /tmp/lea167-pr-comment.md
+          gh pr comment 11 --body-file /tmp/lea167-pr-comment.md
       - name: Publicar evidências quando houver falha
         if: failure()
         uses: actions/upload-artifact@v4
