@@ -33,6 +33,8 @@ const deeplyFrozen = (value, seen = new Set()) => {
   assert.equal(first.metadata.promptInstructionMapVersion, effective.PROMPT_INSTRUCTION_MAP_VERSION);
   assert.equal(first.metadata.omittedOptionalCount, 0);
   assert.equal(first.resolvedAnswers.length, 19);
+  assert.match(first.traceability.materializerMapHash, /^[a-f0-9]{64}$/);
+  assert.equal(first.traceability.materializerMapHash, second.traceability.materializerMapHash);
   assert.equal(first.traceability.effectiveConfigHash, second.traceability.effectiveConfigHash);
   assert.equal(first.traceability.customizationHash, second.traceability.customizationHash);
   assert.equal(effective.stableCanonicalize(first), effective.stableCanonicalize(second));
@@ -41,6 +43,13 @@ const deeplyFrozen = (value, seen = new Set()) => {
   assert.equal(first.company.displayName, "Clínica Aurora Diagnósticos");
   assert.equal(first.employee.name, "Clara");
   assert.ok(first.resolvedAnswers.every((item) => item.promptInstruction && item.source === "suggested"));
+
+  const redundantSuggested = await effective.buildEffectiveAgentConfig({
+    packageDocument: questionnaire,
+    packageCustomization: { answerModes: { employee_name: "use_suggested" }, answers: {}, omittedOptionalFields: [] }
+  });
+  assert.equal(redundantSuggested.traceability.customizationHash, first.traceability.customizationHash);
+  assert.equal(redundantSuggested.traceability.effectiveConfigHash, first.traceability.effectiveConfigHash);
 
   const edited = await effective.buildEffectiveAgentConfig({
     packageDocument: questionnaire,
@@ -71,6 +80,24 @@ const deeplyFrozen = (value, seen = new Set()) => {
   assert.equal(unicodeComposed, unicodeDecomposed);
   assert.notEqual(await effective.sha256(["a", "b"]), await effective.sha256(["b", "a"]));
   assert.equal(await effective.sha256({ b: 2, a: 1 }), await effective.sha256({ a: 1, b: 2 }));
+
+  const reversedInstructions = Object.fromEntries(Object.entries(effective.DEFAULT_MATERIALIZER_MAP.instructions).reverse());
+  const reorderedMaterializer = {
+    version: effective.PROMPT_INSTRUCTION_MAP_VERSION,
+    instructions: reversedInstructions,
+    packageId: effective.PACKAGE_ID
+  };
+  const reordered = await effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: reorderedMaterializer });
+  assert.equal(reordered.traceability.materializerMapHash, first.traceability.materializerMapHash);
+  assert.equal(reordered.traceability.effectiveConfigHash, first.traceability.effectiveConfigHash);
+
+  const changedMaterializer = clone(effective.DEFAULT_MATERIALIZER_MAP);
+  changedMaterializer.instructions.employee_name = "Use rigorosamente como nome do funcionário de IA";
+  const changedMaterialized = await effective.buildEffectiveAgentConfig({ packageDocument: questionnaire, materializerMap: changedMaterializer });
+  assert.notEqual(changedMaterialized.traceability.materializerMapHash, first.traceability.materializerMapHash);
+  assert.notEqual(changedMaterialized.traceability.effectiveConfigHash, first.traceability.effectiveConfigHash);
+  const canonicalMaterializer = effective.validateMaterializerMap(effective.DEFAULT_MATERIALIZER_MAP, new Set(effective.EXPECTED_QUESTION_IDS));
+  assert.equal(first.traceability.materializerMapHash, await effective.sha256(canonicalMaterializer));
 
   await expectCode("UNKNOWN_ANSWER_MODE", () => effective.buildEffectiveAgentConfig({
     packageDocument: questionnaire,
@@ -160,13 +187,19 @@ const deeplyFrozen = (value, seen = new Set()) => {
 
   const optional = clone(questionnaire);
   optional.sections[0].questions[0].required = false;
-  const omitted = await effective.buildEffectiveAgentConfig({
+  const omittedByList = await effective.buildEffectiveAgentConfig({
     packageDocument: optional,
     packageCustomization: { answerModes: {}, answers: {}, omittedOptionalFields: ["company_display_name"] }
   });
-  assert.equal(omitted.metadata.omittedOptionalCount, 1);
-  assert.equal(omitted.company?.displayName, undefined);
-  assert.equal(omitted.metadata.bindingCount, 19);
+  const omittedByMode = await effective.buildEffectiveAgentConfig({
+    packageDocument: optional,
+    packageCustomization: { answerModes: { company_display_name: "do_not_include" }, answers: {}, omittedOptionalFields: [] }
+  });
+  assert.equal(omittedByList.metadata.omittedOptionalCount, 1);
+  assert.equal(omittedByList.company?.displayName, undefined);
+  assert.equal(omittedByList.metadata.bindingCount, 19);
+  assert.equal(omittedByList.traceability.customizationHash, omittedByMode.traceability.customizationHash);
+  assert.equal(omittedByList.traceability.effectiveConfigHash, omittedByMode.traceability.effectiveConfigHash);
 
   const mutationBefore = first.employee.name;
   try { first.employee.name = "mutated"; } catch {}
@@ -181,10 +214,14 @@ const deeplyFrozen = (value, seen = new Set()) => {
   console.log("PACKAGE_QUESTIONS=19");
   console.log("QUESTION_ID_SET=EXACT");
   console.log("CUSTOMIZATION_IDS_VALIDATED=PASS");
+  console.log("REDUNDANT_MODES_CANONICALIZED=PASS");
+  console.log("SEMANTIC_CUSTOMIZATION_HASH=PASS");
   console.log("ORPHAN_CUSTOMIZATION_ANSWERS=REJECTED");
   console.log("EDITED_ANSWER_REQUIRED=PASS");
   console.log("MATERIALIZER_MAP_CONTRACT=CLOSED");
   console.log("MATERIALIZER_INSTRUCTION_SET=EXACT");
+  console.log("MATERIALIZER_MAP_HASH=VERIFIED");
+  console.log("MATERIALIZER_CONTENT_BOUND_TO_EFFECTIVE_HASH=PASS");
   console.log("BINDING_COVERAGE=100%");
   console.log("EXACT_BINDING_SET=PASS");
   console.log("PARTIAL_DOCUMENT_REJECTED=PASS");
