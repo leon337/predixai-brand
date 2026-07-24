@@ -1,0 +1,29 @@
+LEA_167_E2E_FIRST_FAILURE
+RUN=https://github.com/leon337/predixai-brand/actions/runs/30082760259
+HEAD=50ae6c5b904c63a5a6c718776178de1f8a4b02af
+
+[1A[2K  1) [chromium] › tests/e2e/lea-167-visual-projection.spec.js:122:3 › LEA-167 projeta Sophia e Clínica Ciame em desktop 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m failed
+
+    Locator:  getByRole('heading', { name: 'Como esse trabalho é feito atualmente?' })
+    Expected: visible
+    Received: <element(s) not found>
+    Timeout:  5000ms
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: 'Como esse trabalho é feito atualmente?' })[22m
+
+
+      86 |     "Onde esse trabalho acontece hoje?"
+      87 |   ]) {
+    > 88 |     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+         |                                                                ^
+      89 |     await page.getByRole("button", { name: "Continuar" }).click();
+      90 |   }
+      91 |
+        at advancePackageJourney (/home/runner/work/predixai-brand/predixai-brand/tests/e2e/lea-167-visual-projection.spec.js:88:64)
+        at /home/runner/work/predixai-brand/predixai-brand/tests/e2e/lea-167-visual-projection.spec.js:124:5
+
+    Error Context: test-results/tests-e2e-lea-167-visual-p-67527--e-Clínica-Ciame-em-desktop-chromium/error-context.md
