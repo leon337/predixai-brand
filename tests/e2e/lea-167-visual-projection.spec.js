@@ -1,5 +1,7 @@
 const { test, expect } = require("@playwright/test");
 
+test.use({ baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:4173" });
+
 const PACKAGE_URL = "/funcionario-ia-gratis/?package=health-medical-testing-clinic-aurora&new=1";
 const GENERIC_URL = "/funcionario-ia-gratis/?new=1";
 
