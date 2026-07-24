@@ -35,9 +35,10 @@ jobs:
           node-version: "22"
       - name: Instalar Playwright somente no runner
         run: |
+          set -euo pipefail
           npm init -y >/dev/null 2>&1
-          npm install --no-save @playwright/test@1.55.0
-          npx playwright install --with-deps chromium
+          npm install --silent --no-save @playwright/test@1.55.0 >/tmp/lea167-npm.log 2>&1
+          npx playwright install --with-deps chromium >/tmp/lea167-playwright-install.log 2>&1
       - name: Executar cenários desktop e mobile
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
@@ -62,7 +63,16 @@ jobs:
           npx playwright test tests/e2e/lea-167-visual-projection.spec.js \
             --browser=chromium \
             --reporter=line \
-            --workers=1
+            --workers=1 2>&1 | tee /tmp/lea167-e2e.log
+      - name: Resumir falha E2E
+        if: failure()
+        run: |
+          echo "===== LEA-167 E2E FAILURE ====="
+          if [ -f /tmp/lea167-e2e.log ]; then
+            tail -n 160 /tmp/lea167-e2e.log
+          else
+            echo "LOG_E2E_NOT_FOUND"
+          fi
       - name: Publicar evidências quando houver falha
         if: failure()
         uses: actions/upload-artifact@v4
@@ -71,5 +81,6 @@ jobs:
           path: |
             test-results/**
             playwright-report/**
+            /tmp/lea167-e2e.log
           if-no-files-found: ignore
           retention-days: 7
