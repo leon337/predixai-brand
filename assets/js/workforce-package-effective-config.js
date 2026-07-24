@@ -21,7 +21,7 @@
   ]);
   const ALLOWED_BINDING_SET = new Set(ALLOWED_BINDINGS);
 
-  const PROMPT_INSTRUCTION_PREFIX = Object.freeze({
+  const PROMPT_INSTRUCTIONS = Object.freeze({
     company_display_name: "Use como nome da empresa",
     business_description: "Descreva a empresa como",
     service_region: "Considere como região de atendimento",
@@ -41,6 +41,13 @@
     unknown_information_behavior: "Quando faltar informação",
     response_structure: "Estruture as respostas para",
     service_summary: "Ao finalizar o atendimento"
+  });
+  const EXPECTED_QUESTION_IDS = Object.freeze(Object.keys(PROMPT_INSTRUCTIONS));
+  const EXPECTED_QUESTION_ID_SET = new Set(EXPECTED_QUESTION_IDS);
+  const DEFAULT_MATERIALIZER_MAP = Object.freeze({
+    packageId: PACKAGE_ID,
+    version: PROMPT_INSTRUCTION_MAP_VERSION,
+    instructions: PROMPT_INSTRUCTIONS
   });
 
   const fail = (code, detail = "") => {
@@ -65,6 +72,35 @@
     const sections = document?.sections || document?.payload?.questionnaire?.sections || document?.payload?.questions?.sections;
     if (!Array.isArray(sections)) fail("PACKAGE_QUESTION_SECTIONS_REQUIRED");
     return sections.flatMap((section) => Array.isArray(section?.questions) ? section.questions : []);
+  };
+
+  const assertExactIdSet = ({ actualIds, expectedIds, missingCode, extraCode, mismatchCode }) => {
+    const actual = new Set(actualIds);
+    const expected = new Set(expectedIds);
+    const missing = expectedIds.filter((id) => !actual.has(id));
+    const extra = actualIds.filter((id) => !expected.has(id));
+    if (missing.length) fail(missingCode, missing.join(","));
+    if (extra.length) fail(extraCode, extra.join(","));
+    if (actual.size !== expected.size) fail(mismatchCode);
+  };
+
+  const validateQuestionSet = (questions) => {
+    const ids = [];
+    const seen = new Set();
+    for (const question of questions) {
+      if (!question?.id) fail("QUESTION_ID_REQUIRED");
+      if (seen.has(question.id)) fail("DUPLICATE_QUESTION_ID", question.id);
+      seen.add(question.id);
+      ids.push(question.id);
+    }
+    assertExactIdSet({
+      actualIds: ids,
+      expectedIds: EXPECTED_QUESTION_IDS,
+      missingCode: "REQUIRED_QUESTION_IDS_MISSING",
+      extraCode: "UNKNOWN_QUESTION_IDS_PRESENT",
+      mismatchCode: "QUESTION_ID_SET_MISMATCH"
+    });
+    return seen;
   };
 
   const validateBindingPath = (path) => {
@@ -121,24 +157,81 @@
     return labels.get(rawValue) || String(rawValue);
   };
 
+  const validateMaterializerMap = (value, questionIds) => {
+    if (!isPlainObject(value)) fail("MATERIALIZER_MAP_OBJECT_REQUIRED");
+    if (value.packageId !== PACKAGE_ID) fail("MATERIALIZER_MAP_PACKAGE_MISMATCH", String(value.packageId));
+    if (value.version !== PROMPT_INSTRUCTION_MAP_VERSION) fail("MATERIALIZER_MAP_VERSION_MISMATCH", String(value.version));
+    if (!isPlainObject(value.instructions)) fail("MATERIALIZER_INSTRUCTIONS_OBJECT_REQUIRED");
+    const instructionIds = Object.keys(value.instructions);
+    assertExactIdSet({
+      actualIds: instructionIds,
+      expectedIds: [...questionIds],
+      missingCode: "MATERIALIZER_INSTRUCTIONS_MISSING",
+      extraCode: "MATERIALIZER_INSTRUCTIONS_UNKNOWN",
+      mismatchCode: "MATERIALIZER_INSTRUCTION_SET_MISMATCH"
+    });
+    for (const id of instructionIds) {
+      if (typeof value.instructions[id] !== "string" || !value.instructions[id].trim()) fail("MATERIALIZER_INSTRUCTION_INVALID", id);
+    }
+    return value;
+  };
+
   const promptInstructionFor = (question, displayValue, materializerMap) => {
-    const map = materializerMap || PROMPT_INSTRUCTION_PREFIX;
-    const prefix = map[question.id];
-    if (typeof prefix !== "string" || !prefix.trim()) fail("PROMPT_INSTRUCTION_MISSING", question.id);
+    const prefix = materializerMap.instructions[question.id];
     return `${prefix.trim()}: ${displayValue}.`.normalize("NFC");
   };
 
+  const normalizeCustomization = (value, questionsById) => {
+    const source = isPlainObject(value) ? value : Object.create(null);
+    if (own(source, "bindingSchemaVersion") && source.bindingSchemaVersion !== BINDING_SCHEMA_VERSION) {
+      fail("BINDING_SCHEMA_VERSION_MISMATCH", String(source.bindingSchemaVersion));
+    }
+    const rawModes = own(source, "answerModes") ? source.answerModes : Object.create(null);
+    const rawAnswers = own(source, "answers") ? source.answers : Object.create(null);
+    const rawOmitted = own(source, "omittedOptionalFields") ? source.omittedOptionalFields : [];
+    if (!isPlainObject(rawModes)) fail("ANSWER_MODES_OBJECT_REQUIRED");
+    if (!isPlainObject(rawAnswers)) fail("ANSWERS_OBJECT_REQUIRED");
+    if (!Array.isArray(rawOmitted)) fail("OMITTED_OPTIONAL_FIELDS_ARRAY_REQUIRED");
+
+    const knownIds = new Set(questionsById.keys());
+    const validateIds = (ids, field) => {
+      for (const id of ids) if (!knownIds.has(id)) fail("UNKNOWN_CUSTOMIZATION_ID", `${field}:${id}`);
+    };
+    validateIds(Object.keys(rawModes), "answerModes");
+    validateIds(Object.keys(rawAnswers), "answers");
+    validateIds(rawOmitted, "omittedOptionalFields");
+    if (new Set(rawOmitted).size !== rawOmitted.length) fail("DUPLICATE_OMITTED_OPTIONAL_ID");
+
+    const answerModes = cloneValue(rawModes);
+    const omittedOptionalFields = [...rawOmitted].sort();
+    for (const id of omittedOptionalFields) {
+      const question = questionsById.get(id);
+      if (question.required) fail("REQUIRED_PACKAGE_QUESTION_OMITTED", id);
+      if (own(answerModes, id) && answerModes[id] !== MODES.omitted) fail("OMISSION_MODE_CONFLICT", id);
+      answerModes[id] = MODES.omitted;
+    }
+
+    const answers = Object.create(null);
+    for (const id of Object.keys(rawAnswers)) {
+      if (answerModes[id] !== MODES.edited) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
+      answers[id] = cloneValue(rawAnswers[id]);
+    }
+    for (const id of Object.keys(answerModes)) {
+      if (answerModes[id] === MODES.edited && !own(rawAnswers, id)) fail("EDITED_ANSWER_REQUIRED", id);
+      if (answerModes[id] === MODES.omitted && own(rawAnswers, id)) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
+    }
+
+    return { answerModes, answers, omittedOptionalFields, bindingSchemaVersion: BINDING_SCHEMA_VERSION };
+  };
+
   const resolveEffectiveAnswer = ({ question, customization, materializerMap }) => {
-    const modes = customization.answerModes || {};
-    const answers = customization.answers || {};
-    const omitted = new Set(customization.omittedOptionalFields || []);
-    const mode = modes[question.id] || MODES.suggested;
+    const mode = customization.answerModes[question.id] || MODES.suggested;
     if (![MODES.suggested, MODES.edited, MODES.omitted].includes(mode)) fail("UNKNOWN_ANSWER_MODE", `${question.id}:${mode}`);
-    if (mode === MODES.omitted || omitted.has(question.id)) {
+    if (mode === MODES.omitted) {
       if (question.required) fail("REQUIRED_PACKAGE_QUESTION_OMITTED", question.id);
       return null;
     }
-    const rawInput = mode === MODES.edited ? answers[question.id] : question.suggestedAnswer;
+    const rawInput = mode === MODES.edited ? customization.answers[question.id] : question.suggestedAnswer;
     const rawValue = normalizeAnswer(question, rawInput);
     const empty = Array.isArray(rawValue) ? rawValue.length === 0 : rawValue.length === 0;
     if (question.required && empty) fail("REQUIRED_PACKAGE_QUESTION_EMPTY", question.id);
@@ -189,19 +282,6 @@
     return Object.freeze(value);
   };
 
-  const normalizeCustomization = (value) => {
-    const source = isPlainObject(value) ? value : Object.create(null);
-    if (own(source, "bindingSchemaVersion") && source.bindingSchemaVersion !== BINDING_SCHEMA_VERSION) {
-      fail("BINDING_SCHEMA_VERSION_MISMATCH", String(source.bindingSchemaVersion));
-    }
-    return {
-      answerModes: isPlainObject(source.answerModes) ? cloneValue(source.answerModes) : Object.create(null),
-      answers: isPlainObject(source.answers) ? cloneValue(source.answers) : Object.create(null),
-      omittedOptionalFields: Array.isArray(source.omittedOptionalFields) ? [...new Set(source.omittedOptionalFields)] : [],
-      bindingSchemaVersion: BINDING_SCHEMA_VERSION
-    };
-  };
-
   const assertExactBindingSet = (seenBindings) => {
     const missing = ALLOWED_BINDINGS.filter((binding) => !seenBindings.has(binding));
     const extra = [...seenBindings].filter((binding) => !ALLOWED_BINDING_SET.has(binding));
@@ -210,25 +290,25 @@
     if (seenBindings.size !== ALLOWED_BINDINGS.length) fail("BINDING_SET_MISMATCH");
   };
 
-  const buildEffectiveAgentConfig = async ({ packageDocument, packageCustomization = {}, materializerMap = PROMPT_INSTRUCTION_PREFIX, canonicalizationVersion = CANONICALIZATION_VERSION }) => {
+  const buildEffectiveAgentConfig = async ({ packageDocument, packageCustomization = {}, materializerMap = DEFAULT_MATERIALIZER_MAP, canonicalizationVersion = CANONICALIZATION_VERSION }) => {
     if (canonicalizationVersion !== CANONICALIZATION_VERSION) fail("CANONICALIZATION_VERSION_UNSUPPORTED");
     const questions = flattenQuestions(packageDocument);
     if (!questions.length) fail("PACKAGE_QUESTIONS_REQUIRED");
-    const customization = normalizeCustomization(packageCustomization);
+    const questionIds = validateQuestionSet(questions);
+    const questionsById = new Map(questions.map((question) => [question.id, question]));
+    const customization = normalizeCustomization(packageCustomization, questionsById);
+    const validatedMaterializerMap = validateMaterializerMap(materializerMap, questionIds);
     const config = Object.create(null);
     const resolvedAnswers = [];
-    const seenQuestionIds = new Set();
     const seenBindings = new Set();
     let omittedOptionalCount = 0;
 
     for (const question of questions) {
-      if (!question?.id || seenQuestionIds.has(question.id)) fail("DUPLICATE_OR_MISSING_QUESTION_ID", question?.id || "missing");
-      seenQuestionIds.add(question.id);
       const binding = question.includeInPromptAs;
       validateBindingPath(binding);
       if (seenBindings.has(binding)) fail("DUPLICATE_BINDING", binding);
       seenBindings.add(binding);
-      const resolved = resolveEffectiveAnswer({ question, customization, materializerMap });
+      const resolved = resolveEffectiveAnswer({ question, customization, materializerMap: validatedMaterializerMap });
       if (!resolved) { omittedOptionalCount += 1; continue; }
       setByPath(config, binding, resolved.rawValue);
       resolvedAnswers.push(resolved);
@@ -268,7 +348,8 @@
   };
 
   const api = Object.freeze({
-    PACKAGE_ID, BINDING_SCHEMA_VERSION, ALLOWED_BINDINGS, PROMPT_INSTRUCTION_MAP_VERSION, CANONICALIZATION_VERSION,
+    PACKAGE_ID, BINDING_SCHEMA_VERSION, ALLOWED_BINDINGS, EXPECTED_QUESTION_IDS, DEFAULT_MATERIALIZER_MAP,
+    PROMPT_INSTRUCTION_MAP_VERSION, CANONICALIZATION_VERSION, validateQuestionSet, validateMaterializerMap,
     validateBindingPath, setByPath, resolveEffectiveAnswer, stableCanonicalize, sha256, deepFreeze, buildEffectiveAgentConfig
   });
   globalThis.PredixWorkforceEffectiveConfig = api;
