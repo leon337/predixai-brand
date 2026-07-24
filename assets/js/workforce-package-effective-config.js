@@ -43,7 +43,6 @@
     service_summary: "Ao finalizar o atendimento"
   });
   const EXPECTED_QUESTION_IDS = Object.freeze(Object.keys(PROMPT_INSTRUCTIONS));
-  const EXPECTED_QUESTION_ID_SET = new Set(EXPECTED_QUESTION_IDS);
   const DEFAULT_MATERIALIZER_MAP = Object.freeze({
     packageId: PACKAGE_ID,
     version: PROMPT_INSTRUCTION_MAP_VERSION,
@@ -170,15 +169,18 @@
       extraCode: "MATERIALIZER_INSTRUCTIONS_UNKNOWN",
       mismatchCode: "MATERIALIZER_INSTRUCTION_SET_MISMATCH"
     });
-    for (const id of instructionIds) {
-      if (typeof value.instructions[id] !== "string" || !value.instructions[id].trim()) fail("MATERIALIZER_INSTRUCTION_INVALID", id);
+    const instructions = Object.create(null);
+    for (const id of [...questionIds].sort()) {
+      const instruction = cleanText(value.instructions[id], 500);
+      if (!instruction) fail("MATERIALIZER_INSTRUCTION_INVALID", id);
+      instructions[id] = instruction;
     }
-    return value;
+    return { packageId: PACKAGE_ID, version: PROMPT_INSTRUCTION_MAP_VERSION, instructions };
   };
 
   const promptInstructionFor = (question, displayValue, materializerMap) => {
     const prefix = materializerMap.instructions[question.id];
-    return `${prefix.trim()}: ${displayValue}.`.normalize("NFC");
+    return `${prefix}: ${displayValue}.`.normalize("NFC");
   };
 
   const normalizeCustomization = (value, questionsById) => {
@@ -202,35 +204,43 @@
     validateIds(rawOmitted, "omittedOptionalFields");
     if (new Set(rawOmitted).size !== rawOmitted.length) fail("DUPLICATE_OMITTED_OPTIONAL_ID");
 
-    const answerModes = cloneValue(rawModes);
-    const omittedOptionalFields = [...rawOmitted].sort();
-    for (const id of omittedOptionalFields) {
+    const editedIds = new Set();
+    const omittedIds = new Set(rawOmitted);
+    for (const id of Object.keys(rawModes)) {
+      const mode = rawModes[id];
+      if (![MODES.suggested, MODES.edited, MODES.omitted].includes(mode)) fail("UNKNOWN_ANSWER_MODE", `${id}:${mode}`);
+      if (mode === MODES.edited) editedIds.add(id);
+      if (mode === MODES.omitted) omittedIds.add(id);
+    }
+
+    for (const id of omittedIds) {
       const question = questionsById.get(id);
       if (question.required) fail("REQUIRED_PACKAGE_QUESTION_OMITTED", id);
-      if (own(answerModes, id) && answerModes[id] !== MODES.omitted) fail("OMISSION_MODE_CONFLICT", id);
-      answerModes[id] = MODES.omitted;
+      if (editedIds.has(id)) fail("OMISSION_MODE_CONFLICT", id);
+      if (own(rawAnswers, id)) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
     }
 
-    const answers = Object.create(null);
     for (const id of Object.keys(rawAnswers)) {
-      if (answerModes[id] !== MODES.edited) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
+      if (!editedIds.has(id)) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
+    }
+    for (const id of editedIds) {
+      if (!own(rawAnswers, id)) fail("EDITED_ANSWER_REQUIRED", id);
+    }
+
+    const answerModes = Object.create(null);
+    const answers = Object.create(null);
+    for (const id of [...editedIds].sort()) {
+      answerModes[id] = MODES.edited;
       answers[id] = cloneValue(rawAnswers[id]);
     }
-    for (const id of Object.keys(answerModes)) {
-      if (answerModes[id] === MODES.edited && !own(rawAnswers, id)) fail("EDITED_ANSWER_REQUIRED", id);
-      if (answerModes[id] === MODES.omitted && own(rawAnswers, id)) fail("ORPHAN_CUSTOMIZATION_ANSWER", id);
-    }
-
+    const omittedOptionalFields = [...omittedIds].sort();
     return { answerModes, answers, omittedOptionalFields, bindingSchemaVersion: BINDING_SCHEMA_VERSION };
   };
 
   const resolveEffectiveAnswer = ({ question, customization, materializerMap }) => {
-    const mode = customization.answerModes[question.id] || MODES.suggested;
-    if (![MODES.suggested, MODES.edited, MODES.omitted].includes(mode)) fail("UNKNOWN_ANSWER_MODE", `${question.id}:${mode}`);
-    if (mode === MODES.omitted) {
-      if (question.required) fail("REQUIRED_PACKAGE_QUESTION_OMITTED", question.id);
-      return null;
-    }
+    const omitted = new Set(customization.omittedOptionalFields);
+    const mode = omitted.has(question.id) ? MODES.omitted : (customization.answerModes[question.id] || MODES.suggested);
+    if (mode === MODES.omitted) return null;
     const rawInput = mode === MODES.edited ? customization.answers[question.id] : question.suggestedAnswer;
     const rawValue = normalizeAnswer(question, rawInput);
     const empty = Array.isArray(rawValue) ? rawValue.length === 0 : rawValue.length === 0;
@@ -326,6 +336,7 @@
     const checksum = packageDocument.checksum?.value || packageDocument.checksum_sha256 || packageDocument.payload?.manifest?.checksum || null;
 
     const customizationHash = await sha256(customization);
+    const materializerMapHash = await sha256(validatedMaterializerMap);
     const baseOutput = {
       schemaVersion: SCHEMA_VERSION,
       package: { packageId, contentVersion, checksum },
@@ -338,11 +349,11 @@
         bindingCount: seenBindings.size,
         omittedOptionalCount
       },
-      traceability: { customizationHash, effectiveConfigHash: null },
+      traceability: { customizationHash, materializerMapHash, effectiveConfigHash: null },
       resolvedAnswers,
       conflicts: []
     };
-    const effectiveConfigHash = await sha256({ ...baseOutput, traceability: { customizationHash } });
+    const effectiveConfigHash = await sha256({ ...baseOutput, traceability: { customizationHash, materializerMapHash } });
     baseOutput.traceability.effectiveConfigHash = effectiveConfigHash;
     return deepFreeze(baseOutput);
   };
@@ -350,7 +361,8 @@
   const api = Object.freeze({
     PACKAGE_ID, BINDING_SCHEMA_VERSION, ALLOWED_BINDINGS, EXPECTED_QUESTION_IDS, DEFAULT_MATERIALIZER_MAP,
     PROMPT_INSTRUCTION_MAP_VERSION, CANONICALIZATION_VERSION, validateQuestionSet, validateMaterializerMap,
-    validateBindingPath, setByPath, resolveEffectiveAnswer, stableCanonicalize, sha256, deepFreeze, buildEffectiveAgentConfig
+    normalizeCustomization, validateBindingPath, setByPath, resolveEffectiveAnswer, stableCanonicalize, sha256,
+    deepFreeze, buildEffectiveAgentConfig
   });
   globalThis.PredixWorkforceEffectiveConfig = api;
   if (typeof module !== "undefined" && module.exports) module.exports = api;
