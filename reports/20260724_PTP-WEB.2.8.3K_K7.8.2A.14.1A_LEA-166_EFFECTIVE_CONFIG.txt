@@ -1,0 +1,86 @@
+PREDIXAI BR — RELATORIO DE EXECUCAO
+PTP=PTP-WEB.2.8.3K
+ETAPA=K.7.8.2A.14.1A
+ISSUE=LEA-166
+TITULO=Contrato da Configuracao Efetiva
+DATA=2026-07-24
+
+BASE_REPOSITORY=leon337/predixai-brand
+BASE_BRANCH=ptp-web-2-workforce-k6-questionnaire-r2
+BASE_HEAD=f0eb9afa3c688197cf8d04db5f84859b5cf2e87f
+EXECUTION_BRANCH=ptp-web-2-workforce-effective-config-r1
+PULL_REQUEST=10
+PULL_REQUEST_MODE=DRAFT_STACKED
+MERGE=BLOCKED
+
+OBJETIVO
+Implementar um nucleo puro e deterministico que transforma PackageDocument + PackageCustomization em EffectiveAgentConfig sem criar nova fonte persistida ou editavel.
+
+ARQUIVOS_IMPLEMENTADOS
+- assets/js/workforce-package-effective-config.js
+- scripts/validate_workforce_effective_config.js
+- .github/workflows/workforce-package-builder-quality.yml
+
+ENTREGAS
+- allowlist exata dos 19 bindings do pacote Clinica Aurora;
+- resolucao de respostas sugeridas, editadas e omitidas;
+- validacao de perguntas obrigatorias e opcoes;
+- rawValue, displayValue, promptInstruction e source;
+- mapa de promptInstruction especifico e versionado;
+- bloqueio de prototype pollution e paths perigosos;
+- canonicalizacao com chaves ordenadas, arrays preservados e Unicode NFC;
+- SHA-256 deterministico;
+- exclusao de campos temporais do hash;
+- saida profundamente congelada;
+- entrada nao mutada;
+- CI dedicado.
+
+VALIDACOES
+WORKFLOW_VALIDAR_K7_8_2A_PACKAGE_BUILDER=PASS
+WORKFLOW_VALIDAR_PTP_WEB_2_WORKFORCE=PASS
+NODE_SYNTAX=PASS
+EXISTING_PACKAGE_BUILDER_REGRESSION=PASS
+EFFECTIVE_CONFIG_CONTRACT=PASS
+API_CONTRACT_REGRESSION=PASS
+STATIC_PRIVACY=PASS
+PACKAGE_QUESTIONS=19
+BINDING_COVERAGE=100%
+UNKNOWN_BINDINGS=0
+DUPLICATE_BINDINGS=0
+PROMPT_INSTRUCTION_COVERAGE=100%
+PROTOTYPE_POLLUTION=BLOCK
+DETERMINISTIC_HASH=PASS
+UNICODE_NFC=PASS
+OUTPUT_DEEP_FROZEN=PASS
+INPUT_MUTATION=0
+
+GITHUB_ACTIONS
+RUN_PACKAGE_BUILDER=30063733512
+RUN_PACKAGE_BUILDER_CONCLUSION=SUCCESS
+RUN_WORKFORCE=30063733510
+RUN_WORKFORCE_CONCLUSION=SUCCESS
+
+VERCEL
+DEPLOYMENT=dpl_7XaoQUL2tSw9brRVgVB89GnirsBX
+DEPLOYMENT_STATE=READY
+DEPLOYMENT_TARGET=PREVIEW
+PRODUCTION_CHANGED=NO
+MANUAL_DEPLOY=NO
+
+SUPABASE
+PROJECT=vcmvdmxmkmekcurcfdze
+PROJECT_STATUS=ACTIVE_HEALTHY
+SQL_EXECUTED=NO
+MIGRATION_APPLIED=NO
+CONFIG_CHANGED=NO
+
+LINEAR
+ISSUE_STATUS=IN_PROGRESS
+BLOCKS=LEA-167
+LEA_167_RELEASED=NO
+
+RESULTADO
+LEA_166_IMPLEMENTATION=PASS_PENDING_INDEPENDENT_REVIEW
+PR_DRAFT=YES
+MERGE_BLOCKED=YES
+PRODUCTION_CHANGED=NO
