@@ -15,3 +15,4 @@
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_EFFECTIVE_CONFIG.txt` | Contrato determinístico implementado; CI e Preview PASS; revisão independente pendente |
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-R1 | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_REMEDIATION.txt` | Dois bloqueios remediados; testes negativos e CI PASS; nova revisão independente obrigatória |
 | 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-H1 | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_CONTRACT_HARDENING.txt` | IDs, respostas órfãs e materializerMap endurecidos; CI PASS; revisão independente obrigatória |
+| 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A-H2 | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_CANONICAL_HASH.txt` | Modos redundantes canonicalizados e materializerMap vinculado a SHA-256; CI PASS; revisão independente obrigatória |
