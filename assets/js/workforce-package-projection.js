@@ -6,21 +6,26 @@
   const effective = globalThis.PredixWorkforceEffectiveConfig;
 
   const clean = (value) => String(value ?? "").trim();
+  const findAnswer = (config, binding) => Array.isArray(config?.resolvedAnswers)
+    ? config.resolvedAnswers.find((item) => item?.binding === binding) || null
+    : null;
   const findDisplayValue = (config, binding) => {
-    const answer = Array.isArray(config?.resolvedAnswers)
-      ? config.resolvedAnswers.find((item) => item?.binding === binding)
-      : null;
+    const answer = findAnswer(config, binding);
     return clean(answer?.displayValue ?? answer?.rawValue);
   };
 
   const buildVisualProjection = (config) => {
     if (!config || typeof config !== "object") throw new Error("EFFECTIVE_CONFIG_REQUIRED");
+    const toneAnswer = findAnswer(config, "communication.tone");
+    const responseLengthAnswer = findAnswer(config, "communication.responseLength");
     return Object.freeze({
       employeeName: clean(config.employee?.name),
       employeePresentation: clean(config.employee?.presentation),
       companyDisplayName: clean(config.company?.displayName),
       tone: findDisplayValue(config, "communication.tone") || clean(config.communication?.tone),
+      toneRaw: clean(toneAnswer?.rawValue ?? config.communication?.tone),
       responseLength: findDisplayValue(config, "communication.responseLength") || clean(config.communication?.responseLength),
+      responseLengthRaw: clean(responseLengthAnswer?.rawValue ?? config.communication?.responseLength),
       effectiveConfigHash: clean(config.traceability?.effectiveConfigHash)
     });
   };
@@ -62,6 +67,18 @@
     if (element.textContent !== value) element.textContent = value;
   };
 
+  const restoreFailureControls = () => {
+    root.querySelectorAll("[data-package-projection-disabled-original]").forEach((element) => {
+      if ("disabled" in element) element.disabled = element.dataset.packageProjectionDisabledOriginal === "true";
+      delete element.dataset.packageProjectionDisabledOriginal;
+    });
+  };
+
+  const clearFailureState = () => {
+    root.querySelectorAll("[data-package-projection-failure]").forEach((element) => element.remove());
+    restoreFailureControls();
+  };
+
   const cleanup = () => {
     root.querySelectorAll("[data-package-projection-added]").forEach((element) => element.remove());
     root.querySelectorAll("[data-package-projection-original]").forEach(restoreText);
@@ -70,6 +87,7 @@
       element.disabled = false;
       delete element.dataset.packageProjectionHidden;
     });
+    restoreFailureControls();
   };
 
   const addDefinitionRow = (list, label, value, marker) => {
@@ -106,6 +124,7 @@
 
     const tone = main.querySelector('[name="tone"]');
     if (tone instanceof HTMLSelectElement) {
+      if (projection.toneRaw && [...tone.options].some((option) => option.value === projection.toneRaw)) tone.value = projection.toneRaw;
       tone.hidden = true;
       tone.disabled = true;
       tone.dataset.packageProjectionHidden = "true";
@@ -140,22 +159,28 @@
       const detail = row.querySelector("dd");
       if (term === "Funcionário") setText(detail, projection.employeeName);
       if (term === "Tom") setText(detail, projection.tone);
-      if (term === "Segmento" && projection.companyDisplayName) setText(detail, projection.companyDisplayName);
     }
+    addDefinitionRow(list, "Empresa", projection.companyDisplayName, "review-company");
     addDefinitionRow(list, "Tamanho das respostas", projection.responseLength, "review-response-length");
   };
 
   const showFailure = () => {
-    if (!api.isActive() || root.querySelector("[data-package-projection-failure]")) return;
+    if (!api.isActive()) return;
     const main = root.querySelector(".k6-main");
     if (!(main instanceof HTMLElement)) return;
-    const alert = document.createElement("div");
-    alert.dataset.packageProjectionFailure = "true";
-    alert.dataset.packageProjectionAdded = "projection-failure";
-    alert.className = "k6-banner k6-banner-error";
-    alert.setAttribute("role", "alert");
-    alert.textContent = "A configuração efetiva não pôde ser projetada. A interface do pacote foi bloqueada para evitar valores divergentes.";
-    main.prepend(alert);
+    if (!root.querySelector("[data-package-projection-failure]")) {
+      const alert = document.createElement("div");
+      alert.dataset.packageProjectionFailure = "true";
+      alert.dataset.packageProjectionAdded = "projection-failure";
+      alert.className = "k6-banner k6-banner-error";
+      alert.setAttribute("role", "alert");
+      alert.textContent = "A configuração efetiva não pôde ser projetada. A interface do pacote foi bloqueada para evitar valores divergentes.";
+      main.prepend(alert);
+    }
+    root.querySelectorAll(".k6-action-bar button").forEach((button) => {
+      if (!("packageProjectionDisabledOriginal" in button.dataset)) button.dataset.packageProjectionDisabledOriginal = String(button.disabled);
+      button.disabled = true;
+    });
   };
 
   const applyProjection = () => {
@@ -167,10 +192,12 @@
         return;
       }
       if (api.status === "FAILED") {
+        cleanup();
         showFailure();
         return;
       }
       if (api.status !== "READY" || !api.projection) return;
+      clearFailureState();
       projectRecommendation(api.projection);
       projectConfiguration(api.projection);
       projectReview(api.projection);
