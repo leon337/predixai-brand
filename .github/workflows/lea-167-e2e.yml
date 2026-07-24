@@ -1,0 +1,70 @@
+name: Validar LEA-167 E2E
+
+on:
+  push:
+    branches:
+      - ptp-web-2-workforce-effective-projection-r1
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/js/employee-builder.js"
+      - "assets/css/**"
+      - "tests/e2e/lea-167-visual-projection.spec.js"
+      - ".github/workflows/lea-167-e2e.yml"
+  pull_request:
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/js/employee-builder.js"
+      - "assets/css/**"
+      - "tests/e2e/lea-167-visual-projection.spec.js"
+      - ".github/workflows/lea-167-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lea-167-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Instalar Playwright somente no runner
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Iniciar servidor estático local
+        run: |
+          python3 -m http.server 4173 > /tmp/lea167-http.log 2>&1 &
+          echo $! > /tmp/lea167-http.pid
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/funcionario-ia-gratis/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/lea167-http.log
+          exit 1
+      - name: Executar cenários desktop e mobile
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+        run: |
+          npx playwright test tests/e2e/lea-167-visual-projection.spec.js \
+            --browser=chromium \
+            --reporter=line \
+            --workers=1
+      - name: Publicar evidências quando houver falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lea-167-e2e-failure-evidence
+          path: |
+            test-results/**
+            playwright-report/**
+          if-no-files-found: ignore
+          retention-days: 7
