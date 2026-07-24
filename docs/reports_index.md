@@ -12,3 +12,4 @@
 | 2026-07-22 | PTP-WEB.2.8.3K.7.8.2A.12 | `reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.12_SUPABASE_PUBLICATION.txt` | Pacote Clínica Aurora 0.1.0 publicado no Supabase com checksum, RLS e schema PASS |
 | 2026-07-22 | PTP-WEB.2.8.3K.7.8.2A.13 | `reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.13_VERCEL_API_QUERY.txt` | API Vercel implementada em Preview, contrato funcional e CI PASS; produção inalterada |
 | 2026-07-22 | PTP-WEB.2.8.3K.7.8.2A.14 | `reports/20260722_PTP-WEB.2.8.3K_K7.8.2A.14_PROMPT_BUILDER_INTEGRATION.txt` | Pacote Clínica Aurora integrado ao criador; Preview e validadores PASS; validação visual humana pendente |
+| 2026-07-24 | PTP-WEB.2.8.3K.7.8.2A.14.1A | `reports/20260724_PTP-WEB.2.8.3K_K7.8.2A.14.1A_LEA-166_EFFECTIVE_CONFIG.txt` | Contrato determinístico implementado; CI e Preview PASS; revisão independente pendente |
