@@ -1,9 +1,68 @@
 const { test, expect } = require("@playwright/test");
+const fs = require("node:fs");
+const path = require("node:path");
 
 test.use({ baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:4173" });
 
 const PACKAGE_URL = "/funcionario-ia-gratis/?package=health-medical-testing-clinic-aurora&new=1";
 const GENERIC_URL = "/funcionario-ia-gratis/?new=1";
+const COMPONENT_BASE = path.resolve(
+  __dirname,
+  "../../data/employee-simulations/health/medical-testing-clinic"
+);
+
+const readJson = (filename) => JSON.parse(fs.readFileSync(path.join(COMPONENT_BASE, filename), "utf8"));
+const readText = (filename) => fs.readFileSync(path.join(COMPONENT_BASE, filename), "utf8");
+
+const buildPackageFixture = () => {
+  const evidence = readJson("publication-evidence.json");
+  return {
+    packageId: "health-medical-testing-clinic-aurora",
+    contentVersion: "0.1.0",
+    source: "github_build_fallback",
+    status: "READY",
+    payload: {
+      businessProfile: readJson("business-profile.json"),
+      questions: readJson("questions-and-suggested-answers.json"),
+      services: readJson("services-catalog.json"),
+      operations: readJson("units-hours-channels.json"),
+      scheduling: readJson("scheduling-cancellations.json"),
+      paymentsAndInsurance: readJson("payments-insurance.json"),
+      faq: readJson("faq.json"),
+      handoffRules: readJson("human-handoff.json"),
+      scenarios: readJson("scenarios-and-expected-responses.json"),
+      agentTemplate: { promptText: readText("operational-prompt.md") }
+    },
+    checksum: {
+      algorithm: "sha256",
+      value: "940efb5e8ccb1ce23a078e90b78002218851af1322e815f7e2d8040f1300fa69",
+      verifiedAtPublication: true
+    },
+    manifest: readJson("master-package.json"),
+    inventory: evidence.inventory,
+    provenance: {
+      repository: evidence.source.repository,
+      branch: evidence.source.branch,
+      commitSha: evidence.source.commitSha,
+      pullRequest: evidence.source.pullRequest,
+      publishedAt: evidence.supabase.publishedAt
+    },
+    warnings: ["SUPABASE_UNAVAILABLE_USING_VERSIONED_BUILD_FALLBACK"]
+  };
+};
+
+const PACKAGE_FIXTURE = buildPackageFixture();
+
+async function installCatalogRoute(page) {
+  await page.route("**/api/workforce-catalog?**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json; charset=utf-8",
+      body: JSON.stringify(PACKAGE_FIXTURE),
+      headers: { "x-predixai-catalog-source": "github_build_fallback" }
+    });
+  });
+}
 
 async function assertNoHorizontalOverflow(page, label) {
   const metrics = await page.evaluate(() => ({
@@ -14,8 +73,9 @@ async function assertNoHorizontalOverflow(page, label) {
 }
 
 async function advancePackageJourney(page) {
+  await installCatalogRoute(page);
   await page.goto(PACKAGE_URL);
-  await expect(page.getByText("DADOS FICTÍCIOS PARA DEMONSTRAÇÃO")).toBeVisible();
+  await expect(page.getByText("DADOS FICTÍCIOS PARA DEMONSTRAÇÃO")).toBeVisible({ timeout: 15000 });
   await expect(page.getByText("Pacote selecionado")).toBeVisible();
   await page.getByRole("button", { name: "Começar" }).click();
 
@@ -73,7 +133,7 @@ for (const viewport of [
     await editPackageQuestion(page, "Qual nome a clínica deve usar durante o teste?", "Clínica Ciame");
     await editPackageQuestion(page, "Qual nome o Atendente de IA deve usar?", "Sophia");
 
-    await expect(page.getByRole("heading", { name: "Como Sophia vai trabalhar" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Como Sophia vai trabalhar" })).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("Clínica Ciame", { exact: true })).toBeVisible();
     await expect(page.getByText(/professional_clear_welcoming|short_to_medium/)).toHaveCount(0);
     await assertNoHorizontalOverflow(page, `${viewport.name}/configuração personalizada`);
