@@ -39,7 +39,7 @@
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   globalThis.PredixWorkforcePackageProjection = api;
 
-  if (!(root instanceof HTMLElement) || !runtime || !effective?.buildEffectiveAgentConfig) return;
+  if (typeof HTMLElement === "undefined" || !(root instanceof HTMLElement) || !runtime || !effective?.buildEffectiveAgentConfig) return;
 
   let scheduled = false;
   let applying = false;
