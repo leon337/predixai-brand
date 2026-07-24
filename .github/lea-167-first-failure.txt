@@ -1,6 +1,6 @@
 LEA_167_E2E_FIRST_FAILURE
-RUN=https://github.com/leon337/predixai-brand/actions/runs/30083046930
-HEAD=8da12846f2bb0b60d0d90d6a729b6a764eab15ef
+RUN=https://github.com/leon337/predixai-brand/actions/runs/30083049574
+HEAD=171a5a16c97798899e6d8e47fd71d035bc87ad72
 
 [1A[2K  1) [chromium] › tests/e2e/lea-167-visual-projection.spec.js:148:3 › LEA-167 projeta Sophia e Clínica Ciame em desktop 
 
@@ -25,7 +25,7 @@ HEAD=8da12846f2bb0b60d0d90d6a729b6a764eab15ef
     [2m      - <span>…</span> intercepts pointer events[22m
     [2m    - retrying click action[22m
     [2m      - waiting 100ms[22m
-    [2m    55 × waiting for element to be visible, enabled and stable[22m
+    [2m    57 × waiting for element to be visible, enabled and stable[22m
     [2m       - element is visible, enabled and stable[22m
     [2m       - scrolling into view if needed[22m
     [2m       - done scrolling[22m
