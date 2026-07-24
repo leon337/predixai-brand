@@ -1,0 +1,137 @@
+name: Validar LEA-167 E2E
+
+on:
+  push:
+    branches:
+      - ptp-web-2-workforce-effective-projection-r1
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/js/employee-builder.js"
+      - "assets/css/**"
+      - "data/employee-simulations/health/medical-testing-clinic/**"
+      - "tests/e2e/lea-167-visual-projection.spec.js"
+      - ".github/workflows/lea-167-e2e.yml"
+  pull_request:
+    paths:
+      - "funcionario-ia-gratis/**"
+      - "assets/js/workforce-package-*.js"
+      - "assets/js/employee-builder.js"
+      - "assets/css/**"
+      - "data/employee-simulations/health/medical-testing-clinic/**"
+      - "tests/e2e/lea-167-visual-projection.spec.js"
+      - ".github/workflows/lea-167-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  lea-167-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Instalar Playwright somente no runner
+        run: |
+          set -euo pipefail
+          npm init -y >/dev/null 2>&1
+          npm install --silent --no-save @playwright/test@1.55.0 >/tmp/lea167-npm.log 2>&1
+          npx playwright install --with-deps chromium >/tmp/lea167-playwright-install.log 2>&1
+      - name: Executar cenários desktop e mobile com fallback versionado
+        env:
+          PLAYWRIGHT_BASE_URL: http://127.0.0.1:4173
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 > /tmp/lea167-http.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            kill "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/funcionario-ia-gratis/ >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              cat /tmp/lea167-http.log
+              exit 1
+            fi
+            sleep 1
+          done
+          npx playwright test tests/e2e/lea-167-visual-projection.spec.js \
+            --browser=chromium \
+            --reporter=line \
+            --workers=1 2>&1 | tee /tmp/lea167-e2e.log
+      - name: Persistir primeira falha para auditoria
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: ptp-web-2-workforce-effective-projection-r1
+        run: |
+          set -euo pipefail
+          DIAG_PATH=".github/lea-167-first-failure.txt"
+          {
+            echo "LEA_167_E2E_FIRST_FAILURE"
+            echo "RUN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "HEAD=${GITHUB_SHA}"
+            echo
+            if [ -f /tmp/lea167-e2e.log ]; then
+              awk '
+                /  1\) \[chromium\]/ {capture=1}
+                capture {print}
+                capture && /Error Context:/ {exit}
+              ' /tmp/lea167-e2e.log | head -n 100
+            else
+              echo "LOG_E2E_NOT_FOUND"
+            fi
+          } > /tmp/lea167-first-failure.txt
+          CONTENT=$(base64 -w0 /tmp/lea167-first-failure.txt)
+          EXISTING_SHA=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}?ref=${TARGET_BRANCH}" --jq .sha 2>/dev/null || true)
+          if [ -n "$EXISTING_SHA" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}" \
+              -f message="LEA-167 registrar primeira falha E2E" \
+              -f content="$CONTENT" \
+              -f branch="$TARGET_BRANCH" \
+              -f sha="$EXISTING_SHA" >/dev/null
+          else
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/${DIAG_PATH}" \
+              -f message="LEA-167 registrar primeira falha E2E" \
+              -f content="$CONTENT" \
+              -f branch="$TARGET_BRANCH" >/dev/null
+          fi
+      - name: Publicar diagnóstico no PR #11
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "## LEA-167 — diagnóstico automático do E2E"
+            echo
+            echo '```txt'
+            if [ -f /tmp/lea167-e2e.log ]; then
+              tail -n 120 /tmp/lea167-e2e.log
+            else
+              echo "LOG_E2E_NOT_FOUND"
+            fi
+            echo '```'
+            echo
+            echo "RUN=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "HEAD=${GITHUB_SHA}"
+          } > /tmp/lea167-pr-comment.md
+          gh pr comment 11 --body-file /tmp/lea167-pr-comment.md
+      - name: Publicar evidências quando houver falha
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lea-167-e2e-failure-evidence
+          path: |
+            test-results/**
+            playwright-report/**
+            /tmp/lea167-e2e.log
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,0 +1,48 @@
+LEA_167_E2E_FIRST_FAILURE
+RUN=https://github.com/leon337/predixai-brand/actions/runs/30083049574
+HEAD=171a5a16c97798899e6d8e47fd71d035bc87ad72
+
+[1A[2K  1) [chromium] › tests/e2e/lea-167-visual-projection.spec.js:148:3 › LEA-167 projeta Sophia e Clínica Ciame em desktop 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.check: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="objective"]').first()[22m
+    [2m    - locator resolved to <input type="radio" name="objective" value="atendimento"/>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <span>…</span> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <span>…</span> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    57 × waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <span>…</span> intercepts pointer events[22m
+    [2m     - retrying click action[22m
+    [2m       - waiting 500ms[22m
+
+
+      76 |   if (heading === "O que você quer melhorar primeiro?") {
+      77 |     const selected = page.locator('input[name="objective"]:checked');
+    > 78 |     if (await selected.count() === 0) await page.locator('input[name="objective"]').first().check();
+         |                                                                                             ^
+      79 |     return;
+      80 |   }
+      81 |
+        at ensureRequiredJourneyInput (/home/runner/work/predixai-brand/predixai-brand/tests/e2e/lea-167-visual-projection.spec.js:78:93)
+        at advancePackageJourney (/home/runner/work/predixai-brand/predixai-brand/tests/e2e/lea-167-visual-projection.spec.js:114:5)
+        at /home/runner/work/predixai-brand/predixai-brand/tests/e2e/lea-167-visual-projection.spec.js:150:5
+
+    Error Context: test-results/tests-e2e-lea-167-visual-p-67527--e-Clínica-Ciame-em-desktop-chromium/error-context.md

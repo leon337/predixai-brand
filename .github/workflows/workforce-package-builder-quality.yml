@@ -5,6 +5,7 @@ on:
     branches:
       - ptp-web-2-workforce-k6-questionnaire-r2
       - ptp-web-2-workforce-effective-config-r1
+      - ptp-web-2-workforce-effective-projection-r1
     paths:
       - "funcionario-ia-gratis/**"
       - "assets/js/workforce-package-*.js"
@@ -12,6 +13,7 @@ on:
       - "api/workforce-catalog-v2.js"
       - "scripts/validate_workforce_package_builder.js"
       - "scripts/validate_workforce_effective_config.js"
+      - "scripts/validate_workforce_package_projection.js"
       - "scripts/validate_workforce_catalog_v2_contract.js"
       - ".github/workflows/workforce-package-builder-quality.yml"
   pull_request:
@@ -22,6 +24,7 @@ on:
       - "api/workforce-catalog-v2.js"
       - "scripts/validate_workforce_package_builder.js"
       - "scripts/validate_workforce_effective_config.js"
+      - "scripts/validate_workforce_package_projection.js"
       - "scripts/validate_workforce_catalog_v2_contract.js"
       - ".github/workflows/workforce-package-builder-quality.yml"
   workflow_dispatch:
@@ -42,21 +45,27 @@ jobs:
           node --check assets/js/workforce-package-state.js
           node --check assets/js/workforce-package-prompt.js
           node --check assets/js/workforce-package-effective-config.js
+          node --check assets/js/workforce-package-projection.js
           node --check assets/js/workforce-package-ui.js
           node --check api/workforce-catalog-v2.js
           node --check scripts/validate_workforce_package_builder.js
           node --check scripts/validate_workforce_effective_config.js
+          node --check scripts/validate_workforce_package_projection.js
           node --check scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar integração do pacote no criador
         run: node scripts/validate_workforce_package_builder.js
       - name: Validar contrato da configuração efetiva
         run: node scripts/validate_workforce_effective_config.js
+      - name: Validar projeção visual da configuração efetiva
+        run: node scripts/validate_workforce_package_projection.js
       - name: Validar contrato do handler Vercel
         run: node scripts/validate_workforce_catalog_v2_contract.js
       - name: Validar referências estáticas e privacidade
         run: |
           grep -q 'workforce-package.css' funcionario-ia-gratis/index.html
           grep -q 'workforce-package-client.js' funcionario-ia-gratis/index.html
+          grep -q 'workforce-package-effective-config.js' funcionario-ia-gratis/index.html
+          grep -q 'workforce-package-projection.js' funcionario-ia-gratis/index.html
           grep -q 'workforce-package-ui.js' funcionario-ia-gratis/index.html
           ! grep -REn 'SUPABASE_SERVICE_ROLE|sb_secret_|service_role' assets/js/workforce-package-*.js
           ! grep -REn '\.supabase\.co' assets/js/workforce-package-*.js
