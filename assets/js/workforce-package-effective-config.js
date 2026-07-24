@@ -191,12 +191,23 @@
 
   const normalizeCustomization = (value) => {
     const source = isPlainObject(value) ? value : Object.create(null);
+    if (own(source, "bindingSchemaVersion") && source.bindingSchemaVersion !== BINDING_SCHEMA_VERSION) {
+      fail("BINDING_SCHEMA_VERSION_MISMATCH", String(source.bindingSchemaVersion));
+    }
     return {
       answerModes: isPlainObject(source.answerModes) ? cloneValue(source.answerModes) : Object.create(null),
       answers: isPlainObject(source.answers) ? cloneValue(source.answers) : Object.create(null),
       omittedOptionalFields: Array.isArray(source.omittedOptionalFields) ? [...new Set(source.omittedOptionalFields)] : [],
-      bindingSchemaVersion: source.bindingSchemaVersion || BINDING_SCHEMA_VERSION
+      bindingSchemaVersion: BINDING_SCHEMA_VERSION
     };
+  };
+
+  const assertExactBindingSet = (seenBindings) => {
+    const missing = ALLOWED_BINDINGS.filter((binding) => !seenBindings.has(binding));
+    const extra = [...seenBindings].filter((binding) => !ALLOWED_BINDING_SET.has(binding));
+    if (missing.length) fail("REQUIRED_BINDINGS_MISSING", missing.join(","));
+    if (extra.length) fail("UNKNOWN_BINDINGS_PRESENT", extra.join(","));
+    if (seenBindings.size !== ALLOWED_BINDINGS.length) fail("BINDING_SET_MISMATCH");
   };
 
   const buildEffectiveAgentConfig = async ({ packageDocument, packageCustomization = {}, materializerMap = PROMPT_INSTRUCTION_PREFIX, canonicalizationVersion = CANONICALIZATION_VERSION }) => {
@@ -223,10 +234,10 @@
       resolvedAnswers.push(resolved);
     }
 
+    assertExactBindingSet(seenBindings);
     const requiredQuestions = questions.filter((question) => question.required).length;
     const boundRequired = questions.filter((question) => question.required && seenBindings.has(question.includeInPromptAs)).length;
     if (boundRequired !== requiredQuestions) fail("UNBOUND_REQUIRED_QUESTION");
-    if (seenBindings.size !== questions.length) fail("BINDING_COVERAGE_INCOMPLETE");
 
     const packageId = packageDocument.profileId || packageDocument.packageId || packageDocument.payload?.manifest?.packageId || PACKAGE_ID;
     if (packageId !== PACKAGE_ID) fail("UNSUPPORTED_PACKAGE", packageId);
@@ -240,7 +251,7 @@
       package: { packageId, contentVersion, checksum },
       ...config,
       metadata: {
-        bindingSchemaVersion: customization.bindingSchemaVersion,
+        bindingSchemaVersion: BINDING_SCHEMA_VERSION,
         promptInstructionMapVersion: PROMPT_INSTRUCTION_MAP_VERSION,
         canonicalizationVersion: CANONICALIZATION_VERSION,
         questionCount: questions.length,
@@ -257,7 +268,7 @@
   };
 
   const api = Object.freeze({
-    PACKAGE_ID, ALLOWED_BINDINGS, PROMPT_INSTRUCTION_MAP_VERSION, CANONICALIZATION_VERSION,
+    PACKAGE_ID, BINDING_SCHEMA_VERSION, ALLOWED_BINDINGS, PROMPT_INSTRUCTION_MAP_VERSION, CANONICALIZATION_VERSION,
     validateBindingPath, setByPath, resolveEffectiveAnswer, stableCanonicalize, sha256, deepFreeze, buildEffectiveAgentConfig
   });
   globalThis.PredixWorkforceEffectiveConfig = api;
