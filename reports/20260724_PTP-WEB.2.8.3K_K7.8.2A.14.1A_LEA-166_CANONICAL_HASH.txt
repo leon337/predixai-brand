@@ -1,0 +1,47 @@
+PTP=PTP-WEB.2.8.3K.K7.8.2A.14.1A
+ISSUE=LEA-166
+STATUS=PASS_CANONICALIZED_PENDING_INDEPENDENT_REVIEW
+PREVIOUS_HEAD=b6fbdb48f085730dc58502417fe2dd07015cd333
+FUNCTIONAL_HEAD=30011c9608e06200c1aa7ab79256cbcfa43177d4
+BRANCH=ptp-web-2-workforce-effective-config-r1
+PR=10
+PR_DRAFT=YES
+MERGE=BLOCKED
+LEA_167_STARTED=NO
+
+OBJECTIVE=Canonicalize semantically redundant customization modes and bind the validated materializerMap content to a deterministic verifiable hash.
+
+CHANGES:
+- explicit use_suggested entries are removed from canonical answerModes;
+- do_not_include and omittedOptionalFields converge to one sorted omittedOptionalFields representation;
+- answerModes canonical output retains only edit_suggested entries;
+- answers canonical output retains only matching edited answers;
+- semantically equivalent customizations produce the same customizationHash;
+- materializerMap instructions are trimmed, NFC-normalized and key-sorted after exact-contract validation;
+- materializerMapHash is SHA-256 over the canonical validated map;
+- effectiveConfigHash includes customizationHash and materializerMapHash;
+- traceability exposes materializerMapHash for independent verification.
+
+GATES:
+REDUNDANT_MODES_CANONICALIZED=PASS
+SEMANTIC_CUSTOMIZATION_HASH=PASS
+OMISSION_REPRESENTATION_CANONICALIZED=PASS
+MATERIALIZER_MAP_HASH=VERIFIED
+MATERIALIZER_CONTENT_BOUND_TO_EFFECTIVE_HASH=PASS
+MATERIALIZER_KEY_ORDER_INDEPENDENT=PASS
+MATERIALIZER_CONTENT_CHANGE_DETECTED=PASS
+PACKAGE_BUILDER_RUN=30065425138 SUCCESS
+WORKFORCE_RUN=30065425127 SUCCESS
+API_CHANGED=NO
+SUPABASE_CHANGED=NO
+VERCEL_JSON_CHANGED=NO
+UI_CHANGED=NO
+PRODUCTION_CHANGED=NO
+
+SUPABASE_PROJECT=vcmvdmxmkmekcurcfdze
+SUPABASE_STATUS=ACTIVE_HEALTHY
+SQL_EXECUTED=NO
+MIGRATION_APPLIED=NO
+CONFIG_CHANGED=NO
+
+FINAL=PASS_CANONICALIZED_PENDING_INDEPENDENT_REVIEW
